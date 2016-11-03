@@ -14,7 +14,9 @@
   "author": "Nikita Tchayka",
   "license": "Apache-2.0",
   "dependencies": {
+    "bootstrap": "^3.3.7",
     "electron": "^1.4.5",
+    "jquery": "^3.1.1",
     "react": "^15.3.2",
     "react-dom": "^15.3.2"
   }
