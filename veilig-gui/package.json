@@ -1,0 +1,21 @@
+{
+  "name": "veilig-gui",
+  "version": "0.0.1",
+  "description": "A Haskell IDE",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "pulp build --to dist/compiled.js",
+    "start": "electron dist/main.js",
+    "test": "pulp test"
+  },
+  "author": "Nikita Tchayka",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "electron": "^1.4.5",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2"
+  }
+}
