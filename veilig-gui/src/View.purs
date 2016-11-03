@@ -1,16 +1,30 @@
 module View where
 
-import Prelude
-import Pux.Html (Html, text, button, span, div)
+import Prelude (const, show)
+import Pux.Html
 import Pux.Html.Events (onClick)
+import Pux.Html.Attributes
+import Types (State, Action(..))
 
-import Types
+navbar :: State -> Html Action
+navbar state =
+  div
+    [ className "navbar navbar-default" ]
+    [ div
+        [ className "container-fluid" ]
+        [ div
+            [ className "navbar-header" ]
+            [ a [ className "navbar-brand", href "#" ] [ text "Veilig" ]
+            ]
+        ]
+    ]
 
 view :: State -> Html Action
-view count =
+view state =
   div
     []
-    [ button [ onClick (const Increment) ] [ text "Increment" ]
-    , span [] [ text (show count) ]
+    [ navbar state
+    , button [ onClick (const Increment) ] [ text "Increment" ]
+    , span [] [ text (show state) ]
     , button [ onClick (const Decrement) ] [ text "Decrement" ]
     ]
