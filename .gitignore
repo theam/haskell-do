@@ -29,3 +29,4 @@ veilig-core/*.eventlog
 veilig-core/.stack-work/
 veilig-core/cabal.project.local
 veilig-core/.HTF
+veilig-gui/.psc-ide-port
