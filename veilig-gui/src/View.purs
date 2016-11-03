@@ -8,14 +8,25 @@ import Types (State, Action(..))
 
 navbar :: State -> Html Action
 navbar state =
-  div
+  nav
     [ className "navbar navbar-default" ]
     [ div
         [ className "container-fluid" ]
         [ div
             [ className "navbar-header" ]
-            [ a [ className "navbar-brand", href "#" ] [ text "Veilig" ]
+            []
+        , div
+            [ className "" ]
+            [ ul
+                [ className "nav navbar-nav text-center" ]
+                [ li [] [ a [ className "glyphicon glyphicon-file" ] [ text "" ] ]
+                , li [] [ a [ className "glyphicon glyphicon-folder-open" ] [ text "" ] ]
+                ]
             ]
+        , ul
+                [ className "nav navbar-nav navbar-right" ]
+                [ li [] [ a [ className "glyphicon glyphicon-eye-open" ] [ text "" ] ]
+                ]
         ]
     ]
 
