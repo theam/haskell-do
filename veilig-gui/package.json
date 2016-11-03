@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "pulp build --to dist/compiled.js",
-    "start": "electron dist/main.js",
+    "start": "electron dist/js/main.js",
     "test": "pulp test"
   },
   "author": "Nikita Tchayka",
