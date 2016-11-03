@@ -1,0 +1,6 @@
+veilig-gui/bower_components/
+veilig-gui/node_modules/
+veilig-gui/.pulp-cache/
+veilig-gui/output/
+veilig-gui/.psci*
+veilig-gui/src/.webpack.js
