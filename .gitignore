@@ -4,7 +4,7 @@ veilig-gui/.pulp-cache/
 veilig-gui/output/
 veilig-gui/.psci*
 veilig-gui/src/.webpack.js
-veilig-gui/dist/js/compiled.js
+veilig-gui/dist/compiled.js
 veilig-gui/static/dist
 veilig-gui/npm-debug.log
 veilig-gui/**DS_Store
