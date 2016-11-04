@@ -35,7 +35,7 @@ view state =
   div
     []
     [ navbar state
-    , button [ onClick (const Increment) ] [ text "Increment" ]
-    , span [] [ text (show state) ]
-    , button [ onClick (const Decrement) ] [ text "Decrement" ]
+    , div
+        [ id_ "editor" ]
+        []
     ]
