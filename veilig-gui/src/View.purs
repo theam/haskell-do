@@ -1,12 +1,21 @@
 module View where
 
-import Prelude (const, show)
+import Prelude hiding (div)
 import Pux.Html
-import Pux.Html.Events (onClick)
 import Pux.Html.Attributes
-import Types (State, Action(..))
+import Prelude (const, show)
+import Pux.Html.Events (onClick)
+import Types (AppState, Action(..))
 
-navbar :: State -> Html Action
+editButton :: AppState -> Html Action
+editButton state =
+  let
+    icon = if state.editing then "pencil" else "eye-open"
+    cname = "glyphicon glyphicon-" <> icon
+  in
+    li [] [ a [ className cname, onClick (const ToggleEdit) ] [ text "" ] ]
+
+navbar :: AppState -> Html Action
 navbar state =
   nav
     [ className "navbar navbar-default" ]
@@ -26,12 +35,12 @@ navbar state =
             ]
         , ul
                 [ className "nav navbar-nav navbar-right" ]
-                [ li [] [ a [ className "glyphicon glyphicon-eye-open" ] [ text "" ] ]
+                [ editButton state
                 ]
         ]
     ]
 
-view :: State -> Html Action
+view :: AppState -> Html Action
 view state =
   div
     []

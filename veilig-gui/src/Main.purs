@@ -5,13 +5,14 @@ import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Exception (EXCEPTION)
 import Signal.Channel (CHANNEL)
 import Pux (renderToDOM, fromSimple, start)
-import State (update)
+import State (update, initialAppState)
 import View (view)
+import Types (AppState)
 
 main :: forall e. Eff (err :: EXCEPTION, channel :: CHANNEL | e) Unit
 main = do
   app <- start
-    { initialState: 0
+    { initialState: initialAppState
     , update: fromSimple update
     , view: view
     , inputs: []

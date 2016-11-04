@@ -1,5 +1,10 @@
 module Types where
 
-data Action = Increment | Decrement
+data Action
+  = ToggleEdit
 
-type State = Int
+type AppState =
+  { editing :: Boolean
+  , rawText :: String
+  , renderedText :: String
+  }

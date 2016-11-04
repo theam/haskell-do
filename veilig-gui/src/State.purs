@@ -3,6 +3,12 @@ module State where
 import Prelude
 import Types
 
-update :: Action -> State -> State
-update Increment count = count + 1
-update Decrement count = count - 1
+initialAppState :: AppState
+initialAppState =
+  { editing: true
+  , rawText: ""
+  , renderedText: ""
+  }
+
+update :: Action -> AppState -> AppState
+update ToggleEdit state = state { editing = not state.editing }
