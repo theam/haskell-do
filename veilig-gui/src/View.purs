@@ -21,6 +21,7 @@ navbar state =
                 [ className "nav navbar-nav text-center" ]
                 [ li [] [ a [ className "glyphicon glyphicon-file" ] [ text "" ] ]
                 , li [] [ a [ className "glyphicon glyphicon-folder-open" ] [ text "" ] ]
+                , li [] [ a [ className "glyphicon glyphicon-import" ] [ text "" ] ]
                 ]
             ]
         , ul
