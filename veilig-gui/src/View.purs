@@ -1,22 +1,22 @@
 module View where
 
-import Pux.Html
+import Pux.Html hiding (map)
 import Pux.Html.Attributes
 import Prelude (const, show)
 import Pux.Html.Events (onClick)
-import Types (AppState, Action(..))
+import Types
 import Prelude hiding (div)
 
 editButton :: AppState -> Html Action
-editButton state =
+editButton appState =
   let
-    icon = if state.editing then "pencil" else "eye-open"
+    icon = if appState.editing then "pencil" else "eye-open"
     cname = "glyphicon glyphicon-" <> icon
   in
     li [] [ a [ className cname, onClick (const ToggleEdit) ] [ text "" ] ]
 
 navbar :: AppState -> Html Action
-navbar state =
+navbar appState =
   nav
     [ className "navbar navbar-default" ]
     [ div
@@ -35,25 +35,32 @@ navbar state =
             ]
         , ul
                 [ className "nav navbar-nav navbar-right" ]
-                [ editButton state
+                [ editButton appState
                 ]
         ]
     ]
 
+renderTextCell :: Cell -> Html Action
+renderTextCell (TextCell s) = li [] [ p [ contentEditable "true" ] [ text s ] ]
+renderTextCell _ = text ""
+
+renderCells :: AppState -> Array (Html Action)
+renderCells appState = map renderTextCell appState.notebook.cells
+
 view :: AppState -> Html Action
-view state =
+view appState =
   div
     []
-    [ navbar state
+    [ navbar appState
     , div
         [ className "container", id_ "editor" ]
         [ div
             [ className "row" ]
             [ div
                 [ className "col-md-12" ]
-                [ p
-                    [ contentEditable "true" ]
-                    [ text "Type here" ]
+                [ ul
+                    []
+                    $ renderCells appState
                 ]
             ]
         ]
