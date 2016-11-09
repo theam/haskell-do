@@ -1,11 +1,11 @@
 module View where
 
-import Prelude hiding (div)
 import Pux.Html
 import Pux.Html.Attributes
 import Prelude (const, show)
 import Pux.Html.Events (onClick)
 import Types (AppState, Action(..))
+import Prelude hiding (div)
 
 editButton :: AppState -> Html Action
 editButton state =
@@ -46,6 +46,15 @@ view state =
     []
     [ navbar state
     , div
-        [ id_ "editor" ]
-        []
+        [ className "container", id_ "editor" ]
+        [ div
+            [ className "row" ]
+            [ div
+                [ className "col-md-12" ]
+                [ p
+                    [ contentEditable "true" ]
+                    [ text "Type here" ]
+                ]
+            ]
+        ]
     ]
