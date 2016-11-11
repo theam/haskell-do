@@ -1,7 +1,11 @@
 module State where
 
 import Prelude
+
 import Types
+import Data.Array
+import Data.Lens
+import Data.Lens.Setter
 
 initialNotebook :: Notebook
 initialNotebook =
@@ -9,7 +13,7 @@ initialNotebook =
   , subtitle: ""
   , author: ""
   , date: ""
-  , cells: [ TextCell "Type here" ] :: Array Cell
+  , cells: [] :: Array Cell
   }
 
 initialAppState :: AppState
@@ -19,6 +23,13 @@ initialAppState =
   , rawText: ""
   , renderedText: ""
   }
+
+appendCell :: Cell -> AppState -> AppState
+appendCell c =
+  over (_notebook <<< _cells ) $ (<>) [c]
+
+addTextCell :: AppState -> AppState
+addTextCell appState = appendCell (TextCell "Type here") appState
 
 update :: Action -> AppState -> AppState
 update ToggleEdit state = state { editing = not state.editing }

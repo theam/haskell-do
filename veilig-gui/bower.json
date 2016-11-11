@@ -11,7 +11,9 @@
     "purescript-exceptions": "^2.0.0",
     "purescript-pux": "^7.0.0",
     "purescript-signal": "^8.0.0",
-    "purescript-css": "^2.0.0"
+    "purescript-css": "^2.0.0",
+    "purescript-arrays": "^3.0.0",
+    "purescript-profunctor-lenses": "^2.1.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^2.0.0"

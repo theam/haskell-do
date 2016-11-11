@@ -15,6 +15,39 @@ editButton appState =
   in
     li [] [ a [ className cname, onClick (const ToggleEdit) ] [ text "" ] ]
 
+additionMenu :: Html Action
+additionMenu =
+  li
+    [ className "dropdown" ]
+    [ a
+        [ className "dropdown-toggle glyphicon glyphicon-plus"
+        , attr "data-toggle" "dropdown"
+        ]
+        [ text "" ]
+    , ul
+        [ className "dropdown-menu"
+        , aria "labelledby" "dLabel"
+        , role "menu"
+        ]
+        [ li
+            []
+            [ a
+                [ onClick (const AddTextCell)
+                , href "#"
+                ]
+                [ text "Text cell" ]
+            ]
+        , li
+            []
+            [ a
+                [ onClick (const AddTextCell)
+                , href "#"
+                ]
+                [ text "Code cell" ]
+            ]
+        ]
+    ]
+
 navbar :: AppState -> Html Action
 navbar appState =
   nav
@@ -31,6 +64,7 @@ navbar appState =
                 [ li [] [ a [ className "glyphicon glyphicon-file" ] [ text "" ] ]
                 , li [] [ a [ className "glyphicon glyphicon-folder-open" ] [ text "" ] ]
                 , li [] [ a [ className "glyphicon glyphicon-import" ] [ text "" ] ]
+                , additionMenu
                 ]
             ]
         , ul
