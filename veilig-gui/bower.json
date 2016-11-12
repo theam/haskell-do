@@ -14,7 +14,8 @@
     "purescript-css": "^2.0.0",
     "purescript-arrays": "^3.0.0",
     "purescript-profunctor-lenses": "^2.1.0",
-    "purescript-strings": "^2.0.2"
+    "purescript-strings": "^2.0.2",
+    "purescript-aff": "^2.0.1"
   },
   "devDependencies": {
     "purescript-psci-support": "^2.0.0"

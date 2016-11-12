@@ -3,17 +3,17 @@ module Main where
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Exception (EXCEPTION)
 import Prelude (Unit, bind, const)
-import Pux (renderToDOM, fromSimple, start)
+import Pux (CoreEffects, renderToDOM, fromSimple, start)
 import Signal.Channel (CHANNEL)
-import State (update, initialAppState)
-import Types (Action(ToggleEdit), AppState)
+import State
+import Types
 import View (view)
 
-main :: forall e. Eff (err :: EXCEPTION, channel :: CHANNEL | e) Unit
+main :: forall e. Eff (CoreEffects (makeEditor :: MAKEEDITOR)) Unit
 main = do
   app <- start
     { initialState: initialAppState
-    , update: fromSimple update
+    , update: update
     , view: view
     , inputs: []
     }

@@ -2,19 +2,30 @@ module Types where
 
 import Data.Lens
 import Pux.Html.Events
+import Control.Monad.Aff
+import Signal.Channel
+import Control.Monad.Eff.Exception (EXCEPTION)
 
 data Action
   = ToggleEdit
   | AddTextCell
   | AddCodeCell
+  | RenderCodeCell Int
   | CheckInput FormEvent
+  | NoOp
 
 type AppState =
   { editing :: Boolean
   , notebook :: Notebook
   , rawText :: String
   , renderedText :: String
+  , totalCells :: Int
   , currentCell :: Int
+  }
+
+type EffModel state action eff =
+  { state :: state
+  , effects :: Array (Aff (channel :: CHANNEL, err :: EXCEPTION | eff) action)
   }
 
 _notebook :: Lens' AppState Notebook
@@ -35,7 +46,7 @@ _cells :: Lens' Notebook (Array Cell)
 _cells = lens _.cells ( _ { cells = _ } )
 
 data Cell
-  = TextCell String
-  | CodeCell String DisplayResult
+  = TextCell Int String
+  | CodeCell Int String DisplayResult
 
 newtype DisplayResult = DisplayResult String
