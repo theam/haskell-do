@@ -3,7 +3,7 @@ module View where
 import Pux.Html hiding (map)
 import Pux.Html.Attributes
 import Prelude (const, show)
-import Pux.Html.Events (onClick)
+import Pux.Html.Events (onClick, onInput)
 import Types
 import Prelude hiding (div)
 
@@ -40,7 +40,7 @@ additionMenu =
         , li
             []
             [ a
-                [ onClick (const AddTextCell)
+                [ onClick (const AddCodeCell)
                 , href "#"
                 ]
                 [ text "Code cell" ]
@@ -75,8 +75,16 @@ navbar appState =
     ]
 
 renderTextCell :: Cell -> Html Action
-renderTextCell (TextCell s) = li [] [ p [ contentEditable "true" ] [ text s ] ]
-renderTextCell _ = text ""
+renderTextCell (TextCell s) = li [] [ p [ contentEditable "true"
+                                        , onInput CheckInput
+                                        ]
+                                        [ text s ]
+                                    ]
+renderTextCell (CodeCell s _) = li [] [ pre[] [ code [ contentEditable "true"
+                                        , onInput CheckInput
+                                        ]
+                                        [ text s ]
+                                    ]]
 
 renderCells :: AppState -> Array (Html Action)
 renderCells appState = map renderTextCell appState.notebook.cells
