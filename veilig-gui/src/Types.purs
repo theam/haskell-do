@@ -11,7 +11,7 @@ data Action
   | AddTextCell
   | AddCodeCell
   | RenderCodeCell Int
-  | CheckInput FormEvent
+  | CheckInput Int FormEvent
   | NoOp
 
 type AppState =

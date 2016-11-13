@@ -12,6 +12,7 @@ import Control.Monad.Aff
 import Control.Monad.Eff
 import Data.String as S
 import Control.Monad.Eff.Class (liftEff)
+import Data.Lens.Traversal (traversed)
 import Pux (noEffects)
 
 initialNotebook :: Notebook
@@ -48,6 +49,17 @@ addCodeCell as = appendCell emptyCodeCell as
   where
     emptyCodeCell = CodeCell as.totalCells "Code" (DisplayResult "")
 
+
+
+updateCell :: Int -> String -> AppState -> AppState
+updateCell i s =
+  over (_notebook <<< _cells <<< traversed <<< filtered (isCorrectCell i)) updateCell'
+  where
+    isCorrectCell i (TextCell i' _) = i == i'
+    isCorrectCell i (CodeCell i' _ _) = i == i'
+    updateCell' (TextCell i' s') = TextCell i' s
+    updateCell' (CodeCell i' s' d) = CodeCell i' s d
+
 update :: Action -> AppState -> EffModel AppState Action (makeEditor :: MAKEEDITOR)
 update ToggleEdit appState  = noEffects $ appState { editing = not appState.editing }
 update AddTextCell appState = noEffects $ addTextCell appState
@@ -59,7 +71,7 @@ update (RenderCodeCell i) appState =
       pure NoOp
     ]
   }
-update (CheckInput ev) appState = noEffects $ appState
+update (CheckInput i ev) appState = noEffects $ updateCell i ev.target.value appState
 update NoOp appState = noEffects $ appState
 
 

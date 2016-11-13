@@ -1,10 +1,10 @@
 module View where
 
-import Pux.Html hiding (map)
 import Pux.Html.Attributes
-import Prelude (const, show)
-import Pux.Html.Events (onClick, onInput, onLoad)
 import Types
+import Prelude (const, show)
+import Pux.Html.Events (onChange, onClick, onInput, onLoad)
+import Pux.Html hiding (map)
 import Prelude hiding (div)
 
 editButton :: AppState -> Html Action
@@ -61,9 +61,7 @@ navbar appState =
             [ className "" ]
             [ ul
                 [ className "nav navbar-nav text-center" ]
-                [ li [] [ a [ className "glyphicon glyphicon-file" ] [ text "" ] ]
-                , li [] [ a [ className "glyphicon glyphicon-folder-open" ] [ text "" ] ]
-                , li [] [ a [ className "glyphicon glyphicon-import" ] [ text "" ] ]
+                [ li [] [ a [ className "glyphicon glyphicon-play" ] [ text "" ] ]
                 , additionMenu
                 ]
             ]
@@ -76,7 +74,6 @@ navbar appState =
 
 renderTextCell :: Cell -> Html Action
 renderTextCell (TextCell i s) = li [] [ p [ contentEditable "true"
-                                        , onInput CheckInput
                                         , id_ (show i)
                                         ]
                                         [ text s ]
@@ -87,9 +84,10 @@ renderTextCell (CodeCell i s _) =
     [ pre
         []
         [ textarea
-            [onClick (const $ RenderCodeCell i)
+            [ onClick (const $ RenderCodeCell i)
+            , onChange (CheckInput i)
             , id_ (show i)
-            , defaultValue s
+            , defaultValue "Insert code"
             ]
             [ ]
             ]
