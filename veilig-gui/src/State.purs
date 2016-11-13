@@ -16,7 +16,7 @@ import Data.Lens.Traversal (traversed)
 import Pux (noEffects)
 
 initialNotebook :: Notebook
-initialNotebook =
+initialNotebook = Notebook
   { title: ""
   , subtitle: ""
   , author: ""
@@ -25,30 +25,26 @@ initialNotebook =
   }
 
 initialAppState :: AppState
-initialAppState =
+initialAppState = AppState
   { editing: true
   , notebook: initialNotebook
-  , rawText: ""
-  , renderedText: ""
   , totalCells: 0
   , currentCell: 0
   }
 
 appendCell :: Cell -> AppState -> AppState
-appendCell c appState =
-  (_notebook <<< _cells ) <>~ [c]
-    $ appState
-        { totalCells = appState.totalCells + 1
-        }
+appendCell c =
+  ((_notebook <<< _cells ) <>~ [c]) <<< (_totalCells +~ 1)
 
 addTextCell :: AppState -> AppState
-addTextCell as = appendCell (TextCell as.totalCells "Type here") as
+addTextCell as = appendCell (TextCell (getTotalCells as) "Type here") as
 
 addCodeCell :: AppState -> AppState
 addCodeCell as = appendCell emptyCodeCell as
   where
-    emptyCodeCell = CodeCell as.totalCells "Code" (DisplayResult "")
+    emptyCodeCell = CodeCell (getTotalCells as) "Code" (DisplayResult "")
 
+getTotalCells = view _totalCells
 
 
 updateCell :: Int -> String -> AppState -> AppState
@@ -61,11 +57,11 @@ updateCell i s =
     updateCell' (CodeCell i' s' d) = CodeCell i' s d
 
 update :: Action -> AppState -> EffModel AppState Action (makeEditor :: MAKEEDITOR)
-update ToggleEdit appState  = noEffects $ appState { editing = not appState.editing }
+update ToggleEdit appState  = noEffects $ appState
 update AddTextCell appState = noEffects $ addTextCell appState
 update AddCodeCell appState = noEffects $ addCodeCell appState
 update (RenderCodeCell i) appState =
-  { state: appState { editing = not appState.editing }
+  { state: appState 
   , effects: [ do
       liftEff $ makeEditor i
       pure NoOp

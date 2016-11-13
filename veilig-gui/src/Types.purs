@@ -1,10 +1,12 @@
 module Types where
 
+import Prelude
 import Data.Lens
 import Pux.Html.Events
 import Control.Monad.Aff
 import Signal.Channel
 import Control.Monad.Eff.Exception (EXCEPTION)
+import Data.Show (class Show)
 
 data Action
   = ToggleEdit
@@ -14,11 +16,9 @@ data Action
   | CheckInput Int FormEvent
   | NoOp
 
-type AppState =
+data AppState = AppState
   { editing :: Boolean
   , notebook :: Notebook
-  , rawText :: String
-  , renderedText :: String
   , totalCells :: Int
   , currentCell :: Int
   }
@@ -29,12 +29,21 @@ type EffModel state action eff =
   }
 
 _notebook :: Lens' AppState Notebook
-_notebook = lens _.notebook ( _ { notebook = _ } )
+_notebook = lens
+  (\(AppState s) -> s.notebook)
+  (\(AppState s) -> (\n -> AppState (s { notebook = n})))
+
+_totalCells :: Lens' AppState Int
+_totalCells = lens
+  (\(AppState s) -> s.totalCells)
+  (\(AppState s) -> (\n -> AppState (s { totalCells = n})))
 
 _currentCell :: Lens' AppState Int
-_currentCell = lens _.currentCell ( _ { currentCell = _ } )
+_currentCell = lens
+  (\(AppState s) -> s.currentCell)
+  (\(AppState s) -> (\c -> AppState (s { currentCell = c})))
 
-type Notebook =
+data Notebook = Notebook
   { title :: String
   , subtitle :: String
   , date :: String
@@ -43,7 +52,9 @@ type Notebook =
   }
 
 _cells :: Lens' Notebook (Array Cell)
-_cells = lens _.cells ( _ { cells = _ } )
+_cells = lens
+  (\(Notebook n) -> n.cells)
+  (\(Notebook n) -> (\c -> Notebook (n { cells = c})))
 
 data Cell
   = TextCell Int String

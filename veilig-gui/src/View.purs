@@ -6,11 +6,12 @@ import Prelude (const, show)
 import Pux.Html.Events (onChange, onClick, onInput, onLoad)
 import Pux.Html hiding (map)
 import Prelude hiding (div)
+import Data.Lens as L
 
 editButton :: AppState -> Html Action
 editButton appState =
   let
-    icon = if appState.editing then "pencil" else "eye-open"
+    icon = if true then "pencil" else "eye-open"
     cname = "glyphicon glyphicon-" <> icon
   in
     li [] [ a [ className cname, onClick (const ToggleEdit) ] [ text "" ] ]
@@ -94,7 +95,7 @@ renderTextCell (CodeCell i s _) =
         ]
 
 renderCells :: AppState -> Array (Html Action)
-renderCells appState = map renderTextCell appState.notebook.cells
+renderCells = map renderTextCell <<< L.view (_notebook <<< _cells)--appState.notebook.cells
 
 view :: AppState -> Html Action
 view appState =
