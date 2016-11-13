@@ -23,6 +23,15 @@ data AppState = AppState
   , currentCell :: Int
   }
 
+instance showAppState :: Show AppState where
+  show (AppState as) =
+    "(AppState { editing: " <> show as.editing <>
+    ", notebook: " <> show as.notebook <>
+    ", totalCells: " <> show as.totalCells <>
+    ", currentCell: " <> show as.currentCell <>
+    "})"
+
+
 type EffModel state action eff =
   { state :: state
   , effects :: Array (Aff (channel :: CHANNEL, err :: EXCEPTION | eff) action)
@@ -51,6 +60,15 @@ data Notebook = Notebook
   , cells :: Array Cell
   }
 
+instance showNotebook :: Show Notebook where
+  show (Notebook n) =
+    "(Notebook { title: " <> n.title <>
+    ", subtitle: " <> n.subtitle <>
+    ", date: " <> n.date <>
+    ", author: " <> n.author <>
+    ", cells: " <> show n.cells <>
+    "})"
+
 _cells :: Lens' Notebook (Array Cell)
 _cells = lens
   (\(Notebook n) -> n.cells)
@@ -59,5 +77,9 @@ _cells = lens
 data Cell
   = TextCell Int String
   | CodeCell Int String DisplayResult
+
+instance showCell :: Show Cell where
+  show (TextCell i s) = "(TextCell " <> show i <> " " <> s <>")"
+  show (CodeCell i s _) = "(TextCell " <> show i <> " " <> s <>")"
 
 newtype DisplayResult = DisplayResult String
