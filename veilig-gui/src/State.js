@@ -11,3 +11,7 @@ exports.makeEditor = function (_id) {
     );
   }();
 }
+
+exports.checkNotebook = function (notebook) {
+  return console.log("I do nothing");
+}

@@ -72,5 +72,7 @@ update NoOp appState = noEffects $ appState
 
 
 foreign import data MAKEEDITOR :: !
-
 foreign import makeEditor :: forall eff. Int -> Eff ( makeEditor :: MAKEEDITOR | eff ) Action
+
+foreign import data WEBSOCKET :: !
+foreign import checkNotebook :: forall eff. String -> Eff ( websocket :: WEBSOCKET | eff ) Action
