@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "pulp build --to dist/compiled.js",
+    "watch": "pulp --watch build --to dist/compiled.js",
     "start": "electron dist/main.js",
     "test": "pulp test"
   },
