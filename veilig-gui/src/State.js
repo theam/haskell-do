@@ -12,6 +12,6 @@ exports.makeEditor = function (_id) {
   }();
 }
 
-exports.checkNotebook = function (notebook) {
+exports.checkNotebookImpl = function (notebook) {
   return console.log("I do nothing");
 }

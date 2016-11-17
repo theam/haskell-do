@@ -74,25 +74,31 @@ navbar appState =
     ]
 
 renderTextCell :: Cell -> Html Action
-renderTextCell (TextCell i s) = li [] [ p [ contentEditable "true"
-                                        , id_ (show i)
-                                        ]
-                                        [ text s ]
-                                    ]
-renderTextCell (CodeCell i s _) =
+renderTextCell (Cell c@{ cellType : TextCell }) =
+    li
+        []
+        [ p
+            [ contentEditable "true"
+            , id_ (show c.cellId)
+            ]
+            [ text c.cellContent ]
+        ]
+renderTextCell (Cell c@{ cellType : CodeCell }) =
   li
     []
     [ pre
         []
         [ textarea
-            [ onClick (const $ RenderCodeCell i)
-            , onChange (CheckInput i)
-            , id_ (show i)
+            [ onClick (const $ RenderCodeCell c.cellId)
+            , onChange (CheckInput c.cellId)
+            , id_ (show c.cellId)
             , defaultValue "Insert code"
             ]
-            [ ]
-            ]
+            []
         ]
+    ]
+renderTextCell (Cell c@{ cellType : DisplayCell }) =
+    li [] [ text "" ]
 
 renderCells :: AppState -> Array (Html Action)
 renderCells = map renderTextCell <<< L.view (_notebook <<< _cells)--appState.notebook.cells

@@ -5,81 +5,117 @@ import Data.Lens
 import Pux.Html.Events
 import Control.Monad.Aff
 import Signal.Channel
+import Data.Argonaut
+import CSS (b)
 import Control.Monad.Eff.Exception (EXCEPTION)
+import Data.Either (Either(Left, Right))
 import Data.Show (class Show)
 
 data Action
-  = ToggleEdit
-  | AddTextCell
-  | AddCodeCell
-  | RenderCodeCell Int
-  | CheckInput Int FormEvent
-  | NoOp
+    = ToggleEdit
+    | AddTextCell
+    | AddCodeCell
+    | RenderCodeCell Int
+    | CheckInput Int FormEvent
+    | NoOp
 
-data AppState = AppState
-  { editing :: Boolean
-  , notebook :: Notebook
-  , totalCells :: Int
-  , currentCell :: Int
-  }
-
-instance showAppState :: Show AppState where
-  show (AppState as) =
-    "(AppState { editing: " <> show as.editing <>
-    ", notebook: " <> show as.notebook <>
-    ", totalCells: " <> show as.totalCells <>
-    ", currentCell: " <> show as.currentCell <>
-    "})"
-
+newtype AppState = AppState
+    { editing :: Boolean
+    , notebook :: Notebook
+    , totalCells :: Int
+    , currentCell :: Int
+    }
 
 type EffModel state action eff =
-  { state :: state
-  , effects :: Array (Aff (channel :: CHANNEL, err :: EXCEPTION | eff) action)
-  }
+    { state :: state
+    , effects :: Array (Aff (channel :: CHANNEL, err :: EXCEPTION | eff) action)
+    }
 
 _notebook :: Lens' AppState Notebook
 _notebook = lens
-  (\(AppState s) -> s.notebook)
-  (\(AppState s) -> (\n -> AppState (s { notebook = n})))
+    (\(AppState s) -> s.notebook)
+    (\(AppState s) -> (\n -> AppState (s { notebook = n})))
 
 _totalCells :: Lens' AppState Int
 _totalCells = lens
-  (\(AppState s) -> s.totalCells)
-  (\(AppState s) -> (\n -> AppState (s { totalCells = n})))
+    (\(AppState s) -> s.totalCells)
+    (\(AppState s) -> (\n -> AppState (s { totalCells = n})))
 
 _currentCell :: Lens' AppState Int
 _currentCell = lens
-  (\(AppState s) -> s.currentCell)
-  (\(AppState s) -> (\c -> AppState (s { currentCell = c})))
+    (\(AppState s) -> s.currentCell)
+    (\(AppState s) -> (\c -> AppState (s { currentCell = c})))
 
-data Notebook = Notebook
-  { title :: String
-  , subtitle :: String
-  , date :: String
-  , author :: String
-  , cells :: Array Cell
-  }
+newtype Notebook = Notebook
+    { title :: String
+    , subtitle :: String
+    , date :: String
+    , author :: String
+    , cells :: Array Cell
+    }
 
-instance showNotebook :: Show Notebook where
-  show (Notebook n) =
-    "(Notebook { title: " <> n.title <>
-    ", subtitle: " <> n.subtitle <>
-    ", date: " <> n.date <>
-    ", author: " <> n.author <>
-    ", cells: " <> show n.cells <>
-    "})"
+instance encodeJsonNotebook :: EncodeJson Notebook where
+    encodeJson (Notebook n)
+        = "title" := n.title
+       ~> "subtitle" := n.subtitle
+       ~> "date" := n.date
+       ~> "author" := n.author
+       ~> "cells" := n.cells
+       ~> jsonEmptyObject
+
+instance decodeJsonNotebook :: DecodeJson Notebook where
+    decodeJson json = do
+        o <- decodeJson json
+        title <- o .? "title"
+        subtitle <- o .? "subtitle"
+        date <- o .? "date"
+        author <- o .? "author"
+        cells <- o.? "cells"
+        pure $ Notebook {title, subtitle, date, author, cells}
 
 _cells :: Lens' Notebook (Array Cell)
 _cells = lens
-  (\(Notebook n) -> n.cells)
-  (\(Notebook n) -> (\c -> Notebook (n { cells = c})))
+    (\(Notebook n) -> n.cells)
+    (\(Notebook n) -> (\c -> Notebook (n { cells = c})))
 
-data Cell
-  = TextCell Int String
-  | CodeCell Int String DisplayResult
+newtype Cell = Cell
+    { cellType :: CellType
+    , cellId :: Int
+    , cellContent :: String
+    }
 
-instance showCell :: Show Cell where
-  show (TextCell i s) = "(TextCell " <> show i <> " " <> s <>")"
-  show (CodeCell i s _) = "(TextCell " <> show i <> " " <> s <>")"
+data CellType
+    = TextCell
+    | CodeCell
+    | DisplayCell
+
+instance encodeJsonCellType :: EncodeJson CellType where
+    encodeJson TextCell = fromString "TextCell"
+    encodeJson CodeCell = fromString "CodeCell"
+    encodeJson DisplayCell = fromString "DisplayCell"
+
+instance decodeJsonCellType :: DecodeJson CellType where
+    decodeJson json = do
+      s <- decodeJson json
+      case s of
+        "TextCell"    -> pure TextCell
+        "CodeCell"    -> pure CodeCell
+        "DisplayCell" -> pure DisplayCell
+        _             -> Left "Could not decode display Cell"
+
+instance encodeJsonCell :: EncodeJson Cell where
+    encodeJson (Cell c)
+        = "cellId" := c.cellId
+       ~> "cellType" := c.cellType
+       ~> "cellContent" := c.cellContent
+       ~> jsonEmptyObject
+
+instance decodeJsonCell :: DecodeJson Cell where
+    decodeJson json = do
+        o <- decodeJson json
+        cellType <- o .? "cellType"
+        cellId <- o .? "cellId"
+        cellContent <- o .? "cellContent"
+        pure $ Cell { cellType, cellId, cellContent }
 
 newtype DisplayResult = DisplayResult String
