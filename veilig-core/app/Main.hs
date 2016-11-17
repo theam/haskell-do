@@ -78,4 +78,4 @@ talk conn state (user, _) = forever $ do
 main :: IO ()
 main = do
   state <- newMVar newServerState
-  WS.runServer "0.0.0.0" 9160 $ application state
+  WS.runServer "0.0.0.0" 3000 $ application state

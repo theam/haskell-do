@@ -4,7 +4,6 @@ const React = require('react')
 const ReactDOM = require('react-dom')
 const $ = require('jquery')
 const jQuery = require('jquery')
-
 const app = electron.app // this is our app
 const BrowserWindow = electron.BrowserWindow // This is a Module that creates windows
 

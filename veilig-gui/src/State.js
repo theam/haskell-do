@@ -2,6 +2,10 @@
 
 "use strict";
 
+socket.onopen = function () {
+    socket.send("Hi! I am client");
+}
+
 exports.makeEditor = function (_id) {
   return function(){
     document.getElementById(_id.toString()).value = "";
@@ -13,5 +17,7 @@ exports.makeEditor = function (_id) {
 }
 
 exports.checkNotebookImpl = function (notebook) {
-  return console.log("I do nothing");
+    return function () {
+        socket.send(notebook);
+    }
 }
