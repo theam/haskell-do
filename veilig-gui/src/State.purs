@@ -49,11 +49,13 @@ getTotalCells = view _totalCells
 
 
 updateCell :: Int -> String -> AppState -> AppState
-updateCell i s =
-  over (_notebook <<< _cells <<< traversed <<< filtered (isCorrectCell i)) updateCell'
+updateCell i s = (_notebook <<< _cells) .~ [Cell { cellId: i, cellContent: s, cellType: TextCell}]
+{-
+  over (_notebook <<< _cells) (\x -> map updateCell' x)
   where
-    isCorrectCell i (Cell c) = c.cellId == i
-    updateCell' (Cell c) = Cell c { cellContent = s }
+    isCorrectCell (Cell c) = c.cellId == i
+    updateCell' (Cell c) = if isCorrectCell (Cell c) then Cell c { cellContent = s } else Cell c
+-}
 
 update :: Action -> AppState -> EffModel AppState Action (makeEditor :: MAKEEDITOR, websocket :: WEBSOCKET)
 update ToggleEdit appState  = noEffects $ appState

@@ -80,6 +80,7 @@ renderTextCell (Cell c@{ cellType : TextCell }) =
         [ p
             [ contentEditable "true"
             , id_ (show c.cellId)
+            , onInput (CheckInput c.cellId)
             ]
             [ text c.cellContent ]
         ]
