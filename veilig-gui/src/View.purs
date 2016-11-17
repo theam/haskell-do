@@ -62,7 +62,7 @@ navbar appState =
             [ className "" ]
             [ ul
                 [ className "nav navbar-nav text-center" ]
-                [ li [] [ a [ className "glyphicon glyphicon-play" ] [ text "" ] ]
+                [ li [] [ a [ className "glyphicon glyphicon-play", onClick (const $ CheckNotebook) ] [ text "" ] ]
                 , additionMenu
                 ]
             ]

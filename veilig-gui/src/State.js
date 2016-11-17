@@ -18,6 +18,6 @@ exports.makeEditor = function (_id) {
 
 exports.checkNotebookImpl = function (notebook) {
     return function () {
-        socket.send(notebook);
+        socket.send(JSON.stringify(notebook));
     }
 }

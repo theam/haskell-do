@@ -9,7 +9,7 @@ import State
 import Types
 import View (view)
 
-main :: forall e. Eff (CoreEffects (makeEditor :: MAKEEDITOR)) Unit
+main :: forall e. Eff (CoreEffects (makeEditor :: MAKEEDITOR, websocket :: WEBSOCKET)) Unit
 main = do
   app <- start
     { initialState: initialAppState

@@ -55,7 +55,7 @@ updateCell i s =
     isCorrectCell i (Cell c) = c.cellId == i
     updateCell' (Cell c) = Cell c { cellContent = s }
 
-update :: Action -> AppState -> EffModel AppState Action (makeEditor :: MAKEEDITOR)
+update :: Action -> AppState -> EffModel AppState Action (makeEditor :: MAKEEDITOR, websocket :: WEBSOCKET)
 update ToggleEdit appState  = noEffects $ appState
 update AddTextCell appState = noEffects $ addTextCell appState
 update AddCodeCell appState = noEffects $ addCodeCell appState
@@ -67,10 +67,17 @@ update (RenderCodeCell i) appState =
     ]
   }
 update (CheckInput i ev) appState = noEffects $ updateCell i ev.target.value appState
+update CheckNotebook as@(AppState appState) =
+    { state: as
+    , effects: [ do
+        liftEff $ checkNotebook appState.notebook
+        pure NoOp
+      ]
+    }
 update NoOp appState = noEffects $ appState
 
-cn :: forall eff . Notebook -> Eff ( websocket :: WEBSOCKET | eff ) Action
-cn n = checkNotebookImpl $ encodeJson n
+checkNotebook :: forall eff . Notebook -> Eff ( websocket :: WEBSOCKET | eff ) Action
+checkNotebook n = checkNotebookImpl $ encodeJson n
 
 
 foreign import data MAKEEDITOR :: !

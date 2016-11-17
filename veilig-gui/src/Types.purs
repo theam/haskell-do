@@ -17,6 +17,7 @@ data Action
     | AddCodeCell
     | RenderCodeCell Int
     | CheckInput Int FormEvent
+    | CheckNotebook
     | NoOp
 
 newtype AppState = AppState
