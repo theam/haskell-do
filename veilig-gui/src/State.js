@@ -13,7 +13,7 @@ exports.makeEditor = function (_id) {
       document.getElementById(_id.toString()),
       {mode: "haskell"}
     );
-  }();
+  };
 }
 
 exports.checkNotebookImpl = function (notebook) {
