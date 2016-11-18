@@ -77,12 +77,12 @@ renderTextCell :: Cell -> Html Action
 renderTextCell (Cell c@{ cellType : TextCell }) =
     li
         []
-        [ p
-            [ contentEditable "true"
-            , id_ (show c.cellId)
+        [ textarea
+            [ id_ (show c.cellId)
             , onInput (CheckInput c.cellId)
+            , defaultValue c.cellContent
             ]
-            [ text c.cellContent ]
+            []
         ]
 renderTextCell (Cell c@{ cellType : CodeCell }) =
   li
@@ -91,7 +91,7 @@ renderTextCell (Cell c@{ cellType : CodeCell }) =
         []
         [ textarea
             [ onClick (const $ RenderCodeCell c.cellId)
-            , onChange (CheckInput c.cellId)
+            , onInput (CheckInput c.cellId)
             , id_ (show c.cellId)
             , defaultValue "Insert code"
             ]
