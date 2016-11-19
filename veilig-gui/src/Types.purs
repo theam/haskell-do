@@ -1,15 +1,14 @@
 module Types where
 
-import Prelude
-import Data.Lens
-import Pux.Html.Events
-import Control.Monad.Aff
-import Signal.Channel
+import Prelude (pure, bind, ($))
+
+import Data.Lens (Lens', lens)
+import Pux.Html.Events (FormEvent)
+import Control.Monad.Aff (Aff)
+import Signal.Channel (CHANNEL)
 import Data.Argonaut
-import CSS (b)
 import Control.Monad.Eff.Exception (EXCEPTION)
-import Data.Either (Either(Left, Right))
-import Data.Show (class Show)
+import Data.Either (Either(Left))
 
 data Action
     = ToggleEdit
