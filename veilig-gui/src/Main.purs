@@ -8,8 +8,9 @@ import Signal.Channel (CHANNEL)
 import State
 import Types
 import View (view)
+import WebSocket
 
-main :: forall e. Eff (CoreEffects (makeEditor :: MAKEEDITOR, websocket :: WEBSOCKET)) Unit
+main :: Eff (CoreEffects (websocket :: WEBSOCKET)) Unit
 main = do
   app <- start
     { initialState: initialAppState

@@ -15,6 +15,7 @@ import Data.String as S
 import Control.Monad.Eff.Class (liftEff)
 import Data.Lens.Traversal (traversed)
 import Pux (noEffects)
+import WebSocket
 
 initialNotebook :: Notebook
 initialNotebook = Notebook
@@ -55,14 +56,13 @@ updateCell i s =
     isCorrectCell (Cell c) = c.cellId == i
     updateCell' (Cell c) = if isCorrectCell (Cell c) then Cell c { cellContent = s } else Cell c
 
-update :: Action -> AppState -> EffModel AppState Action (makeEditor :: MAKEEDITOR, websocket :: WEBSOCKET)
+update :: Action -> AppState -> EffModel AppState Action (websocket :: WEBSOCKET)
 update ToggleEdit appState  = noEffects $ appState
 update AddTextCell appState = noEffects $ addTextCell appState
 update AddCodeCell appState = noEffects $ addCodeCell appState
 update (RenderCodeCell i) appState =
   { state: appState
   , effects: [ do
-      liftEff $ makeEditor i
       pure NoOp
     ]
   }
@@ -77,7 +77,4 @@ update CheckNotebook as@(AppState appState) =
 update NoOp appState = noEffects $ appState
 
 checkNotebook :: forall eff . Notebook -> Eff ( websocket :: WEBSOCKET | eff ) Action
-checkNotebook n = checkNotebookImpl $ encodeJson n
-
-foreign import data MAKEEDITOR :: !
-foreign import makeEditor :: forall eff. Int -> Eff ( makeEditor :: MAKEEDITOR | eff ) Action
+checkNotebook n = pure NoOp
