@@ -79,9 +79,5 @@ update NoOp appState = noEffects $ appState
 checkNotebook :: forall eff . Notebook -> Eff ( websocket :: WEBSOCKET | eff ) Action
 checkNotebook n = checkNotebookImpl $ encodeJson n
 
-
 foreign import data MAKEEDITOR :: !
 foreign import makeEditor :: forall eff. Int -> Eff ( makeEditor :: MAKEEDITOR | eff ) Action
-
-foreign import data WEBSOCKET :: !
-foreign import checkNotebookImpl :: forall eff. Json -> Eff ( websocket :: WEBSOCKET | eff ) Action
