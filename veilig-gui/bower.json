@@ -16,9 +16,13 @@
     "purescript-profunctor-lenses": "^2.1.0",
     "purescript-strings": "^2.0.2",
     "purescript-aff": "^2.0.1",
-    "purescript-argonaut": "^2.0.0"
+    "purescript-argonaut": "^2.0.0",
+    "purescript-websocket-simple": "^1.0.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^2.0.0"
+  },
+  "resolutions": {
+    "purescript-dom": "^3.1.0"
   }
 }
