@@ -40,7 +40,7 @@ renderCodeCell (Cell c) =
 
 renderDisplayCell :: Cell -> Html Action
 renderDisplayCell (Cell c) =
-    li [] [ text "" ]
+    li [] [ text c.cellContent ]
 
 renderCells :: AppState -> Array (Html Action)
 renderCells = map renderCell <<< L.view (_notebook <<< _cells)
