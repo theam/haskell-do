@@ -54,10 +54,6 @@ application state pending = do
           | otherwise -> flip finally disconnect $ do
               modifyMVar_ state $ \s -> do
                 let s' = addClient client s
-                WS.sendTextData conn $
-                  "Welcome! Users: " `mappend`
-                  T.intercalate ", " (map fst s)
-                broadcast (fst client `mappend` " joined") s'
                 return s'
               talk conn state client
         where
@@ -72,8 +68,7 @@ application state pending = do
 talk :: WS.Connection -> MVar ServerState -> Client -> IO ()
 talk conn state (user, _) = forever $ do
   msg <- WS.receiveData conn
-  readMVar state >>= broadcast
-    (user `mappend` ": " `mappend` msg)
+  readMVar state >>= broadcast msg
 
 main :: IO ()
 main = do
