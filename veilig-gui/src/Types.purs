@@ -1,14 +1,14 @@
 module Types where
 
-import Prelude (pure, bind, ($))
-
-import Data.Lens (Lens', lens)
-import Pux.Html.Events (FormEvent)
-import Control.Monad.Aff (Aff)
-import Signal.Channel (CHANNEL)
 import Data.Argonaut
+import Control.Monad.Aff (Aff)
 import Control.Monad.Eff.Exception (EXCEPTION)
 import Data.Either (Either(Left))
+import Data.Lens (Lens', lens)
+import Prelude (pure, bind, ($))
+import Pux.Html.Events (FormEvent)
+import Signal.Channel (CHANNEL)
+import WebSocket (Connection)
 
 data Action
     = ToggleEdit
@@ -17,6 +17,7 @@ data Action
     | RenderCodeCell Int
     | CheckInput Int FormEvent
     | CheckNotebook
+    | DisplayMessage String
     | NoOp
 
 newtype AppState = AppState
@@ -24,6 +25,7 @@ newtype AppState = AppState
     , notebook :: Notebook
     , totalCells :: Int
     , currentCell :: Int
+    , socket :: Connection
     }
 
 type EffModel state action eff =

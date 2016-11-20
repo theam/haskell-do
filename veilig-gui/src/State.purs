@@ -11,11 +11,14 @@ import Data.Maybe
 import Data.Argonaut
 import Control.Monad.Aff
 import Control.Monad.Eff
+import WebSocket
 import Data.String as S
 import Control.Monad.Eff.Class (liftEff)
+import Control.Monad.Eff.Exception (EXCEPTION)
 import Data.Lens.Traversal (traversed)
 import Pux (noEffects)
-import WebSocket
+import Signal.Channel (send, Channel)
+import Control.Monad.Eff.Var (($=))
 
 initialNotebook :: Notebook
 initialNotebook = Notebook
@@ -26,13 +29,21 @@ initialNotebook = Notebook
   , cells: [] :: Array Cell
   }
 
-initialAppState :: AppState
-initialAppState = AppState
-  { editing: true
-  , notebook: initialNotebook
-  , totalCells: 0
-  , currentCell: 0
-  }
+initialAppState :: Channel Action -> String -> forall e. Eff (err::EXCEPTION, ws::WEBSOCKET|e) AppState
+initialAppState chan url = do
+    connection@(Connection ws) <- newWebSocket (URL url) []
+    ws.onopen $= \event -> do
+        ws.send (Message "Hi! I am client")
+    ws.onmessage $= \event -> do
+        let received = runMessage (runMessageEvent event)
+        send chan ((DisplayMessage received) :: Action)
+    pure $ AppState
+        { editing: true
+        , notebook: initialNotebook
+        , totalCells: 0
+        , currentCell: 0
+        , socket : connection
+        }
 
 appendCell :: Cell -> AppState -> AppState
 appendCell c =
@@ -46,6 +57,11 @@ addCodeCell as = appendCell emptyCodeCell as
   where
     emptyCodeCell = Cell { cellId : (getTotalCells as), cellContent: "Type here", cellType: CodeCell }
 
+addDisplayCell :: String -> AppState -> AppState
+addDisplayCell msg as = appendCell displayCell as
+  where
+    displayCell = Cell { cellId : (getTotalCells as), cellContent: msg, cellType: DisplayCell }
+
 getTotalCells = view _totalCells
 
 
@@ -56,7 +72,7 @@ updateCell i s =
     isCorrectCell (Cell c) = c.cellId == i
     updateCell' (Cell c) = if isCorrectCell (Cell c) then Cell c { cellContent = s } else Cell c
 
-update :: Action -> AppState -> EffModel AppState Action (websocket :: WEBSOCKET)
+update :: Action -> AppState -> EffModel AppState Action (ws :: WEBSOCKET)
 update ToggleEdit appState  = noEffects $ appState
 update AddTextCell appState = noEffects $ addTextCell appState
 update AddCodeCell appState = noEffects $ addCodeCell appState
@@ -70,11 +86,13 @@ update (CheckInput i ev) appState = noEffects $ updateCell i ev.target.value app
 update CheckNotebook as@(AppState appState) =
     { state: as
     , effects: [ do
-        liftEff $ checkNotebook appState.notebook
-        pure NoOp
+        liftEff $ checkNotebook appState.socket appState.notebook
       ]
     }
+update (DisplayMessage received) appState = noEffects $ addDisplayCell received appState
 update NoOp appState = noEffects $ appState
 
-checkNotebook :: forall eff . Notebook -> Eff ( websocket :: WEBSOCKET | eff ) Action
-checkNotebook n = pure NoOp
+checkNotebook :: forall eff . Connection -> Notebook -> Eff ( ws :: WEBSOCKET, err :: EXCEPTION | eff ) Action
+checkNotebook (Connection ws) n = do
+    let s = encodeJson n
+    ws.send (Message $ show s) *> pure NoOp
