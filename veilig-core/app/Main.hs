@@ -81,7 +81,6 @@ intNotebook n = T.intercalate "\n"
 
 notebookInterpreter :: Text -> Interpreter Text
 notebookInterpreter code = do
-    --setTopLevelModules["Current"]
     setImportsQ[("Prelude",Nothing)]
     a <- eval $ cs code
     return $ cs a
