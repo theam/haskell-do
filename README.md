@@ -20,9 +20,10 @@ For compiling the **backend**, execute in the `veilig-core/` directory:
 For compiling the **frontend**, execute in the `veilig-gui/` directory:
 
 - `npm install -g bower pulp purescript` - This will install:
-  - **Bower** - A dependency tool used for purescript libraries
-  - **Pulp** - A build tool for purescript
-  - **Purescript** itself
+    - **Bower** - A dependency tool used for purescript libraries
+    - **Pulp** - A build tool for purescript
+    - **Purescript** itself
+
 - `npm install` - Installs necessary dependencies for the desktop app
 - `bower install` - Installs purescript libraries used for the project
 - `npm run build` - Build the project
