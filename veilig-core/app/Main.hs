@@ -36,8 +36,7 @@ addClient c s = c : s
 
 addClient' :: Client -> MVar ServerState -> IO ()
 addClient' client state =
-    modifyMVar_ state $ \s -> do
-        return $ addClient client s
+    modifyMVar_ state $ \s -> return $ addClient client s
 
 removeClient :: Client -> ServerState -> ServerState
 removeClient c = filter ((/= fst c) . fst)
@@ -58,34 +57,55 @@ application state pending = do
     WS.forkPingThread conn 30
     msg <- WS.receiveData conn
     clients <- readMVar state
+    dispatchMessage conn state (client conn msg) clients msg
+
+dispatchMessage :: WS.Connection -> MVar ServerState -> Client -> ServerState -> Text -> IO ()
+dispatchMessage conn state client clients msg =
     case msg of
-        _   | not (prefix `T.isPrefixOf` msg) ->
+        _   | not $ hasCorrectPrefix msg ->
                 notifyWrongPrefix conn
-            | isWrongName ->
+            | isWrongName client ->
                 notifyWrongName conn
             | clientExists client clients ->
                 notifyUserExists conn
-            | otherwise -> afterEverything disconnect $ do
+            | otherwise -> afterEverything (disconnect client state) $ do
                 addClient' client state
                 talk conn state client
-                    where
-                        notifyWrongPrefix conn = WS.sendTextData conn ("Wrong announcement" :: Text)
-                        isWrongName = any ($ fst client) [T.null, T.any isPunctuation, T.any isSpace]
-                        notifyWrongName conn = WS.sendTextData conn ("Name cannot contain punctuation or whitespace, and cannot be empty" :: Text)
-                        notifyUserExists conn = WS.sendTextData conn ("User already exists" :: Text)
-                        prefix     = "Hi! I am "
-                        client     = (T.drop (T.length prefix) msg, conn)
-                        afterEverything = flip finally
-                        disconnect = do
-                            s <- removeClient' client state
-                            broadcast (fst client <> " disconnected") s
+
+client :: WS.Connection -> Text -> (Text, WS.Connection)
+client conn msg = (T.drop (T.length connectionPrefix) msg, conn)
+
+hasCorrectPrefix :: Text -> Bool
+hasCorrectPrefix msg = connectionPrefix `T.isPrefixOf` msg
+
+disconnect :: Client -> MVar ServerState -> IO ()
+disconnect client state = do
+    s <- removeClient' client state
+    broadcast (fst client <> " disconnected") s
+
+connectionPrefix :: Text
+connectionPrefix = "Hi! I am "
+
+afterEverything :: IO b -> IO a -> IO a
+afterEverything = flip finally
+
+notifyWrongPrefix :: WS.Connection -> IO ()
+notifyWrongPrefix conn = WS.sendTextData conn ("Wrong announcement" :: Text)
+
+notifyWrongName :: WS.Connection -> IO ()
+notifyWrongName conn = WS.sendTextData conn ("Name cannot contain punctuation or whitespace, and cannot be empty" :: Text)
+
+notifyUserExists :: WS.Connection -> IO ()
+notifyUserExists conn = WS.sendTextData conn ("User already exists" :: Text)
+
+isWrongName :: Client -> Bool
+isWrongName c = any ($ fst c) [T.null, T.any isPunctuation, T.any isSpace]
 
 intNotebook :: Notebook -> Text
-intNotebook n = T.intercalate "\n"
+intNotebook= T.intercalate "\n"
               . map cellContent
               . filter (\c -> cellType c == CodeCell )
               . cells
-              $ n
 
 notebookInterpreter :: Text -> Interpreter Text
 notebookInterpreter code = do
@@ -106,7 +126,13 @@ talk conn state (user, _) = forever $ do
         Nothing ->
             readMVar state >>= broadcast "Could not decode"
 
+address :: String
+address = "0.0.0.0"
+
+port :: Int
+port = 3000
+
 main :: IO ()
 main = do
     state <- newMVar newServerState
-    WS.runServer "0.0.0.0" 3000 $ application state
+    WS.runServer address port $ application state
