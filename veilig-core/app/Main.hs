@@ -34,8 +34,18 @@ clientExists c = any ((== fst c) . fst)
 addClient :: Client -> ServerState -> ServerState
 addClient c s = c : s
 
+addClient' :: Client -> MVar ServerState -> IO ()
+addClient' client state =
+    modifyMVar_ state $ \s -> do
+        return $ addClient client s
+
 removeClient :: Client -> ServerState -> ServerState
 removeClient c = filter ((/= fst c) . fst)
+
+removeClient' :: Client -> MVar ServerState -> IO ServerState
+removeClient' client state =
+    modifyMVar state $ \s ->
+        let s' = removeClient client s in return (s', s')
 
 broadcast :: Text -> ServerState -> IO ()
 broadcast msg state = do
@@ -50,27 +60,25 @@ application state pending = do
     clients <- readMVar state
     case msg of
         _   | not (prefix `T.isPrefixOf` msg) ->
-                WS.sendTextData conn ("Wrong announcement" :: Text)
-            | any ($ fst client)
-                [T.null, T.any isPunctuation, T.any isSpace] ->
-                    WS.sendTextData conn ("Name cannot " `mappend`
-                        "contain punctuation or whitespace, and " `mappend`
-                        "cannot be empty" :: Text)
+                notifyWrongPrefix conn
+            | isWrongName ->
+                notifyWrongName conn
             | clientExists client clients ->
-                WS.sendTextData conn ("User already exists" :: Text)
-            | otherwise -> flip finally disconnect $ do
-                modifyMVar_ state $ \s -> do
-                    let s' = addClient client s
-                    return s'
+                notifyUserExists conn
+            | otherwise -> afterEverything disconnect $ do
+                addClient' client state
                 talk conn state client
                     where
+                        notifyWrongPrefix conn = WS.sendTextData conn ("Wrong announcement" :: Text)
+                        isWrongName = any ($ fst client) [T.null, T.any isPunctuation, T.any isSpace]
+                        notifyWrongName conn = WS.sendTextData conn ("Name cannot contain punctuation or whitespace, and cannot be empty" :: Text)
+                        notifyUserExists conn = WS.sendTextData conn ("User already exists" :: Text)
                         prefix     = "Hi! I am "
                         client     = (T.drop (T.length prefix) msg, conn)
+                        afterEverything = flip finally
                         disconnect = do
-                            -- Remove client and return new state
-                            s <- modifyMVar state $ \s ->
-                                let s' = removeClient client s in return (s', s')
-                            broadcast (fst client `mappend` " disconnected") s
+                            s <- removeClient' client state
+                            broadcast (fst client <> " disconnected") s
 
 intNotebook :: Notebook -> Text
 intNotebook n = T.intercalate "\n"
