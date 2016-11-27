@@ -3,6 +3,7 @@ module WebSocketServer where
 
 import Types
 
+import Language.Haskell.Interpreter
 import Data.Char (isPunctuation, isSpace)
 import Data.Monoid (mappend, (<>))
 import Data.Text (Text)
