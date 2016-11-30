@@ -15,10 +15,11 @@ import WebSocket
 import Data.String as S
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Exception (EXCEPTION)
+import Control.Monad.Eff.Var (($=))
+import Data.Either
 import Data.Lens.Traversal (traversed)
 import Pux (noEffects)
 import Signal.Channel (send, Channel)
-import Control.Monad.Eff.Var (($=))
 
 initialNotebook :: Notebook
 initialNotebook = Notebook
@@ -29,6 +30,11 @@ initialNotebook = Notebook
   , cells: [] :: Array Cell
   }
 
+decodeReceived :: String -> Json
+decodeReceived s = case jsonParser s of
+    Right j -> j
+    Left _ -> fromString ""
+
 initialAppState :: Channel Action -> String -> forall e. Eff (err::EXCEPTION, ws::WEBSOCKET|e) AppState
 initialAppState chan url = do
     connection@(Connection ws) <- newWebSocket (URL url) []
@@ -36,7 +42,12 @@ initialAppState chan url = do
         ws.send (Message "Hi! I am client")
     ws.onmessage $= \event -> do
         let received = runMessage (runMessageEvent event)
-        send chan ((DisplayMessage received) :: Action)
+        let nb = decodeJson (decodeReceived received) :: Either String Notebook
+        case nb of
+            Left s ->
+                send chan (NoOp :: Action)
+            Right n ->
+                send chan ((UpdateNotebook n) :: Action)
     pure $ AppState
         { editing: true
         , notebook: initialNotebook
@@ -62,8 +73,11 @@ addDisplayCell msg as = appendCell displayCell as
   where
     displayCell = Cell { cellId : (getTotalCells as), cellContent: msg, cellType: DisplayCell }
 
+getTotalCells :: AppState -> Int
 getTotalCells = view _totalCells
 
+updateNotebook :: Notebook -> AppState -> AppState
+updateNotebook n (AppState as) = AppState $ as { notebook = n }
 
 updateCell :: Int -> String -> AppState -> AppState
 updateCell i s =
@@ -89,7 +103,7 @@ update CheckNotebook as@(AppState appState) =
         liftEff $ checkNotebook appState.socket appState.notebook
       ]
     }
-update (DisplayMessage received) appState = noEffects $ addDisplayCell received appState
+update (UpdateNotebook receivedNotebook) appState = noEffects $ updateNotebook receivedNotebook appState
 update NoOp appState = noEffects $ appState
 
 checkNotebook :: forall eff . Connection -> Notebook -> Eff ( ws :: WEBSOCKET, err :: EXCEPTION | eff ) Action
