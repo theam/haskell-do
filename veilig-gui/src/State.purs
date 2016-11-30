@@ -30,6 +30,11 @@ initialNotebook = Notebook
   , cells: [] :: Array Cell
   }
 
+decodeReceived :: String -> Json
+decodeReceived s = case jsonParser s of
+    Right j -> j
+    Left _ -> fromString ""
+
 initialAppState :: Channel Action -> String -> forall e. Eff (err::EXCEPTION, ws::WEBSOCKET|e) AppState
 initialAppState chan url = do
     connection@(Connection ws) <- newWebSocket (URL url) []
@@ -37,7 +42,7 @@ initialAppState chan url = do
         ws.send (Message "Hi! I am client")
     ws.onmessage $= \event -> do
         let received = runMessage (runMessageEvent event)
-        let nb = decodeJson (fromString received) :: Either String Notebook
+        let nb = decodeJson (decodeReceived received) :: Either String Notebook
         case nb of
             Left s ->
                 send chan (NoOp :: Action)
