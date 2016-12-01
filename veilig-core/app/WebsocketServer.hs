@@ -105,9 +105,9 @@ talk conn state (user, _) = forever $ do
     let x = decode msg :: Maybe Notebook
     case x of
         Just n -> do
-            r <- runInterpreter $ notebookInterpreter (intNotebook n)
+            r <- runInterpreter $ notebookInterpreter n
             case r of
                 Left err -> readMVar state >>= broadcast (cs (show err))
-                Right res -> readMVar state >>= broadcast (cs res)
+                Right res -> readMVar state >>= broadcast (cs (encode res))
         Nothing ->
             readMVar state >>= broadcast "Could not decode"
