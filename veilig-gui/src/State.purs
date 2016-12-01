@@ -77,7 +77,12 @@ getTotalCells :: AppState -> Int
 getTotalCells = view _totalCells
 
 updateNotebook :: Notebook -> AppState -> AppState
-updateNotebook n (AppState as) = AppState $ as { notebook = n }
+updateNotebook n (AppState as) =
+    let
+        x = AppState $ as { notebook = n }
+        total = (fromMaybe 0 $ maximumOf (_notebook <<< _cells <<< traversed <<< _cellId) x ) + 1
+    in
+        (_totalCells .~ total) x
 
 updateCell :: Int -> String -> AppState -> AppState
 updateCell i s =

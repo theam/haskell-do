@@ -1,11 +1,15 @@
 module Types where
 
+import Prelude
+
 import Data.Argonaut
+import Data.Ord
 import Control.Monad.Aff (Aff)
 import Control.Monad.Eff.Exception (EXCEPTION)
 import Data.Either (Either(Left))
 import Data.Lens (Lens', lens)
-import Prelude (pure, bind, ($))
+import Data.Show (class Show)
+import Prelude (class Eq, pure, bind, ($))
 import Pux.Html.Events (FormEvent)
 import Signal.Channel (CHANNEL)
 import WebSocket (Connection)
@@ -86,10 +90,26 @@ newtype Cell = Cell
     , cellContent :: String
     }
 
+_cellId :: Lens' Cell Int
+_cellId = lens
+    (\(Cell n) -> n.cellId)
+    (\(Cell n) -> (\c -> Cell (n { cellId = c})))
+
+instance ordCell :: Ord Cell where
+    compare (Cell c1) (Cell c2) = c1.cellId `compare` c2.cellId
+
+instance eqCell :: Eq Cell where
+    eq (Cell c1) (Cell c2) = c1.cellId == c2.cellId
+
 data CellType
     = TextCell
     | CodeCell
     | DisplayCell
+
+instance showCellType :: Show CellType where
+    show TextCell = "TextCell"
+    show CodeCell = "CodeCell"
+    show DisplayCell = "DisplayCell"
 
 instance encodeJsonCellType :: EncodeJson CellType where
     encodeJson TextCell = fromString "TextCell"
