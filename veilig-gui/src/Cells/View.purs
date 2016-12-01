@@ -3,7 +3,7 @@ module Cells.View where
 import Prelude (map, show, (<<<))
 
 import Types (AppState, Action(..), Cell(..), CellType(..), _cells, _notebook)
-import Pux.Html (Html, ul, text, li, textarea)
+import Pux.Html (Html, ul, text, li, textarea, code)
 import Pux.Html.Events (onInput)
 import Pux.Html.Attributes (defaultValue, id_)
 import Data.Lens as L
@@ -40,7 +40,12 @@ renderCodeCell (Cell c) =
 
 renderDisplayCell :: Cell -> Html Action
 renderDisplayCell (Cell c) =
-    li [] [ text c.cellContent ]
+    li
+        []
+        [ code
+            [ id_ (show c.cellId) ]
+            [ text c.cellContent]
+        ]
 
 renderCells :: AppState -> Array (Html Action)
 renderCells = map renderCell <<< L.view (_notebook <<< _cells)

@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Interpreter 
+module Interpreter
   ( runInterpreter
   , notebookInterpreter
   ) where

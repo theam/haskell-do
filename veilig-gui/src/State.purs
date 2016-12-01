@@ -76,8 +76,15 @@ addDisplayCell msg as = appendCell displayCell as
 getTotalCells :: AppState -> Int
 getTotalCells = view _totalCells
 
+countCellsInNotebook :: AppState -> Int
+countCellsInNotebook =
+    fromMaybe 0 <<< maximumOf (_notebook <<< _cells <<< traversed <<< _cellId)
+
 updateNotebook :: Notebook -> AppState -> AppState
-updateNotebook n (AppState as) = AppState $ as { notebook = n }
+updateNotebook n (AppState as) =
+    (_totalCells .~ countCellsInNotebook updatedNotebook + 1) updatedNotebook
+  where
+    updatedNotebook = AppState $ as { notebook = n }
 
 updateCell :: Int -> String -> AppState -> AppState
 updateCell i s =
