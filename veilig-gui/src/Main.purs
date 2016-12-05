@@ -12,11 +12,12 @@ import Control.Monad.Eff.Exception (EXCEPTION)
 import Control.Monad.Eff.Var (($=))
 import Data.Either (Either(Left))
 import Data.Maybe (Maybe(Nothing))
+import Editor.CodeMirror (CODEMIRROR)
 import Pux (CoreEffects, renderToDOM, fromSimple, start)
 import Signal.Channel (subscribe, channel, CHANNEL)
 import View (view)
 
-main :: Eff (CoreEffects (ws :: WEBSOCKET)) Unit
+main :: Eff (CoreEffects (ws :: WEBSOCKET, codemirror :: CODEMIRROR)) Unit
 main = do
     wsInput <- channel NoOp
     appState <- initialAppState wsInput "ws://127.0.0.1:3000"

@@ -8,7 +8,7 @@ import Data.Lens.Index
 import Data.Lens.Setter
 import Data.Array
 import Data.Maybe
-import Data.Argonaut
+import Data.Argonaut hiding ((:=))
 import Control.Monad.Aff
 import Control.Monad.Eff
 import WebSocket
@@ -20,6 +20,8 @@ import Data.Either
 import Data.Lens.Traversal (traversed)
 import Pux (noEffects)
 import Signal.Channel (send, Channel)
+import Editor.CodeMirror
+import Data.Tuple
 
 initialNotebook :: Notebook
 initialNotebook = Notebook
@@ -93,14 +95,18 @@ updateCell i s =
     isCorrectCell (Cell c) = c.cellId == i
     updateCell' (Cell c) = if isCorrectCell (Cell c) then Cell c { cellContent = s } else Cell c
 
-update :: Action -> AppState -> EffModel AppState Action (ws :: WEBSOCKET)
+update :: Action -> AppState -> EffModel AppState Action (ws :: WEBSOCKET, codemirror :: CODEMIRROR)
 update ToggleEdit appState  = noEffects $ appState
 update AddTextCell appState = noEffects $ addTextCell appState
-update AddCodeCell appState = noEffects $ addCodeCell appState
+update AddCodeCell appState =
+    { state: addCodeCell appState
+    , effects : [ pure $ RenderCodeCell (getTotalCells appState) ]
+    }
 update (RenderCodeCell i) appState =
   { state: appState
   , effects: [ do
-      pure NoOp
+        liftEff $ fromTextArea (show i) [ "mode" := "haskell" ]
+        pure NoOp
     ]
   }
 update (CheckInput i ev) appState = noEffects $ updateCell i ev.target.value appState
