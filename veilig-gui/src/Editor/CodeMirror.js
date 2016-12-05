@@ -12,10 +12,20 @@ exports.fromTextAreaImpl = function (textAreaId) {
     return function (configArray) {
         return function () {
             if (configArray.length > 0) {
-                CodeMirror.fromTextArea(document.getElementById(textAreaId), objectify(configArray));
+                return CodeMirror.fromTextArea(document.getElementById(textAreaId), objectify(configArray));
             } else {
-                CodeMirror.fromTextArea(document.getElementById(textAreaId));
+                return CodeMirror.fromTextArea(document.getElementById(textAreaId));
             }
+        }
+    }
+}
+
+exports.onChange = function (editor) {
+    return function (callback) {
+        return function () {
+            editor.on('change', function(newStuff) {
+                return callback(newStuff.getValue());
+            });
         }
     }
 }

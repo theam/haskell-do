@@ -8,20 +8,20 @@ import Data.Lens.Index
 import Data.Lens.Setter
 import Data.Array
 import Data.Maybe
-import Data.Argonaut hiding ((:=))
 import Control.Monad.Aff
 import Control.Monad.Eff
 import WebSocket
+import Data.Either
+import Editor.CodeMirror
+import Data.Tuple
 import Data.String as S
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Exception (EXCEPTION)
 import Control.Monad.Eff.Var (($=))
-import Data.Either
 import Data.Lens.Traversal (traversed)
 import Pux (noEffects)
-import Signal.Channel (send, Channel)
-import Editor.CodeMirror
-import Data.Tuple
+import Signal.Channel (CHANNEL, send, Channel)
+import Data.Argonaut hiding ((:=))
 
 initialNotebook :: Notebook
 initialNotebook = Notebook
@@ -55,6 +55,7 @@ initialAppState chan url = do
         , notebook: initialNotebook
         , totalCells: 0
         , currentCell: 0
+        , activeChannel : chan
         , socket : connection
         }
 
@@ -68,7 +69,7 @@ addTextCell as = appendCell (Cell { cellId : (getTotalCells as), cellContent: "T
 addCodeCell :: AppState -> AppState
 addCodeCell as = appendCell emptyCodeCell as
   where
-    emptyCodeCell = Cell { cellId : (getTotalCells as), cellContent: "Type here", cellType: CodeCell }
+    emptyCodeCell = Cell { cellId : (getTotalCells as), cellContent: "-- Type here", cellType: CodeCell }
 
 addDisplayCell :: String -> AppState -> AppState
 addDisplayCell msg as = appendCell displayCell as
@@ -102,14 +103,12 @@ update AddCodeCell appState =
     { state: addCodeCell appState
     , effects : [ pure $ RenderCodeCell (getTotalCells appState) ]
     }
-update (RenderCodeCell i) appState =
+update (RenderCodeCell i) appState@(AppState as) =
   { state: appState
-  , effects: [ do
-        liftEff $ fromTextArea (show i) [ "mode" := "haskell" ]
-        pure NoOp
-    ]
+  , effects: [ do liftEff $ makeCodeEditor as.activeChannel i ]
   }
 update (CheckInput i ev) appState = noEffects $ updateCell i ev.target.value appState
+update (CheckCode i s) appState = noEffects $ updateCell i s appState
 update CheckNotebook as@(AppState appState) =
     { state: as
     , effects: [ do
@@ -118,6 +117,13 @@ update CheckNotebook as@(AppState appState) =
     }
 update (UpdateNotebook receivedNotebook) appState = noEffects $ updateNotebook receivedNotebook appState
 update NoOp appState = noEffects $ appState
+
+makeCodeEditor :: ∀ eff . Channel Action -> Int -> Eff ( channel :: CHANNEL, codemirror :: CODEMIRROR | eff ) Action
+makeCodeEditor chan i = do
+    editor <- liftEff $ fromTextArea (show i) [ "mode" := "haskell" ]
+    nextAction :: Action <- onChange editor (\code -> CheckCode i code)
+    send chan nextAction
+    pure NoOp
 
 checkNotebook :: forall eff . Connection -> Notebook -> Eff ( ws :: WEBSOCKET, err :: EXCEPTION | eff ) Action
 checkNotebook (Connection ws) n = do
