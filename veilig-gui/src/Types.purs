@@ -1,7 +1,6 @@
 module Types where
 
 import Prelude
-
 import Data.Argonaut
 import Data.Ord
 import Control.Monad.Aff (Aff)
@@ -11,7 +10,7 @@ import Data.Lens (Lens', lens)
 import Data.Show (class Show)
 import Prelude (class Eq, pure, bind, ($))
 import Pux.Html.Events (FormEvent)
-import Signal.Channel (CHANNEL)
+import Signal.Channel (Channel, CHANNEL)
 import WebSocket (Connection)
 
 data Action
@@ -20,6 +19,7 @@ data Action
     | AddCodeCell
     | RenderCodeCell Int
     | CheckInput Int FormEvent
+    | CheckCode Int String
     | CheckNotebook
     | UpdateNotebook Notebook
     | NoOp
@@ -29,6 +29,7 @@ newtype AppState = AppState
     , notebook :: Notebook
     , totalCells :: Int
     , currentCell :: Int
+    , activeChannel :: Channel Action
     , socket :: Connection
     }
 

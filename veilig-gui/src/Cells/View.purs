@@ -1,12 +1,11 @@
 module Cells.View where
 
-import Prelude (map, show, (<<<))
-
-import Types (AppState, Action(..), Cell(..), CellType(..), _cells, _notebook)
-import Pux.Html (Html, ul, text, li, textarea, code)
-import Pux.Html.Events (onInput)
-import Pux.Html.Attributes (defaultValue, id_)
 import Data.Lens as L
+import Prelude (map, show, (<<<))
+import Pux.Html (pre, Html, ul, text, li, textarea, code)
+import Pux.Html.Attributes (defaultValue, id_)
+import Pux.Html.Events (onInput)
+import Types (AppState, Action(..), Cell(..), CellType(..), _cells, _notebook)
 
 
 renderCell :: Cell -> Html Action
@@ -30,12 +29,18 @@ renderCodeCell :: Cell -> Html Action
 renderCodeCell (Cell c) =
     li
         []
-        [ textarea
-            [ onInput (CheckInput c.cellId)
-            , id_ (show c.cellId)
-            , defaultValue c.cellContent
-            ]
+        [ pre
             []
+            [ code
+                []
+                [ textarea
+                    [ onInput (CheckInput c.cellId)
+                    , id_ (show c.cellId)
+                    , defaultValue c.cellContent
+                    ]
+                    []
+                ]
+            ]
         ]
 
 renderDisplayCell :: Cell -> Html Action
