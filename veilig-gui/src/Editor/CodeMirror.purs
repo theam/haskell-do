@@ -1,35 +1,35 @@
-module Editor.CodeMirror ( fromTextArea
-                         , onChange
-                         , (:=)
-                         , CODEMIRROR
-                         , CodeMirrorEff
-                         , CodeEditor
-                         ) where
+module Editor.CodeMirror where
 
 import Prelude
 import Data.Tuple
+import Data.Foreign.Callback
 import Control.Monad.Eff (Eff)
 import Data.Function.Uncurried (Fn1)
+import Signal.Channel (send, Channel, CHANNEL)
 
 foreign import data CODEMIRROR :: !
 foreign import data CodeEditor :: *
 type CodeMirrorEff a = ∀ a e . Eff ( codemirror :: CODEMIRROR | e ) a
 type TextAreaId = String
-type Configuration a =
-    ∀ a .
+type Configuration =
     { mode :: String
-    , onChange :: Fn1 String a
     }
 
 infixr 0 Tuple as :=
 
-fromTextArea ::
-    ∀ a .
-    TextAreaId ->
-    Configuration a ->
-    CodeMirrorEff CodeEditor
-fromTextArea id' config =
-    fromTextAreaImpl id' config
+onChange ::
+    ∀ a e .
+    CodeEditor ->
+    Channel a ->
+    (String -> a) ->
+    Eff ( codemirror :: CODEMIRROR, channel :: CHANNEL | e ) Unit
+onChange editor chan f = do
+    let cb = callback1 (\x -> send chan (f x))
+    _onChange editor cb
 
-foreign import fromTextAreaImpl :: ∀ a . TextAreaId -> Configuration a -> CodeMirrorEff CodeEditor
-foreign import onChange :: ∀ a . CodeEditor -> (String -> a) -> CodeMirrorEff a
+foreign import fromTextArea :: ∀ a . TextAreaId -> Configuration -> CodeMirrorEff CodeEditor
+foreign import _onChange ::
+    ∀ a e .
+    CodeEditor ->
+    Callback1 a Unit ->
+    CodeMirrorEff Unit

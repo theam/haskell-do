@@ -120,9 +120,8 @@ update NoOp appState = noEffects $ appState
 
 makeCodeEditor :: ∀ eff . Channel Action -> Int -> Eff ( channel :: CHANNEL, codemirror :: CODEMIRROR | eff ) Action
 makeCodeEditor chan i = do
-    editor <- liftEff $ fromTextArea (show i) [ "mode" := "haskell" ]
-    nextAction :: Action <- onChange editor (\code -> CheckCode i code)
-    send chan nextAction
+    editor <- liftEff $ fromTextArea (show i) { mode : "haskell" }
+    onChange editor chan (\code -> CheckCode i code)
     pure NoOp
 
 checkNotebook :: forall eff . Connection -> Notebook -> Eff ( ws :: WEBSOCKET, err :: EXCEPTION | eff ) Action

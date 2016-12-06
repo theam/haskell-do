@@ -8,7 +8,7 @@ function objectify(array){
     return object;
 }
 
-exports.fromTextAreaImpl = function (textAreaId) {
+exports.fromTextArea = function (textAreaId) {
     return function (configArray) {
         return function () {
             if (configArray.length > 0) {
@@ -20,7 +20,7 @@ exports.fromTextAreaImpl = function (textAreaId) {
     }
 }
 
-exports.onChange = function (editor) {
+exports._onChange = function (editor) {
     return function (callback) {
         return function () {
             editor.on('change', function(newStuff) {
