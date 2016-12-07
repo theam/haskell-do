@@ -22,6 +22,7 @@ data Action
     | CheckCode Int String
     | CheckNotebook
     | UpdateNotebook Notebook
+    | RenderTextCell Int
     | NoOp
 
 newtype AppState = AppState

@@ -1,5 +1,7 @@
 "use strict";
 
+var $ = require("jquery");
+
 function objectify(array){
     var object = {};
     array.forEach(function(element) {
@@ -18,6 +20,22 @@ exports.fromTextArea = function (textAreaId) {
             }
         }
     }
+}
+
+
+exports.fromTextAreaMarkdownEditor = function (textAreaId) {
+        return function () {
+            var textarea = document.getElementById(textAreaId);
+            var outerId = "outer-"+textAreaId;
+            var editor = new SimpleMDE({ element : textarea, status : false, autofocus : true, toolbar: false});
+            editor.codemirror.on("blur", function () {
+                editor.togglePreview();
+            });
+            $('#'+outerId+"> .CodeMirror").dblclick(function () {
+                editor.togglePreview();
+            });
+            return editor;
+        }
 }
 
 exports._onChange = function (editor) {

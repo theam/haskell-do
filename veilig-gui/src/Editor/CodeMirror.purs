@@ -9,6 +9,7 @@ import Signal.Channel (send, Channel, CHANNEL)
 
 foreign import data CODEMIRROR :: !
 foreign import data CodeEditor :: *
+type MarkdownEditor = { codemirror :: CodeEditor }
 type CodeMirrorEff a = ∀ a e . Eff ( codemirror :: CODEMIRROR | e ) a
 type TextAreaId = String
 type Configuration =
@@ -27,9 +28,10 @@ onChange editor chan f = do
     let cb = callback1 (\x -> send chan (f x))
     _onChange editor cb
 
-foreign import fromTextArea :: ∀ a . TextAreaId -> Configuration -> CodeMirrorEff CodeEditor
+foreign import fromTextArea :: TextAreaId -> Configuration -> CodeMirrorEff CodeEditor
+foreign import fromTextAreaMarkdownEditor :: TextAreaId -> CodeMirrorEff MarkdownEditor
 foreign import _onChange ::
-    ∀ a e .
+    ∀ a .
     CodeEditor ->
     Callback1 a Unit ->
     CodeMirrorEff Unit
