@@ -1,7 +1,7 @@
 module Cells.View where
 
 import Data.Lens as L
-import Prelude (map, show, (<<<))
+import Prelude (map, show, (<<<), ($), (<>))
 import Pux.Html (pre, Html, ul, text, li, textarea, code)
 import Pux.Html.Attributes (defaultValue, id_)
 import Pux.Html.Events (onInput)
@@ -16,8 +16,8 @@ renderCell (Cell c@{ cellType : DisplayCell}) = renderDisplayCell (Cell c)
 renderTextCell :: Cell -> Html Action
 renderTextCell (Cell c) =
     li
-        []
-        [ textarea
+        [ id_ $ "outer-" <> show c.cellId]
+        [textarea
             [ id_ (show c.cellId)
             , onInput (CheckInput c.cellId)
             , defaultValue c.cellContent
