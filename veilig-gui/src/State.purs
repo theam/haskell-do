@@ -97,8 +97,11 @@ updateCell i s =
     updateCell' (Cell c) = if isCorrectCell (Cell c) then Cell c { cellContent = s } else Cell c
 
 update :: Action -> AppState -> EffModel AppState Action (ws :: WEBSOCKET, codemirror :: CODEMIRROR)
-update ToggleEdit appState  = noEffects $ appState
-update AddTextCell appState = noEffects $ addTextCell appState
+update ToggleEdit (AppState appState)  = noEffects $ AppState appState { editing = not appState.editing}
+update AddTextCell appState =
+    { state : addTextCell appState
+    , effects : [ pure $ RenderTextCell (getTotalCells appState) ]
+    }
 update AddCodeCell appState =
     { state: addCodeCell appState
     , effects : [ pure $ RenderCodeCell (getTotalCells appState) ]
@@ -107,6 +110,10 @@ update (RenderCodeCell i) appState@(AppState as) =
   { state: appState
   , effects: [ do liftEff $ makeCodeEditor as.activeChannel i ]
   }
+update (RenderTextCell i) appState@(AppState as) =
+    { state: appState
+    , effects : [ liftEff $ makeTextEditor as.activeChannel i ]
+    }
 update (CheckInput i ev) appState = noEffects $ updateCell i ev.target.value appState
 update (CheckCode i s) appState = noEffects $ updateCell i s appState
 update CheckNotebook as@(AppState appState) =
@@ -122,6 +129,12 @@ makeCodeEditor :: ∀ eff . Channel Action -> Int -> Eff ( channel :: CHANNEL, c
 makeCodeEditor chan i = do
     editor <- liftEff $ fromTextArea (show i) { mode : "haskell" }
     onChange editor chan (\code -> CheckCode i code)
+    pure NoOp
+
+makeTextEditor :: ∀ eff . Channel Action -> Int -> Eff (channel :: CHANNEL, codemirror :: CODEMIRROR | eff ) Action
+makeTextEditor chan i = do
+    editor <- fromTextAreaMarkdownEditor (show i)
+    onChange editor.codemirror chan (\txt -> CheckCode i txt)
     pure NoOp
 
 checkNotebook :: forall eff . Connection -> Notebook -> Eff ( ws :: WEBSOCKET, err :: EXCEPTION | eff ) Action
