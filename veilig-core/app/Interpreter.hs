@@ -6,9 +6,13 @@ module Interpreter
 import Types
 import Control.Monad.Trans
 import Language.Haskell.Interpreter
+import Control.Monad
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.String.Conversions
+
+isModule (' ' : xs) = isModule xs
+isModule ('m':'o':'d':'u':'l':'e':xs) = True
 
 preprocess x = do
   a <- x
