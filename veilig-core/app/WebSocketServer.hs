@@ -15,6 +15,7 @@ import Network.WebSockets (Connection)
 import Data.String.Conversions
 import Data.Aeson
 import Interpreter
+import GHC
 
 broadcast :: Connection -> Text -> IO ()
 broadcast conn msg = do
@@ -24,7 +25,6 @@ broadcast conn msg = do
 application :: WS.ServerApp
 application pending = do
   conn <- WS.acceptRequest pending
-  WS.forkPingThread conn 30
   talk conn
 
 distress conn = broadcast conn "Distress!"
