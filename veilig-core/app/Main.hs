@@ -12,6 +12,4 @@ port :: Int
 port = 3000
 
 main :: IO ()
-main = do
-  server <- newServer 
-  WS.runServer address port (application server)
+main = WS.runServer address port application
