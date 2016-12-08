@@ -26,6 +26,9 @@ executable veilig-core-exe
                      , lens-aeson
                      , bytestring
                      , string-conversions
+                     , mtl
+                     , ghc
+                     , stm
   default-language:    Haskell2010
 
 test-suite veilig-core-test

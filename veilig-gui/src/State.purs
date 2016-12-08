@@ -41,7 +41,7 @@ initialAppState :: Channel Action -> String -> forall e. Eff (err::EXCEPTION, ws
 initialAppState chan url = do
     connection@(Connection ws) <- newWebSocket (URL url) []
     ws.onopen $= \event -> do
-        ws.send (Message "Hi! I am client")
+        ws.send (Message "HaskellDO:Client")
     ws.onmessage $= \event -> do
         let received = runMessage (runMessageEvent event)
         let nb = decodeJson (decodeReceived received) :: Either String Notebook

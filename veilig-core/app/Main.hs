@@ -13,5 +13,5 @@ port = 3000
 
 main :: IO ()
 main = do
-    state <- newMVar newServerState
-    WS.runServer address port $ application state
+  server <- newServer 
+  WS.runServer address port (application server)

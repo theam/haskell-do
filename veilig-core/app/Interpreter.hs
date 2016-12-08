@@ -1,17 +1,23 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Interpreter
-  ( runInterpreter
-  , notebookInterpreter
+  ( notebookInterpreter
   ) where
 
 import Types
+import Control.Monad.Trans
 import Language.Haskell.Interpreter
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.String.Conversions
 
-notebookInterpreter :: Notebook -> Interpreter Notebook
-notebookInterpreter code = do
+preprocess x = do
+  a <- x
+  case a of
+    Left a -> pure (Left (show a))
+    Right x -> pure (Right x)
+
+notebookInterpreter :: Notebook -> IO (Either String Notebook)
+notebookInterpreter code = preprocess . runInterpreter $ do
     setImportsQ[("Prelude",Nothing)]
     let newIds = [maximum (cellId <$> cells code) + 1 ..]
     newCells <- sequence $ do
@@ -22,4 +28,4 @@ notebookInterpreter code = do
         CodeCell -> do
           let str = cs <$> eval (cs $ cellContent c)
           [pure c, Cell DisplayCell newId <$> str]
-    return $ code { cells = newCells}
+    return $ code { cells = newCells }
