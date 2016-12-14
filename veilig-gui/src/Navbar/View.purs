@@ -51,7 +51,7 @@ additionMenu =
 view :: AppState -> Html Action
 view appState =
   nav
-    [ className "navbar navbar-default" ]
+    [ className "navbar navbar-default navbar-fixed-top" ]
     [ div
         [ className "container-fluid" ]
         [ div

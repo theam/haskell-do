@@ -3,7 +3,7 @@ module Cells.View where
 import Data.Lens as L
 import Prelude (map, show, (<<<), ($), (<>))
 import Pux.Html (pre, Html, ul, text, li, textarea, code)
-import Pux.Html.Attributes (defaultValue, id_)
+import Pux.Html.Attributes (className, defaultValue, id_)
 import Pux.Html.Events (onInput)
 import Types (AppState, Action(..), Cell(..), CellType(..), _cells, _notebook)
 
@@ -16,7 +16,7 @@ renderCell (Cell c@{ cellType : DisplayCell}) = renderDisplayCell (Cell c)
 renderTextCell :: Cell -> Html Action
 renderTextCell (Cell c) =
     li
-        [ id_ $ "outer-" <> show c.cellId]
+        [ id_ $ "outer-" <> show c.cellId, className "text-cell"]
         [textarea
             [ id_ (show c.cellId)
             , onInput (CheckInput c.cellId)
