@@ -1,9 +1,11 @@
 module Cells.View where
 
 import Data.Lens as L
-import Prelude (map, show, (<<<), ($), (<>))
-import Pux.Html (pre, Html, ul, text, li, textarea, code)
-import Pux.Html.Attributes (className, defaultValue, id_)
+import Data.Maybe (Maybe(Just))
+import Data.String (stripSuffix, Pattern(Pattern), stripPrefix)
+import Prelude (map, show, (<<<), ($), (<>), (>>=))
+import Pux.Html (img, data_, object, pre, Html, ul, text, li, textarea, code)
+import Pux.Html.Attributes (src, className, defaultValue, id_)
 import Pux.Html.Events (onInput)
 import Types (AppState, Action(..), Cell(..), CellType(..), _cells, _notebook)
 
@@ -49,8 +51,14 @@ renderDisplayCell (Cell c) =
         []
         [ code
             [ id_ (show c.cellId) ]
-            [ text c.cellContent]
+            [ case stripPrefix (Pattern "\"svg:") c.cellContent >>= stripSuffix (Pattern "\"") of
+                Just s -> rSvg s
+                _ -> rText c
+            ]
         ]
+  where
+    rText c = text c.cellContent
+    rSvg file = img [src file] []
 
 renderCells :: AppState -> Array (Html Action)
 renderCells = map renderCell <<< L.view (_notebook <<< _cells)

@@ -22,7 +22,11 @@ preprocess x = do
 
 notebookInterpreter :: Notebook -> IO (Either String Notebook)
 notebookInterpreter code = preprocess . runInterpreter $ do
-    setImportsQ[("Prelude",Nothing)]
+    setImportsQ[ ("Prelude",Nothing)
+               , ("Graphics.Rendering.Chart.Easy", Nothing)
+               , ("System.IO.Unsafe", Nothing)
+               , ("Graphics.Rendering.Chart.Backend.Diagrams", Nothing)
+               ]
     let newIds = [maximum (cellId <$> cells code) + 1 ..]
     newCells <- sequence $ do
       (c, newId) <- cells code `zip` newIds
