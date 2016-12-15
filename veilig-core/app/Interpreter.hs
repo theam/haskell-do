@@ -34,6 +34,8 @@ notebookInterpreter code = preprocess . runInterpreter $ do
         DisplayCell -> []
         TextCell -> pure $ pure c
         CodeCell -> do
-          let str = cs <$> eval (cs $ cellContent c)
+          let str = cs <$> eval (cs $ preformat $ cs $ cellContent c)
           [pure c, Cell DisplayCell newId <$> str]
     return $ code { cells = newCells }
+  where
+    preformat = (++) "do\n" . unlines . map (\l -> "    " ++ l) . lines
