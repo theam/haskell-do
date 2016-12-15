@@ -29,6 +29,8 @@ executable veilig-core-exe
                      , mtl
                      , ghc
                      , stm
+                     , Chart
+                     , Chart-diagrams
   default-language:    Haskell2010
 
 test-suite veilig-core-test
