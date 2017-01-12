@@ -29,6 +29,7 @@ executable veilig-core-exe
                      , mtl
                      , ghc
                      , stm
+                     , process
                      , Chart
                      , Chart-diagrams
   default-language:    Haskell2010

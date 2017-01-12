@@ -16,6 +16,9 @@ import Data.String.Conversions
 import Data.Aeson
 import Interpreter
 import GHC
+import GHC.IO.Handle
+import System.IO
+import System.Process
 
 broadcast :: Connection -> Text -> IO ()
 broadcast conn msg = do
@@ -25,7 +28,11 @@ broadcast conn msg = do
 application :: WS.ServerApp
 application pending = do
   conn <- WS.acceptRequest pending
-  talk conn
+  (inp, out, err, pid) <- runInteractiveCommand "stack ghci"
+  hSetBinaryMode inp False
+  hSetBinaryMode out False
+  hSetBinaryMode err False
+  talk conn inp out
 
 distress conn = broadcast conn "Distress!"
 
@@ -33,9 +40,9 @@ broadcastNotebook conn n = broadcast conn (cs (encode n))
 
 sendNotebook conn = either (broadcast conn . T.pack) (broadcastNotebook conn)
 
-talk :: Connection -> IO ()
-talk conn = forever $ do
+talk :: Connection -> Handle -> Handle -> IO ()
+talk conn inp out = forever $ do
   msg <- WS.receiveData conn
   maybe (distress conn) 
-        (notebookInterpreter >=> sendNotebook conn) 
+        ((\notebook -> notebookInterpreter notebook inp out) >=> sendNotebook conn) 
         (decode msg)

@@ -30,6 +30,7 @@ initialNotebook = Notebook
   , author: ""
   , date: ""
   , cells: [] :: Array Cell
+  , console: ">1+1"
   }
 
 decodeReceived :: String -> Json

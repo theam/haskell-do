@@ -12,6 +12,7 @@ data Notebook = Notebook
     , date :: String
     , author :: String
     , cells :: [Cell]
+    , console :: String
     } deriving (Generic, Show)
 
 instance FromJSON Notebook

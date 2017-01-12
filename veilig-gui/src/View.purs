@@ -7,6 +7,7 @@ import Types
 import Pux.Html (Html, div)
 import Navbar.View as Navbar
 import Cells.View as Cells
+import Console.View as Console
 
 boilerplate :: forall a. Html a -> Html a
 boilerplate content =
@@ -26,4 +27,5 @@ view appState =
         []
         [ Navbar.view appState
         , boilerplate $ Cells.view appState
+        , boilerplate $ Console.view appState
         ]

@@ -60,6 +60,7 @@ newtype Notebook = Notebook
     , date :: String
     , author :: String
     , cells :: Array Cell
+    , console :: String
     }
 
 instance encodeJsonNotebook :: EncodeJson Notebook where
@@ -69,6 +70,7 @@ instance encodeJsonNotebook :: EncodeJson Notebook where
        ~> "date" := n.date
        ~> "author" := n.author
        ~> "cells" := n.cells
+       ~> "console" := n.console
        ~> jsonEmptyObject
 
 instance decodeJsonNotebook :: DecodeJson Notebook where
@@ -79,12 +81,18 @@ instance decodeJsonNotebook :: DecodeJson Notebook where
         date <- o .? "date"
         author <- o .? "author"
         cells <- o.? "cells"
-        pure $ Notebook {title, subtitle, date, author, cells}
+        console <- o.? "console"
+        pure $ Notebook {title, subtitle, date, author, cells, console}
 
 _cells :: Lens' Notebook (Array Cell)
 _cells = lens
     (\(Notebook n) -> n.cells)
     (\(Notebook n) -> (\c -> Notebook (n { cells = c})))
+
+_console :: Lens' Notebook String
+_console = lens
+    (\(Notebook n) -> n.console)
+    (\(Notebook n) -> (\c -> Notebook (n { console = c})))
 
 newtype Cell = Cell
     { cellType :: CellType
