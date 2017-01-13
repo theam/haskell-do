@@ -31,3 +31,5 @@ veilig-core/cabal.project.local
 veilig-core/.HTF
 veilig-gui/.psc-ide-port
 *.log
+
+.psc-ide-port
