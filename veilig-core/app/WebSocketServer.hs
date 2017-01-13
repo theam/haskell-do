@@ -20,6 +20,15 @@ import GHC.IO.Handle
 import System.IO
 import System.Process
 
+data State = State { 
+    ghciInput :: Handle
+  , ghciOutput :: Handle
+  , ghciError :: Handle
+  , ghciProcessHandle :: ProcessHandle 
+  , notebookAuthor :: String }
+
+type ServerState = (MVar State, Connection)
+
 broadcast :: Connection -> Text -> IO ()
 broadcast conn msg = do
   T.putStrLn ("Log:" <> cs msg)
