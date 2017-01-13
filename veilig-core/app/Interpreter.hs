@@ -14,20 +14,17 @@ import System.IO
 import System.Process
 import GHC.IO.Handle
 
-isModule (' ' : xs) = isModule xs
-isModule ('m':'o':'d':'u':'l':'e':xs) = True
-
 preprocess x = do
   a <- x
   case a of
     Left a -> pure (Left (show a))
     Right x -> pure (Right x)
 
-notebookInterpreter :: Notebook -> Handle -> Handle -> IO (Either String Notebook)
-notebookInterpreter code inp out = preprocess . runInterpreter $ do
-    liftIO $ hPutStrLn inp ":r"
+notebookInterpreter :: Notebook -> State -> IO (Either String Notebook)
+notebookInterpreter code state = preprocess . runInterpreter $ do
+    liftIO $ hPutStrLn (ghciInput state) ":r"
     let toExec = tail . dropWhile (/= '>') $ console code
-    liftIO $ hPutStrLn inp toExec
+    liftIO $ hPutStrLn (ghciInput state) toExec
     setImportsQ[ ("Prelude",Nothing)
                , ("Graphics.Rendering.Chart.Easy", Nothing)
                , ("System.IO.Unsafe", Nothing)
@@ -42,7 +39,7 @@ notebookInterpreter code inp out = preprocess . runInterpreter $ do
         CodeCell -> do
           let str = cs <$> eval (cs $ preformat $ cs $ cellContent c)
           [pure c, Cell DisplayCell newId <$> str]
-    newConsole <- liftIO $ hGetContents out
+    newConsole <- liftIO $ hGetContents (ghciOutput state)
     return $ code { cells = newCells, console = newConsole }
   where
     preformat = (++) "do\n" . unlines . map (\l -> "    " ++ l) . lines

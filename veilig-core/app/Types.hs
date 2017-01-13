@@ -4,7 +4,17 @@ module Types where
 
 import GHC.Generics
 import Data.Aeson
+import GHC.IO.Handle
+import System.Process
 import Data.Text
+
+data State = State { 
+    ghciInput :: Handle
+  , ghciOutput :: Handle
+  , ghciError :: Handle
+  , ghciProcessHandle :: ProcessHandle 
+  , notebookFilePath :: FilePath
+  , notebookAuthor :: Maybe String }
 
 data Notebook = Notebook
     { title :: String

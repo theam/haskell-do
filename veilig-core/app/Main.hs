@@ -12,4 +12,6 @@ port :: Int
 port = 3000
 
 main :: IO ()
-main = WS.runServer address port application
+main = do
+  state <- initializeState
+  WS.runServer address port (application state)
