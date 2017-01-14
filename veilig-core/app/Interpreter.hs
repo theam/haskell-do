@@ -20,6 +20,7 @@ preprocess x = do
     Left a -> pure (Left (show a))
     Right x -> pure (Right x)
 
+
 notebookInterpreter :: Notebook -> State -> IO (Either String Notebook)
 notebookInterpreter code state = preprocess . runInterpreter $ do
     liftIO $ hPutStrLn (ghciInput state) ":r"
