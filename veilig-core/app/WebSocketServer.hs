@@ -25,18 +25,31 @@ broadcast conn msg = do
   T.putStrLn ("Log:" <> cs msg)
   WS.sendTextData conn msg
 
-initializeState :: IO State
-initializeState = do
-  (inp, out, err, pid) <- runInteractiveCommand "stack ghci"
+clearHandle :: Handle -> IO ()
+clearHandle out = do
+  test <- hReady out
+  if test
+    then do hGetChar out
+            clearHandle out
+    else pure ()
+
+initializeState :: FilePath -> IO State
+initializeState fp = do
+  (inp, out, err, pid) <- runInteractiveCommand "stack repl"
   hSetBinaryMode inp False
   hSetBinaryMode out False
   hSetBinaryMode err False
-  return (State { 
+  hPutStrLn inp (":l " ++ fp)
+  hPutStrLn inp ":set prompt \">\""
+  hFlush inp
+  clearHandle out
+  return (State {
     ghciInput = inp
   , ghciOutput = out
   , ghciError = err
   , ghciProcessHandle = pid
-  , notebookAuthor = Nothing }) 
+  , notebookFilePath = fp
+  , notebookAuthor = Nothing })
 
 application :: State -> WS.ServerApp
 application state pending = do
@@ -52,6 +65,6 @@ sendNotebook conn = either (broadcast conn . T.pack) (broadcastNotebook conn)
 talk :: Connection -> State -> IO ()
 talk conn state = forever $ do
   msg <- WS.receiveData conn
-  maybe (distress conn) 
-        ((\notebook -> notebookInterpreter notebook state) >=> sendNotebook conn) 
+  maybe (distress conn)
+        ((\notebook -> notebookInterpreter notebook state) >=> sendNotebook conn)
         (decode msg)
