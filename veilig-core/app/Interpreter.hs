@@ -9,6 +9,7 @@ import Language.Haskell.Interpreter
 import Control.Monad
 import Data.Text (Text)
 import qualified Data.Text as T
+import qualified Data.Text.IO as T
 import Data.String.Conversions
 import System.IO
 import System.Process
@@ -20,9 +21,18 @@ preprocess x = do
     Left a -> pure (Left (show a))
     Right x -> pure (Right x)
 
+getCellText :: Cell -> Text
+getCellText c = case cellType c of
+  TextCell    -> T.unlines $ map (mappend "-- ") (T.lines $ cellContent c)
+  CodeCell    -> cellContent c
+  DisplayCell -> mempty
+
+formatNotebook :: Notebook -> Text
+formatNotebook note = T.unlines $ map getCellText (cells note)
 
 notebookInterpreter :: Notebook -> State -> IO (Either String Notebook)
 notebookInterpreter code state = preprocess . runInterpreter $ do
+    liftIO . T.putStrLn $ formatNotebook code
     liftIO $ hPutStrLn (ghciInput state) ":r"
     let toExec = tail . dropWhile (/= '>') $ console code
     liftIO $ hPutStrLn (ghciInput state) toExec
