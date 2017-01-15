@@ -16,6 +16,7 @@ import Data.String.Conversions
 import Data.Aeson
 import Interpreter
 import GHC
+import Utils
 import GHC.IO.Handle
 import System.IO
 import System.Process
@@ -24,14 +25,6 @@ broadcast :: Connection -> Text -> IO ()
 broadcast conn msg = do
   T.putStrLn ("Log:" <> cs msg)
   WS.sendTextData conn msg
-
-clearHandle :: Handle -> IO ()
-clearHandle out = do
-  test <- hReady out
-  if test
-    then do hGetChar out
-            clearHandle out
-    else pure ()
 
 initializeState :: FilePath -> IO State
 initializeState fp = do
