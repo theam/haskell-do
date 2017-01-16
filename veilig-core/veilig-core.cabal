@@ -28,6 +28,7 @@ executable veilig-core-exe
                      , string-conversions
                      , mtl
                      , ghc
+                     , ghc-mod
                      , stm
                      , process
                      , Chart

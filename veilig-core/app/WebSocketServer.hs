@@ -4,6 +4,7 @@ module WebSocketServer where
 import Types
 
 import Language.Haskell.Interpreter
+import Language.Haskell.GhcMod
 import Data.Monoid (mappend, (<>))
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -25,6 +26,26 @@ broadcast :: Connection -> Text -> IO ()
 broadcast conn msg = do
   T.putStrLn ("Log:" <> cs msg)
   WS.sendTextData conn msg
+
+-- cradleProject, cradleCurrentDir, cradleRootDir, cradleTempDir, cradleCabalFile, cradleDistDir
+initializeState' :: FilePath -> Cradle -> IO State
+initializeState' fp cr = do
+  (inp, out, err, pid) <- runInteractiveCommand "stack repl"
+  hSetBinaryMode inp False
+  hSetBinaryMode out False
+  hSetBinaryMode err False
+  hPutStrLn inp (":l " ++ fp)
+  hPutStrLn inp "set prompt \">\""
+  hFlush inp
+  clearHandle out
+  return (State {
+    ghciInput = inp
+  , ghciOutput = out
+  , ghciError = err
+  , ghciProcessHandle = pid
+  , notebookFilePath = fp
+  , notebookCradle = cr
+  , notebookAuthor = Nothing })
 
 initializeState :: FilePath -> IO State
 initializeState fp = do
