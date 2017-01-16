@@ -9,9 +9,23 @@ import Data.Lens as L
 
 view :: AppState -> Html Action
 view appState = 
-    let code = L.view (_notebook <<< _console) appState in
-    div []
-        [ textarea 
-            [rows 8, cols 80, defaultValue code , id_ "console"]
+    let 
+        cde = L.view (_notebook <<< _console) appState
+        inp = L.view _consoleBuffer appState
+    in
+    pre [ className "console", id_ "consoleWindow"]
+        [ code
+            [ ]
+            [ text $ cde ]
+        , input 
+            [id_ "consoleInput", onKeyPress sendConsole, onChange updateConsole ]
             []
         ]
+
+sendConsole ev = 
+    if ev.charCode == 13
+        then CheckNotebook
+        else NoOp
+
+updateConsole ev =
+    AddToConsole ev.target.value

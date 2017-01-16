@@ -1,12 +1,13 @@
 module View where
 
-import Prelude (($))
+import Prelude
 
 import Pux.Html.Attributes (className)
 import Types
-import Pux.Html (Html, div, nav)
+import Pux.Html (Html, div, nav, text)
 import Navbar.View as Navbar
 import Cells.View as Cells
+import Data.Lens as L
 import Console.View as Console
 
 boilerplate :: forall a. Html a -> Html a

@@ -8,6 +8,7 @@ import Data.Lens.Index
 import Data.Lens.Setter
 import Data.Array
 import Data.Maybe
+import Data.String as Str
 import Control.Monad.Aff
 import Control.Monad.Eff
 import WebSocket
@@ -30,7 +31,7 @@ initialNotebook = Notebook
   , author: ""
   , date: ""
   , cells: [] :: Array Cell
-  , console: ">1+1"
+  , console: ">"
   }
 
 decodeReceived :: String -> Json
@@ -58,6 +59,7 @@ initialAppState chan url = do
         , currentCell: 0
         , activeChannel : chan
         , socket : connection
+        , consoleBuffer : ""
         }
 
 appendCell :: Cell -> AppState -> AppState
@@ -117,13 +119,17 @@ update (RenderTextCell i) appState@(AppState as) =
     }
 update (CheckInput i ev) appState = noEffects $ updateCell i ev.target.value appState
 update (CheckCode i s) appState = noEffects $ updateCell i s appState
-update CheckNotebook as@(AppState appState) =
+update CheckNotebook as=
     { state: as
     , effects: [ do
-        liftEff $ checkNotebook appState.socket appState.notebook
+        let as' = ((_notebook <<< _console) .~ (view _consoleBuffer as)) as
+        liftEff $ checkNotebook (view _socket as') (view _notebook as')
       ]
     }
 update (UpdateNotebook receivedNotebook) appState = noEffects $ updateNotebook receivedNotebook appState
+update SendConsole appState = noEffects $ appState
+update (AppendConsole key) appState = noEffects $ addToConsole (view _consoleBuffer appState <> key) appState
+update (AddToConsole consoleText) appState = noEffects $ addToConsole consoleText appState
 update NoOp appState = noEffects $ appState
 
 makeCodeEditor :: ∀ eff . Channel Action -> Int -> Eff ( channel :: CHANNEL, codemirror :: CODEMIRROR | eff ) Action
@@ -142,3 +148,9 @@ checkNotebook :: forall eff . Connection -> Notebook -> Eff ( ws :: WEBSOCKET, e
 checkNotebook (Connection ws) n = do
     let s = encodeJson n
     ws.send (Message $ show s) *> pure NoOp
+
+addToConsole :: String -> AppState -> AppState
+addToConsole consoleText (AppState as) =
+    AppState $ as { consoleBuffer = consoleText }
+  where
+    input = Str.drop 1 $ Str.dropWhile (\c -> c /= '>') consoleText

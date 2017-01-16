@@ -17,12 +17,15 @@ data Action
     = ToggleEdit
     | AddTextCell
     | AddCodeCell
+    | AppendConsole String
+    | SendConsole
     | RenderCodeCell Int
     | CheckInput Int FormEvent
     | CheckCode Int String
     | CheckNotebook
     | UpdateNotebook Notebook
     | RenderTextCell Int
+    | AddToConsole String
     | NoOp
 
 newtype AppState = AppState
@@ -32,6 +35,7 @@ newtype AppState = AppState
     , currentCell :: Int
     , activeChannel :: Channel Action
     , socket :: Connection
+    , consoleBuffer :: String
     }
 
 type EffModel state action eff =
@@ -53,6 +57,16 @@ _currentCell :: Lens' AppState Int
 _currentCell = lens
     (\(AppState s) -> s.currentCell)
     (\(AppState s) -> (\c -> AppState (s { currentCell = c})))
+
+_consoleBuffer :: Lens' AppState String
+_consoleBuffer = lens
+    (\(AppState s) -> s.consoleBuffer)
+    (\(AppState s) -> (\n -> AppState (s { consoleBuffer = n})))
+
+_socket :: Lens' AppState Connection
+_socket = lens
+    (\(AppState s) -> s.socket)
+    (\(AppState s) -> (\n -> AppState (s { socket = n})))
 
 newtype Notebook = Notebook
     { title :: String

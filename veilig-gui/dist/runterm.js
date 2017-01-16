@@ -15,4 +15,4 @@ function makeInitialTextReadOnly(input) {
     });
 }
 
-makeInitialTextReadOnly(document.getElementById('console'));
+//makeInitialTextReadOnly(document.getElementById('console'));
