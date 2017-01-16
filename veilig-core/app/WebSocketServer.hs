@@ -16,6 +16,7 @@ import Data.String.Conversions
 import Data.Aeson
 import Interpreter
 import GHC
+import Utils
 import GHC.IO.Handle
 import System.IO
 import System.Process
@@ -25,14 +26,28 @@ broadcast conn msg = do
   T.putStrLn ("Log:" <> cs msg)
   WS.sendTextData conn msg
 
-application :: WS.ServerApp
-application pending = do
-  conn <- WS.acceptRequest pending
-  (inp, out, err, pid) <- runInteractiveCommand "stack ghci"
+initializeState :: FilePath -> IO State
+initializeState fp = do
+  (inp, out, err, pid) <- runInteractiveCommand "stack repl"
   hSetBinaryMode inp False
   hSetBinaryMode out False
   hSetBinaryMode err False
-  talk conn inp out
+  hPutStrLn inp (":l " ++ fp)
+  hPutStrLn inp ":set prompt \">\""
+  hFlush inp
+  clearHandle out
+  return (State {
+    ghciInput = inp
+  , ghciOutput = out
+  , ghciError = err
+  , ghciProcessHandle = pid
+  , notebookFilePath = fp
+  , notebookAuthor = Nothing })
+
+application :: State -> WS.ServerApp
+application state pending = do
+  conn <- WS.acceptRequest pending
+  talk conn state
 
 distress conn = broadcast conn "Distress!"
 
@@ -40,9 +55,9 @@ broadcastNotebook conn n = broadcast conn (cs (encode n))
 
 sendNotebook conn = either (broadcast conn . T.pack) (broadcastNotebook conn)
 
-talk :: Connection -> Handle -> Handle -> IO ()
-talk conn inp out = forever $ do
+talk :: Connection -> State -> IO ()
+talk conn state = forever $ do
   msg <- WS.receiveData conn
-  maybe (distress conn) 
-        ((\notebook -> notebookInterpreter notebook inp out) >=> sendNotebook conn) 
+  maybe (distress conn)
+        ((\notebook -> notebookInterpreter notebook state) >=> sendNotebook conn)
         (decode msg)
