@@ -2,59 +2,27 @@ module Navbar.View where
 
 import Prelude (const, ($), (<>))
 
+import UIUtils
 import Types (AppState, Action(..))
 import Pux.Html (Html, ul, text, a, li, div, nav)
 import Pux.Html.Events (onClick)
 import Pux.Html.Attributes (className, href, role, aria, attr)
 
 additionMenu :: Html Action
-additionMenu =
-  li
-    [ className "dropdown" ]
-    [ a
-        [ className "dropdown-toggle glyphicon glyphicon-plus"
-        , attr "data-toggle" "dropdown"
-        ]
-        [ text "" ]
-    , ul
-        [ className "dropdown-menu"
-        , aria "labelledby" "dLabel"
-        , role "menu"
-        ]
-        [ li
-            []
-            [ a
-                [ onClick (const AddTextCell)
-                , href "#"
-                ]
-                [ text "Text cell" ]
+additionMenu = 
+    dropdownMenu
+        GlyphiconPlus
+        [ a
+            [ onClick (const AddCodeCell)
+            , href "#"
             ]
-        , li
-            []
-            [ a
-                [ onClick (const AddCodeCell)
-                , href "#"
-                ]
-                [ text "Code cell" ]
+            [ text "Code cell" ]
+        , a
+            [ onClick (const AddTextCell)
+            , href "#"
             ]
+            [ text "Text cell" ]
         ]
-    ]
 
 view :: AppState -> Html Action
-view appState =
-  nav
-    [ className "navbar navbar-default navbar-fixed-top" ]
-    [ div
-        [ className "container-fluid" ]
-        [ div
-            [ className "navbar-header" ]
-            []
-        , div
-            [ className "" ]
-            [ ul
-                [ className "nav navbar-nav text-center" ]
-                [ additionMenu
-                ]
-            ]
-        ]
-    ]
+view appState = topFixedNavbar additionMenu
