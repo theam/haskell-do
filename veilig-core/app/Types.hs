@@ -3,7 +3,6 @@
 module Types where
 
 import GHC.Generics
-import Language.Haskell.GhcMod (Cradle, Project)
 import Data.Aeson
 import GHC.IO.Handle
 import System.Process
@@ -15,7 +14,6 @@ data State = State {
   , ghciError :: Handle
   , ghciProcessHandle :: ProcessHandle
   , notebookFilePath :: FilePath
-  , notebookCradle :: Cradle
   , notebookAuthor :: Maybe String }
 
 data Notebook = Notebook

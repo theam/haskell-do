@@ -4,7 +4,6 @@ module WebSocketServer where
 import Types
 
 import Language.Haskell.Interpreter
-import Language.Haskell.GhcMod
 import Data.Monoid (mappend, (<>))
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -21,6 +20,7 @@ import Utils
 import GHC.IO.Handle
 import System.IO
 import System.Process
+import System.FilePath (pathSeparator)
 
 broadcast :: Connection -> Text -> IO ()
 broadcast conn msg = do
@@ -28,13 +28,13 @@ broadcast conn msg = do
   WS.sendTextData conn msg
 
 -- cradleProject, cradleCurrentDir, cradleRootDir, cradleTempDir, cradleCabalFile, cradleDistDir
-initializeState :: Cradle -> IO State
-initializeState cr = do
+initializeState :: String -> IO State
+initializeState st = do
   (inp, out, err, pid) <- runInteractiveCommand "stack repl"
   hSetBinaryMode inp False
   hSetBinaryMode out False
   hSetBinaryMode err False
-  hPutStrLn inp (":l app/" ++ (cradleRootDir cr) ++ ".hs")
+  hPutStrLn inp (":l " ++ st ++ [pathSeparator] ++ "app" ++ [pathSeparator] ++ "Main.hs")
   hPutStrLn inp "set prompt \">\""
   hFlush inp
   clearHandle out
@@ -43,8 +43,7 @@ initializeState cr = do
   , ghciOutput = out
   , ghciError = err
   , ghciProcessHandle = pid
-  , notebookFilePath = cradleRootDir cr
-  , notebookCradle = cr
+  , notebookFilePath = (st ++ [pathSeparator] ++ "app" ++ [pathSeparator] ++ "Main.hs")
   , notebookAuthor = Nothing })
 
 application :: State -> WS.ServerApp

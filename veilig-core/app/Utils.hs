@@ -2,6 +2,7 @@ module Utils (clearHandle) where
 
 import GHC.IO.Handle
 import System.IO
+import System.Process
 
 clearHandle :: Handle -> IO String
 clearHandle out = do
