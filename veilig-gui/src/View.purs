@@ -7,10 +7,9 @@ import Types
 import Pux.Html (Html, div, nav, text)
 import Navbar.View as Navbar
 import Cells.View as Cells
-import Data.Lens as L
 import Console.View as Console
 
-boilerplate :: forall a. Html a -> Html a
+boilerplate :: ∀ action . Html action -> Html action
 boilerplate content =
     div
         [ className "container" ]
@@ -22,7 +21,7 @@ boilerplate content =
             ]
         ]
 
-columns :: Html Action -> Html Action -> Html Action
+columns :: ∀ action . Html action -> Html action -> Html action
 columns leftSide rightSide =
     div
         [ className "container-fluid" ]

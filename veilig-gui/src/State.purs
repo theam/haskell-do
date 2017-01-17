@@ -39,7 +39,7 @@ decodeReceived s = case jsonParser s of
     Right j -> j
     Left _ -> fromString ""
 
-initialAppState :: Channel Action -> String -> forall e. Eff (err::EXCEPTION, ws::WEBSOCKET|e) AppState
+initialAppState :: Channel Action -> String -> ∀ e. Eff (err::EXCEPTION, ws::WEBSOCKET|e) AppState
 initialAppState chan url = do
     connection@(Connection ws) <- newWebSocket (URL url) []
     ws.onopen $= \event -> do
@@ -144,7 +144,7 @@ makeTextEditor chan i = do
     onChange editor.codemirror chan (\txt -> CheckCode i txt)
     pure NoOp
 
-checkNotebook :: forall eff . Connection -> Notebook -> Eff ( ws :: WEBSOCKET, err :: EXCEPTION | eff ) Action
+checkNotebook :: ∀ eff . Connection -> Notebook -> Eff ( ws :: WEBSOCKET, err :: EXCEPTION | eff ) Action
 checkNotebook (Connection ws) n = do
     let s = encodeJson n
     ws.send (Message $ show s) *> pure NoOp
