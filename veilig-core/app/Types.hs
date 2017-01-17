@@ -29,6 +29,13 @@ instance FromJSON Notebook
 instance ToJSON Notebook where
     toEncoding = genericToEncoding defaultOptions
 
+newtype Directory = Directory String
+newtype ProjectName = ProjectName String
+
+data ProjectAction
+  = OpenProject Directory
+  | NewProject ProjectName Directory
+
 data Cell = Cell
     { cellType :: CellType
     , cellId :: Int
