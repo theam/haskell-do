@@ -12,11 +12,10 @@ import Prelude (class Eq, pure, bind, ($))
 import Pux.Html.Events (FormEvent)
 import Signal.Channel (Channel, CHANNEL)
 import WebSocket (Connection)
+import Navbar.Actions
 
 data Action
-    = ToggleEdit
-    | AddTextCell
-    | AddCodeCell
+    = NavbarAction NavbarAction
     | AppendConsole String
     | SendConsole
     | RenderCodeCell Int
