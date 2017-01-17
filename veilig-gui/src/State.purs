@@ -53,8 +53,7 @@ initialAppState chan url = do
             Right n ->
                 send chan ((UpdateNotebook n) :: Action)
     pure $ AppState
-        { editing: true
-        , notebook: initialNotebook
+        { notebook: initialNotebook
         , totalCells: 0
         , currentCell: 0
         , activeChannel : chan
@@ -100,7 +99,6 @@ updateCell i s =
     updateCell' (Cell c) = if isCorrectCell (Cell c) then Cell c { cellContent = s } else Cell c
 
 update :: Action -> AppState -> EffModel AppState Action (ws :: WEBSOCKET, codemirror :: CODEMIRROR)
-update ToggleEdit (AppState appState)  = noEffects $ AppState appState { editing = not appState.editing}
 update AddTextCell appState =
     { state : addTextCell appState
     , effects : [ pure $ RenderTextCell (getTotalCells appState) ]

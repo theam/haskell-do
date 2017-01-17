@@ -29,8 +29,7 @@ data Action
     | NoOp
 
 newtype AppState = AppState
-    { editing :: Boolean
-    , notebook :: Notebook
+    { notebook :: Notebook
     , totalCells :: Int
     , currentCell :: Int
     , activeChannel :: Channel Action
