@@ -28,13 +28,13 @@ broadcast conn msg = do
   WS.sendTextData conn msg
 
 -- cradleProject, cradleCurrentDir, cradleRootDir, cradleTempDir, cradleCabalFile, cradleDistDir
-initializeState' :: FilePath -> Cradle -> IO State
-initializeState' fp cr = do
+initializeState :: Cradle -> IO State
+initializeState cr = do
   (inp, out, err, pid) <- runInteractiveCommand "stack repl"
   hSetBinaryMode inp False
   hSetBinaryMode out False
   hSetBinaryMode err False
-  hPutStrLn inp (":l " ++ fp)
+  hPutStrLn inp (":l " ++ (cradleRootDir cr) ++ ".hs")
   hPutStrLn inp "set prompt \">\""
   hFlush inp
   clearHandle out
@@ -43,26 +43,8 @@ initializeState' fp cr = do
   , ghciOutput = out
   , ghciError = err
   , ghciProcessHandle = pid
-  , notebookFilePath = fp
+  , notebookFilePath = cradleRootDir cr
   , notebookCradle = cr
-  , notebookAuthor = Nothing })
-
-initializeState :: FilePath -> IO State
-initializeState fp = do
-  (inp, out, err, pid) <- runInteractiveCommand "stack repl"
-  hSetBinaryMode inp False
-  hSetBinaryMode out False
-  hSetBinaryMode err False
-  hPutStrLn inp (":l " ++ fp)
-  hPutStrLn inp ":set prompt \">\""
-  hFlush inp
-  clearHandle out
-  return (State {
-    ghciInput = inp
-  , ghciOutput = out
-  , ghciError = err
-  , ghciProcessHandle = pid
-  , notebookFilePath = fp
   , notebookAuthor = Nothing })
 
 application :: State -> WS.ServerApp

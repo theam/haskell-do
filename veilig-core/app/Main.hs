@@ -30,5 +30,5 @@ main :: IO ()
 main = do
   filepath : _ <- getArgs
   cradle <- findCradle $ Programs { stackProgram = filepath }
-  state <- initializeState' filepath cradle
+  state <- initializeState cradle
   WS.runServer address port (application state)
