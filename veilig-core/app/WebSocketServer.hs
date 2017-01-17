@@ -34,7 +34,7 @@ initializeState cr = do
   hSetBinaryMode inp False
   hSetBinaryMode out False
   hSetBinaryMode err False
-  hPutStrLn inp (":l " ++ (cradleRootDir cr) ++ ".hs")
+  hPutStrLn inp (":l app/" ++ (cradleRootDir cr) ++ ".hs")
   hPutStrLn inp "set prompt \">\""
   hFlush inp
   clearHandle out

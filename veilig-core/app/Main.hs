@@ -28,7 +28,7 @@ port = 3000
 
 main :: IO ()
 main = do
-  filepath : _ <- getArgs
-  cradle <- findCradle $ Programs { stackProgram = filepath }
+  projecname : _ <- getArgs
+  cradle <- findCradle $ Programs { stackProgram = projectname }
   state <- initializeState cradle
   WS.runServer address port (application state)
