@@ -33,3 +33,4 @@ veilig-gui/.psc-ide-port
 *.log
 
 .psc-ide-port
+output/
