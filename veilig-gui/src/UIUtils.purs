@@ -12,7 +12,7 @@ data Glyphicon
 instance showGlyphicon :: Show Glyphicon where
     show GlyphiconPlus = "glyphicon glyphicon-plus"
 
-dropdownMenu :: ∀ action .  Glyphicon -> Array (Html action) -> Html Action
+dropdownMenu :: ∀ action .  Glyphicon -> Array (Html action) -> Html action
 dropdownMenu icon contents =
   li
     [ className "dropdown" ]

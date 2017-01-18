@@ -5,7 +5,7 @@ import Prelude
 import Pux.Html.Attributes (className)
 import Types
 import Pux.Html (Html, div, nav, text)
-import Navbar.View as Navbar
+import Components.Navbar as Navbar
 import Cells.View as Cells
 import Console.View as Console
 
@@ -43,7 +43,7 @@ view :: AppState -> Html Action
 view appState =
     div
         []
-        [ Navbar.view appState
+        [ forwardTo NavbarAction $ Navbar.view appState
         , columns 
             (Cells.view appState)
             (Console.view appState)
