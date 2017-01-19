@@ -21,12 +21,54 @@ import Utils
 import GHC.IO.Handle
 import System.IO
 import System.Process
-import System.FilePath (pathSeparator)
+import System.FilePath (pathSeparator, takeFileName)
 
 broadcast :: Connection -> Text -> IO ()
 broadcast conn msg = do
   T.putStrLn ("Log:" <> cs msg)
   WS.sendTextData conn msg
+
+createNewProject :: ProjectName -> Directory -> IO State
+createNewProject pn dir = do
+  runInteractiveCommand $ unwords ["stack", "new", getProjName pn]
+  runInteractiveCommand $ "cd " ++ (getProjName pn)
+  (inp, out, err, pid) <- runInteractiveCommand "stack repl"
+  hSetBinaryMode inp False
+  hSetBinaryMode out False
+  hSetBinaryMode err False
+  hPutStrLn inp $ ":l " ++ (intercalate [pathSeparator] ["app", "Main.hs"])
+  hPutStrLn inp "set prompt \">\""
+  hFlush inp
+  clearHandle out
+  return $ State {
+     ghciInput = inp
+  , ghciOutput = out
+  , ghciError = err
+  , ghciProcessHandle = pid
+  , notebookProjectName = pn
+  , notebookDirectory = dir
+  , notebookAuthor = Nothing
+  }
+
+loadProject :: Directory -> IO State
+loadProject dir = do
+  (inp, out, err, pid) <- runInteractiveCommand "stack repl"
+  hSetBinaryMode inp False
+  hSetBinaryMode out False
+  hSetBinaryMode err False
+  hPutStrLn inp (":l " ++ (intercalate [pathSeparator] ["app", "Main.hs"]))
+  hPutStrLn inp "set prompt \">\""
+  hFlush inp
+  clearHandle out
+  return (State {
+    ghciInput = inp
+  , ghciOutput = out
+  , ghciError = err
+  , ghciProcessHandle = pid
+  , notebookProjectName = ProjectName $ takeFileName $ getDir dir
+  , notebookDirectory = dir
+  , notebookAuthor = Nothing })
+
 
 initializeState :: String -> IO State
 initializeState st = do
@@ -43,7 +85,8 @@ initializeState st = do
   , ghciOutput = out
   , ghciError = err
   , ghciProcessHandle = pid
-  , notebookFilePath = (intercalate [pathSeparator] [st, "app", "Main.hs"])
+  , notebookProjectName = ProjectName st
+  , notebookDirectory = Directory st
   , notebookAuthor = Nothing })
 
 application :: State -> WS.ServerApp

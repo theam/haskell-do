@@ -51,7 +51,6 @@ notebookInterpreter :: Notebook -> State -> IO (Either String Notebook)
 notebookInterpreter n s = do
   writeNotebook s n
   loadNotebook s
-  writeConsole s n 
+  writeConsole s n
   x <- readConsole s
   return (Right ( n { console = x } ))
-

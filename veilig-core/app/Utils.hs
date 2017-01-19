@@ -1,8 +1,11 @@
-module Utils (clearHandle) where
+module Utils ( clearHandle
+             , notebookFilePath) where
 
 import GHC.IO.Handle
 import System.IO
-import System.Process
+import Types
+import System.FilePath
+import Data.List (intercalate)
 
 clearHandle :: Handle -> IO String
 clearHandle out = do
@@ -12,3 +15,6 @@ clearHandle out = do
             xs <- clearHandle out
             return (x : xs)
     else pure []
+
+notebookFilePath :: State -> FilePath
+notebookFilePath note = intercalate [pathSeparator] [getDir $ notebookDirectory note, "app", "Main.hs"]

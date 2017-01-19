@@ -16,6 +16,7 @@ port = 3000
 main :: IO ()
 main = do
   projectname : _ <- getArgs
-  createProcess $ proc "stack" ["new", projectname]
   state <- initializeState projectname
+  -- ^ can be replaced when frontend ability is in place to call
+  -- functions like createNewNotebook
   WS.runServer address port (application state)

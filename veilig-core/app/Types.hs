@@ -8,12 +8,16 @@ import GHC.IO.Handle
 import System.Process
 import Data.Text
 
+newtype Directory = Directory { getDir :: String }
+newtype ProjectName = ProjectName { getProjName :: String }
+
 data State = State {
     ghciInput :: Handle
   , ghciOutput :: Handle
   , ghciError :: Handle
   , ghciProcessHandle :: ProcessHandle
-  , notebookFilePath :: FilePath
+  , notebookProjectName :: ProjectName
+  , notebookDirectory :: Directory
   , notebookAuthor :: Maybe String }
 
 data Notebook = Notebook
@@ -28,9 +32,6 @@ data Notebook = Notebook
 instance FromJSON Notebook
 instance ToJSON Notebook where
     toEncoding = genericToEncoding defaultOptions
-
-newtype Directory = Directory String
-newtype ProjectName = ProjectName String
 
 data ProjectAction
   = OpenProject Directory
