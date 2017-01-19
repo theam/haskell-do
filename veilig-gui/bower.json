@@ -48,7 +48,7 @@
     "purescript-enums": "^2.0.0",
     "purescript-foreign": "^3.0.0",
     "purescript-js-date": "^3.0.0",
-    "purescript-foldable-traversable": "~2.0.0",
+    "purescript-foldable-traversable": "^2.0.0",
     "purescript-functions": "^2.0.0",
     "purescript-strings": "^2.0.0"
   }

@@ -61,26 +61,6 @@ initialAppState chan url = do
         , consoleBuffer : ""
         }
 
-appendCell :: Cell -> AppState -> AppState
-appendCell c =
-  ((_notebook <<< _cells ) <>~ [c]) <<< (_totalCells +~ 1)
-
-addTextCell :: AppState -> AppState
-addTextCell as = appendCell (Cell { cellId : (getTotalCells as), cellContent: "Type here", cellType: TextCell} ) as
-
-addCodeCell :: AppState -> AppState
-addCodeCell as = appendCell emptyCodeCell as
-  where
-    emptyCodeCell = Cell { cellId : (getTotalCells as), cellContent: "-- Type here", cellType: CodeCell }
-
-addDisplayCell :: String -> AppState -> AppState
-addDisplayCell msg as = appendCell displayCell as
-  where
-    displayCell = Cell { cellId : (getTotalCells as), cellContent: msg, cellType: DisplayCell }
-
-getTotalCells :: AppState -> Int
-getTotalCells = view _totalCells
-
 countCellsInNotebook :: AppState -> Int
 countCellsInNotebook =
     fromMaybe 0 <<< maximumOf (_notebook <<< _cells <<< traversed <<< _cellId)

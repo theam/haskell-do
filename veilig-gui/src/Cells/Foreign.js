@@ -10,7 +10,7 @@ function objectify(array){
     return object;
 }
 
-exports.fromTextArea = function (textAreaId) {
+exports.fromTextAreaCodeEditor = function (textAreaId) {
     return function (configArray) {
         return function () {
             if (configArray.length > 0) {

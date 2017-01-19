@@ -1,67 +1,66 @@
-module Cells.View where
+module Cells.View
+  ( cellsDisplay
+  , addTextCellButton
+  , addCodeCellButton
+  )
+where
 
-import Data.Lens as L
-import Data.Maybe (Maybe(Just))
-import Data.String (stripSuffix, Pattern(Pattern), stripPrefix)
-import Prelude (map, show, (<<<), ($), (<>), (>>=))
-import Pux.Html (img, data_, object, pre, Html, ul, text, li, textarea, code)
-import Pux.Html.Attributes (src, className, defaultValue, id_)
-import Pux.Html.Events (onInput)
-import Types (AppState, Action(..), Cell(..), CellType(..), _cells, _notebook)
+import Prelude
+
+import Cells.Types
+import Pux.Html
+import Pux.Html.Attributes
+import Pux.Html.Events
+import Data.Lens as Lens
 
 
 renderCell :: Cell -> Html Action
-renderCell (Cell c@{ cellType : TextCell}) = renderTextCell (Cell c)
-renderCell (Cell c@{ cellType : CodeCell}) = renderCodeCell (Cell c)
-renderCell (Cell c@{ cellType : DisplayCell}) = renderDisplayCell (Cell c)
+renderCell c =
+    case Lens.view cellType c of
+        TextCell -> renderTextCell c
+        CodeCell -> renderCodeCell c
 
 renderTextCell :: Cell -> Html Action
-renderTextCell (Cell c) =
+renderTextCell c =
     li
-        [ id_ $ "outer-" <> show c.cellId, className "text-cell"]
-        [textarea
-            [ id_ (show c.cellId)
-            , onInput (CheckInput c.cellId)
-            , defaultValue c.cellContent
-            ]
-            []
+        [ id_     $ "outer-" <> show cId
+        , className "text-cell"
         ]
-
-renderCodeCell :: Cell -> Html Action
-renderCodeCell (Cell c) =
-    li
-        []
-        [ pre
-            []
-            [ code
-                []
-                [ textarea
-                    [ onInput (CheckInput c.cellId)
-                    , id_ (show c.cellId)
-                    , defaultValue c.cellContent
-                    ]
-                    []
-                ]
-            ]
-        ]
-
-renderDisplayCell :: Cell -> Html Action
-renderDisplayCell (Cell c) =
-    li
-        []
-        [ code
-            [ id_ (show c.cellId) ]
-            [ case stripPrefix (Pattern "\"svg:") c.cellContent >>= stripSuffix (Pattern "\"") of
-                Just s -> rSvg s
-                _ -> rText c
-            ]
+        [ textarea
+            [ id_          $ show cellId
+            , onInput      $ (\ev -> SaveContent cId ev.target.value)
+            , defaultValue $ Lens.view cellContent c
+            ] []
         ]
   where
-    rText c = text c.cellContent
-    rSvg file = img [src file] []
+    cId = Lens.view cellId c
 
-renderCells :: AppState -> Array (Html Action)
-renderCells = map renderCell <<< L.view (_notebook <<< _cells)
+renderCodeCell :: Cell -> Html Action
+renderCodeCell c = wrapper $ 
+    textarea
+        [ onInput      $ SaveContent cId
+        , id_          $ show cId
+        , defaultValue $ Lens.view cellContent c
+        ] []
+  where
+    wrapper content = li [] [ pre [] [ code [] [ content ] ] ]
 
-view :: AppState -> Html Action
-view appState = ul [] (renderCells appState)
+renderCells :: State -> Array (Html Action)
+renderCells = map renderCell <<< Lens.view cells
+
+cellsDisplay :: State -> Html Action
+cellsDisplay appState = ul [] (renderCells appState)
+
+addTextCellButton :: State -> Html Action
+addTextCellButton _ = a
+    [ onClick $ const AddTextCell
+    , href "#"
+    ]
+    [ text "Text cell" ]
+
+addCodeCellButton :: State -> Html Action
+addCodeCellButton _ = a
+    [ onClick $ const AddCodeCell
+    , href "#"
+    ]
+    [ text "Code cell" ]
