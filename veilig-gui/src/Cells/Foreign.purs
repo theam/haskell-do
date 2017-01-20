@@ -2,9 +2,8 @@ module Cells.Foreign
   ( CodeEditor(..)
   , MarkdownEditor
   , Configuration
-  , onChange
-  , fromTextAreaCodeEditor
-  , fromTextAreaMarkdownEditor
+  , makeCodeEditor
+  , makeTextEditor
   )
 where
 
@@ -52,7 +51,19 @@ foreign import fromTextAreaMarkdownEditor ::
     Eff (dom :: DOM | e) MarkdownEditor
 
 foreign import _onChange ::
-    ∀ a .
+    ∀ a e .
     CodeEditor ->
     Callback1 a Unit ->
-    CodeMirrorEff Unit
+    Eff ( dom :: DOM | e) Unit
+
+makeCodeEditor :: ∀ eff . Channel Action -> Int -> Eff ( channel :: CHANNEL, codemirror :: CODEMIRROR | eff ) Action
+makeCodeEditor chan i = do
+    editor <- liftEff $ fromTextArea (show i) { mode : "haskell" }
+    onChange editor chan (\code -> CheckCode i code)
+    pure NoOp
+
+makeTextEditor :: ∀ eff . Channel Action -> Int -> Eff (channel :: CHANNEL, codemirror :: CODEMIRROR | eff ) Action
+makeTextEditor chan i = do
+    editor <- fromTextAreaMarkdownEditor (show i)
+    onChange editor.codemirror chan (\txt -> CheckCode i txt)
+    pure NoOp

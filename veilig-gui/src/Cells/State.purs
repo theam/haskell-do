@@ -30,9 +30,24 @@ update AddCodeCell s =
     { state : addCodeCell s
     , effects : [ pure $ RenderCodeCell ( CellId $ totalCells s ) ]
     }
+
 update AddTextCell s = 
     { state : addTextCell s
     , effects : [ pure $ RenderTextCell ( CellId $ totalCells s ) ]
     }
+
+update (RenderCodeCell $ CellId i) s  =
+    { state : s
+    , effects : [ liftEff $ makeCodeEditor (view editorChanges s) i ]
+    }
+
+update (RenderTextCell $ CellId i) s  =
+    { state : s
+    , effects : [ liftEff $ makeTextEditor (view editorChanges s) i ]
+    }
+
 update (SaveContent cId newContent) s = noEffects $ saveContent cId newContent s
+
 update (RemoveCell cId) s             = noEffects $ removeCell  cId s
+
+update NoOp s                         = noEffects $ s

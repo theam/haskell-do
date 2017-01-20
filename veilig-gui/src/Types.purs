@@ -26,7 +26,7 @@ data Action
     | NoOp
 
 newtype AppState = AppState
-    { cellsState    :: Cells.State
+    { _cellsState    :: Cells.State
     , activeChannel :: Channel Action
     , socket        :: Connection
     , consoleBuffer :: String

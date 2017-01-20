@@ -21,6 +21,8 @@ data Action
     | SaveContent    CellId String
     | RemoveCell     CellId
     | RenderTextCell CellId
+    | RenderCodeCell CellId
+    | NoOp
 
 type EffModel eff =
     { state :: State
@@ -30,7 +32,7 @@ type EffModel eff =
 data State = State
     { _currentCell :: CellId
     , _cells       :: Array Cell
-    , _activeChannel :: Channel 
+    , _editorChanges :: Channel Action
     }
 
 -- | Inserts a cell after a given Cell Id.
@@ -111,6 +113,11 @@ cells = lens
     (\(State s) -> s._cells)
     (\(State s) -> (\newValue -> State (s { _cells = newValue})))
 
+editorChanges :: Lens' State Int
+editorChanges = lens
+    (\(State s) -> s._editorChanges)
+    (\(State s) -> (\newValue -> State (s { _editorChanges = newValue})))
+    
 cellId :: Lens' Cell Int
 cellId = lens
     (\(Cell c) -> c._cellId)

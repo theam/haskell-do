@@ -1,6 +1,9 @@
 module State where
 
 import Prelude
+
+import Cells.State as Cells
+import Cells.Types as Cells
 import Types
 import Data.Array
 import Data.Lens
@@ -54,16 +57,10 @@ initialAppState chan url = do
                 send chan ((UpdateNotebook n) :: Action)
     pure $ AppState
         { notebook: initialNotebook
-        , totalCells: 0
-        , currentCell: 0
         , activeChannel : chan
         , socket : connection
         , consoleBuffer : ""
         }
-
-countCellsInNotebook :: AppState -> Int
-countCellsInNotebook =
-    fromMaybe 0 <<< maximumOf (_notebook <<< _cells <<< traversed <<< _cellId)
 
 updateNotebook :: Notebook -> AppState -> AppState
 updateNotebook n (AppState as) =
@@ -71,32 +68,9 @@ updateNotebook n (AppState as) =
   where
     updatedNotebook = AppState $ as { notebook = n }
 
-updateCell :: Int -> String -> AppState -> AppState
-updateCell i s =
-  over (_notebook <<< _cells) (\x -> map updateCell' x)
-  where
-    isCorrectCell (Cell c) = c.cellId == i
-    updateCell' (Cell c) = if isCorrectCell (Cell c) then Cell c { cellContent = s } else Cell c
-
 update :: Action -> AppState -> EffModel AppState Action (ws :: WEBSOCKET, codemirror :: CODEMIRROR)
-update AddTextCell appState =
-    { state : addTextCell appState
-    , effects : [ pure $ RenderTextCell (getTotalCells appState) ]
-    }
-update AddCodeCell appState =
-    { state: addCodeCell appState
-    , effects : [ pure $ RenderCodeCell (getTotalCells appState) ]
-    }
-update (RenderCodeCell i) appState@(AppState as) =
-  { state: appState
-  , effects: [ do liftEff $ makeCodeEditor as.activeChannel i ]
-  }
-update (RenderTextCell i) appState@(AppState as) =
-    { state: appState
-    , effects : [ liftEff $ makeTextEditor as.activeChannel i ]
-    }
-update (CheckInput i ev) appState = noEffects $ updateCell i ev.target.value appState
-update (CheckCode i s) appState = noEffects $ updateCell i s appState
+update (CellAction action) as = Cells.update action (view cellsState as)
+
 update CheckNotebook as=
     { state: as
     , effects: [ do
@@ -109,18 +83,6 @@ update SendConsole appState = noEffects $ appState
 update (AppendConsole key) appState = noEffects $ addToConsole (view _consoleBuffer appState <> key) appState
 update (AddToConsole consoleText) appState = noEffects $ addToConsole consoleText appState
 update NoOp appState = noEffects $ appState
-
-makeCodeEditor :: ∀ eff . Channel Action -> Int -> Eff ( channel :: CHANNEL, codemirror :: CODEMIRROR | eff ) Action
-makeCodeEditor chan i = do
-    editor <- liftEff $ fromTextArea (show i) { mode : "haskell" }
-    onChange editor chan (\code -> CheckCode i code)
-    pure NoOp
-
-makeTextEditor :: ∀ eff . Channel Action -> Int -> Eff (channel :: CHANNEL, codemirror :: CODEMIRROR | eff ) Action
-makeTextEditor chan i = do
-    editor <- fromTextAreaMarkdownEditor (show i)
-    onChange editor.codemirror chan (\txt -> CheckCode i txt)
-    pure NoOp
 
 checkNotebook :: ∀ eff . Connection -> Notebook -> Eff ( ws :: WEBSOCKET, err :: EXCEPTION | eff ) Action
 checkNotebook (Connection ws) n = do
