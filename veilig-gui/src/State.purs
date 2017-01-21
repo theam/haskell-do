@@ -2,8 +2,10 @@ module State where
 
 import Prelude
 
-import Cells.State as Cells
-import Cells.Types as Cells
+import Cells.State   as Cells
+import Cells.Types   as Cells
+import Columns.State as Columns
+import Columns.Types as Columns
 import Types
 import Data.Array
 import Data.Lens
@@ -70,8 +72,10 @@ updateNotebook n (AppState as) =
 
 update :: Action -> AppState -> EffModel AppState Action (ws :: WEBSOCKET, codemirror :: CODEMIRROR)
 update (CellAction action) as = Cells.update action (view cellsState as)
+update (ColumnsAction action) as = Columns.update action (view columnsState as)
+update (ConsoleAction action) as = ConsoleAction.update action (view consoleState as)
 
-update CheckNotebook as=
+update CheckNotebook as =
     { state: as
     , effects: [ do
         let as' = ((_notebook <<< _console) .~ (view _consoleBuffer as)) as
@@ -79,8 +83,6 @@ update CheckNotebook as=
       ]
     }
 update (UpdateNotebook receivedNotebook) appState = noEffects $ updateNotebook receivedNotebook appState
-update SendConsole appState = noEffects $ appState
-update (AppendConsole key) appState = noEffects $ addToConsole (view _consoleBuffer appState <> key) appState
 update (AddToConsole consoleText) appState = noEffects $ addToConsole consoleText appState
 update NoOp appState = noEffects $ appState
 

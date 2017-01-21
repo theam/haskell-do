@@ -14,6 +14,7 @@ import Control.Monad.Eff (Eff)
 import Data.Function.Uncurried (Fn1)
 import Signal.Channel (send, Channel, CHANNEL)
 import DOM (DOM)
+import Cells.Types
 
 -- | The reference to a CodeMirror editor
 foreign import data CodeEditor :: *

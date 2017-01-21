@@ -1,4 +1,4 @@
-module Cells.State (update, initialState) where
+module Cells.State where
 
 import Prelude
 
@@ -25,7 +25,7 @@ saveContent cId newContent = over cells (\cell' -> map updateCell cell')
             then (cellContent .~ newContent) c
             else c
 
-update :: Action -> State -> EffModel ( dom :: DOM )
+update :: Update State Action ( dom :: DOM )
 update AddCodeCell s = 
     { state : addCodeCell s
     , effects : [ pure $ RenderCodeCell ( CellId $ totalCells s ) ]
@@ -37,17 +37,23 @@ update AddTextCell s =
     }
 
 update (RenderCodeCell $ CellId i) s  =
-    { state : s
-    , effects : [ liftEff $ makeCodeEditor (view editorChanges s) i ]
-    }
+    onlyEffects
+    . liftEff 
+    $ makeCodeEditor (view editorChanges s) i
 
 update (RenderTextCell $ CellId i) s  =
-    { state : s
-    , effects : [ liftEff $ makeTextEditor (view editorChanges s) i ]
-    }
+    onlyEffects
+    . liftEff
+    $ makeTextEditor (view editorChanges s) i
 
-update (SaveContent cId newContent) s = noEffects $ saveContent cId newContent s
+update (SaveContent cId newContent) s = 
+    noEffects
+    $ saveContent cId newContent s
 
-update (RemoveCell cId) s             = noEffects $ removeCell  cId s
+update (RemoveCell cId) s             = 
+    noEffects 
+    $ removeCell cId s
 
-update NoOp s                         = noEffects $ s
+update NoOp s                         = 
+    noEffects
+    $ s

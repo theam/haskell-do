@@ -1,10 +1,9 @@
 module UIUtils where
 
-import Prelude
+import Prelude hiding (div)
 
 import Pux.Html (Html, ul, text, a, li, div, nav)
-import Pux.Html.Events (onClick)
-import Pux.Html.Attributes (className, href, role, aria, attr)
+import Pux.Html.Attributes (className, role, aria, attr)
 
 data Glyphicon
     = GlyphiconPlus
@@ -17,7 +16,7 @@ dropdownMenu icon contents =
   li
     [ className "dropdown" ]
     [ a
-        [ className "dropdown-toggle" <> show icon
+        [ className $ "dropdown-toggle" <> show icon
         , attr "data-toggle" "dropdown"
         ]
         [ text "" ]

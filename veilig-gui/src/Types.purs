@@ -13,20 +13,22 @@ import Pux.Html.Events (FormEvent)
 import Signal.Channel (Channel, CHANNEL)
 import WebSocket (Connection)
 import Cells.Types as Cells
+import Columns.Types as Columns
+import Console.Types as Console
 
 data Action
     = CellsAction Cells.Action
-    | AppendConsole String
-    | SendConsole
-    | RenderCodeCell Int
+    | ColumnsAction Columns.Action
+    | ConsoleAction Console.Action
     | CheckCode Int String
     | CheckNotebook
     | UpdateNotebook Notebook
-    | AddToConsole String
     | NoOp
 
 newtype AppState = AppState
     { _cellsState    :: Cells.State
+    , _columnsState  :: Columns.State
+    , _consoleState  :: Console.State
     , activeChannel :: Channel Action
     , socket        :: Connection
     , consoleBuffer :: String

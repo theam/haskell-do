@@ -7,7 +7,12 @@ import Types
 import Pux.Html (Html, div, nav, text)
 import Components.Navbar as Navbar
 import Cells.View as Cells
+import Columns.View as Columns
 import Console.View as Console
+
+{--------  IS THIS EVEN NEEDED?
+
+-- TODO: Remove this
 
 boilerplate :: ∀ action . Html action -> Html action
 boilerplate content =
@@ -20,31 +25,15 @@ boilerplate content =
                 [ content ]
             ]
         ]
-
-columns :: ∀ action . Html action -> Html action -> Html action
-columns leftSide rightSide =
-    div
-        [ className "container-fluid" ]
-        [ div
-            [ className "row" ]
-            [ div
-                [ className "col-lg-4 col-lg-push-8"]
-                [ nav
-                    [ className "navbar navbar-default navbar-fixed-side" ]
-                    [ rightSide ]
-                ]
-            , div
-                [ className "col-lg-8 col-lg-pull-4" ]
-                [ leftSide ]
-            ]
-        ]
+------------------------------}
 
 view :: AppState -> Html Action
 view appState =
     div
         []
         [ forwardTo NavbarAction $ Navbar.view appState
-        , columns 
-            (Cells.view appState)
-            (Console.view appState)
+        , forwardTo ColumnsAction $ 
+            Columns.view (Lens.view columnsState appState) 
+                (Cells.cellsDisplay $ Lens.view cellsState appState)
+                (Console.view appState)
         ]
