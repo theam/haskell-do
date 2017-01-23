@@ -28,10 +28,8 @@ broadcast conn msg = do
   T.putStrLn ("Log:" <> cs msg)
   WS.sendTextData conn msg
 
-createNewProject :: ProjectName -> Directory -> IO State
-createNewProject pn dir = do
-  runInteractiveCommand $ unwords ["stack", "new", getProjName pn]
-  runInteractiveCommand $ "cd " ++ (getProjName pn)
+setupState :: IO (Handle, Handle, Handle, ProcessHandle)
+setupState = do
   (inp, out, err, pid) <- runInteractiveCommand "stack repl"
   hSetBinaryMode inp False
   hSetBinaryMode out False
@@ -40,6 +38,13 @@ createNewProject pn dir = do
   hPutStrLn inp "set prompt \">\""
   hFlush inp
   clearHandle out
+  return (inp, out, err, pid)
+
+createNewProject :: ProjectName -> Directory -> IO State
+createNewProject pn dir = do
+  runInteractiveCommand $ unwords ["stack", "new", getProjName pn]
+  runInteractiveCommand $ "cd " ++ (getProjName pn)
+  (inp, out, err, pid) <- setupState
   return $ State {
      ghciInput = inp
   , ghciOutput = out
@@ -52,14 +57,7 @@ createNewProject pn dir = do
 
 loadProject :: Directory -> IO State
 loadProject dir = do
-  (inp, out, err, pid) <- runInteractiveCommand "stack repl"
-  hSetBinaryMode inp False
-  hSetBinaryMode out False
-  hSetBinaryMode err False
-  hPutStrLn inp (":l " ++ (intercalate [pathSeparator] ["app", "Main.hs"]))
-  hPutStrLn inp "set prompt \">\""
-  hFlush inp
-  clearHandle out
+  (inp, out, err, pid) <- setupState
   return (State {
     ghciInput = inp
   , ghciOutput = out
