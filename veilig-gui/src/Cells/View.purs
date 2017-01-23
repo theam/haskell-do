@@ -1,16 +1,11 @@
-module Cells.View
-  ( cellsDisplay
-  , addTextCellButton
-  , addCodeCellButton
-  )
-where
+module Cells.View where
 
-import Prelude
+import Prelude (const, map, show, ($), (<<<), (<>))
 
-import Cells.Types
-import Pux.Html
-import Pux.Html.Attributes
-import Pux.Html.Events
+import Cells.Types (Action(..), Cell, CellType(..), State, cellContent, cellId, cellType, cells)
+import Pux.Html (Html, a, code, li, pre, text, textarea, ul)
+import Pux.Html.Attributes (className, defaultValue, href, id_)
+import Pux.Html.Events (onClick, onInput)
 import Data.Lens as Lens
 
 
@@ -27,7 +22,7 @@ renderTextCell c =
         , className "text-cell"
         ]
         [ textarea
-            [ id_          $ show cellId
+            [ id_          $ show cId
             , onInput      $ (\ev -> SaveContent cId ev.target.value)
             , defaultValue $ Lens.view cellContent c
             ] []
@@ -38,11 +33,12 @@ renderTextCell c =
 renderCodeCell :: Cell -> Html Action
 renderCodeCell c = wrapper $ 
     textarea
-        [ onInput      $ SaveContent cId
+        [ onInput      $ (\ev -> SaveContent cId ev.target.value)
         , id_          $ show cId
         , defaultValue $ Lens.view cellContent c
         ] []
   where
+    cId = Lens.view cellId c
     wrapper content = li [] [ pre [] [ code [] [ content ] ] ]
 
 renderCells :: State -> Array (Html Action)

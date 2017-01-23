@@ -1,20 +1,14 @@
-module Cells.Foreign
-  ( CodeEditor(..)
-  , MarkdownEditor
-  , Configuration
-  , makeCodeEditor
-  , makeTextEditor
-  )
-where
+module Cells.Foreign where
 
 import Prelude
 import Data.Tuple
 import Data.Foreign.Callback
+import Cells.Types
 import Control.Monad.Eff (Eff)
+import Control.Monad.Eff.Class (liftEff)
+import DOM (DOM)
 import Data.Function.Uncurried (Fn1)
 import Signal.Channel (send, Channel, CHANNEL)
-import DOM (DOM)
-import Cells.Types
 
 -- | The reference to a CodeMirror editor
 foreign import data CodeEditor :: *
@@ -57,14 +51,14 @@ foreign import _onChange ::
     Callback1 a Unit ->
     Eff ( dom :: DOM | e) Unit
 
-makeCodeEditor :: ∀ eff . Channel Action -> Int -> Eff ( channel :: CHANNEL, codemirror :: CODEMIRROR | eff ) Action
+makeCodeEditor :: ∀ eff . Channel Action -> CellId -> Eff ( channel :: CHANNEL, dom :: DOM | eff ) Action
 makeCodeEditor chan i = do
-    editor <- liftEff $ fromTextArea (show i) { mode : "haskell" }
-    onChange editor chan (\code -> CheckCode i code)
+    editor <- liftEff $ fromTextAreaCodeEditor (show i) { mode : "haskell" }
+    onChange editor chan (\code -> SaveContent i code)
     pure NoOp
 
-makeTextEditor :: ∀ eff . Channel Action -> Int -> Eff (channel :: CHANNEL, codemirror :: CODEMIRROR | eff ) Action
+makeTextEditor :: ∀ eff . Channel Action -> CellId -> Eff (channel :: CHANNEL, dom :: DOM | eff ) Action
 makeTextEditor chan i = do
     editor <- fromTextAreaMarkdownEditor (show i)
-    onChange editor.codemirror chan (\txt -> CheckCode i txt)
+    onChange editor.codemirror chan (\txt -> SaveContent i txt)
     pure NoOp

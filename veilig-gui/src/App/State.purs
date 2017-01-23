@@ -1,4 +1,4 @@
-module State where
+module App.State where
 
 import Prelude
 
@@ -6,7 +6,8 @@ import Cells.State   as Cells
 import Cells.Types   as Cells
 import Columns.State as Columns
 import Columns.Types as Columns
-import Types
+import App.Types     as App
+import Notebook.Types
 import Data.Array
 import Data.Lens
 import Data.Lens.Index
@@ -18,7 +19,6 @@ import Control.Monad.Aff
 import Control.Monad.Eff
 import WebSocket
 import Data.Either
-import Editor.CodeMirror
 import Data.Tuple
 import Data.String as S
 import Control.Monad.Eff.Class (liftEff)
@@ -35,7 +35,7 @@ initialNotebook = Notebook
   , subtitle: ""
   , author: ""
   , date: ""
-  , cells: [] :: Array Cell
+  , cells: [] :: Array Cells.Cell
   , console: ">"
   }
 
@@ -44,7 +44,7 @@ decodeReceived s = case jsonParser s of
     Right j -> j
     Left _ -> fromString ""
 
-initialAppState :: Channel Action -> String -> ∀ e. Eff (err::EXCEPTION, ws::WEBSOCKET|e) AppState
+initialAppState :: ∀ e. Channel App.Action -> String -> Eff (err::EXCEPTION, ws::WEBSOCKET|e) App.State
 initialAppState chan url = do
     connection@(Connection ws) <- newWebSocket (URL url) []
     ws.onopen $= \event -> do
@@ -54,14 +54,13 @@ initialAppState chan url = do
         let nb = decodeJson (decodeReceived received) :: Either String Notebook
         case nb of
             Left s ->
-                send chan (NoOp :: Action)
+                send chan (NoOp :: App.Action)
             Right n ->
-                send chan ((UpdateNotebook n) :: Action)
+                send chan ((UpdateNotebook n) :: App.Action)
     pure $ AppState
         { notebook: initialNotebook
         , activeChannel : chan
         , socket : connection
-        , consoleBuffer : ""
         }
 
 updateNotebook :: Notebook -> AppState -> AppState
@@ -74,16 +73,10 @@ update :: Action -> AppState -> EffModel AppState Action (ws :: WEBSOCKET, codem
 update (CellAction action) as = Cells.update action (view cellsState as)
 update (ColumnsAction action) as = Columns.update action (view columnsState as)
 update (ConsoleAction action) as = ConsoleAction.update action (view consoleState as)
+update (BackendConnectionAction action) as = BackendConnection.update action (view backendConnectionState as)
 
-update CheckNotebook as =
-    { state: as
-    , effects: [ do
-        let as' = ((_notebook <<< _console) .~ (view _consoleBuffer as)) as
-        liftEff $ checkNotebook (view _socket as') (view _notebook as')
-      ]
-    }
+
 update (UpdateNotebook receivedNotebook) appState = noEffects $ updateNotebook receivedNotebook appState
-update (AddToConsole consoleText) appState = noEffects $ addToConsole consoleText appState
 update NoOp appState = noEffects $ appState
 
 checkNotebook :: ∀ eff . Connection -> Notebook -> Eff ( ws :: WEBSOCKET, err :: EXCEPTION | eff ) Action

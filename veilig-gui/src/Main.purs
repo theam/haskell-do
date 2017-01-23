@@ -1,7 +1,7 @@
 module Main where
 
 import Prelude
-import State
+import App.State as App
 import Types
 import WebSocket
 import Signal
@@ -12,15 +12,15 @@ import Control.Monad.Eff.Exception (EXCEPTION)
 import Control.Monad.Eff.Var (($=))
 import Data.Either (Either(Left))
 import Data.Maybe (Maybe(Nothing))
-import Editor.CodeMirror (CODEMIRROR)
 import Pux (CoreEffects, renderToDOM, fromSimple, start)
 import Signal.Channel (subscribe, channel, CHANNEL)
+import DOM
 import View (view)
 
-main :: Eff (CoreEffects (ws :: WEBSOCKET, codemirror :: CODEMIRROR)) Unit
+main :: Eff (CoreEffects (ws :: WEBSOCKET, dom :: DOM)) Unit
 main = do
     wsInput <- channel NoOp
-    appState <- initialAppState wsInput "ws://127.0.0.1:3000"
+    appState <- App.initialAppState wsInput "ws://127.0.0.1:3000"
     let wsSignal = subscribe wsInput :: Signal Action
     app <- start
         { initialState: appState

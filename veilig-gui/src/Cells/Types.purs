@@ -1,6 +1,7 @@
 module Cells.Types where
 
-import Prelude (class Eq, ($), (/=), (<<<), (<>))
+import Data.Show (show)
+import Prelude (class Eq, class Show, ($), (/=), (<<<), (<>))
 
 import Data.Maybe (fromMaybe)
 import Data.Generic (class Generic)
@@ -51,6 +52,8 @@ newtype CellId = CellId Int
 
 derive instance genericCellId :: Generic CellId
 derive instance eqCellId :: Eq CellId
+instance showCellId :: Show CellId where
+    show (CellId i) = show i
 
 data Cell = Cell
     { _cellType    :: CellType
