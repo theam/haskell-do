@@ -3,6 +3,7 @@ module App.State where
 import Prelude
 
 
+import Cells.Types as Cells
 import Cells.State (update) as Cells
 import Columns.State as Columns
 import Columns.Types as Columns
@@ -15,6 +16,15 @@ import Notebook.Types
 
 import Pux
 import Global.Effects
+
+initialState :: Cells.State -> Columns.State -> BackendConnection.State Notebook -> Console.State -> State
+initialState cellsState columnsState backendConnectionState consoleState =
+    { cellsState : cellsState
+    , columnsState : {}
+    , backendConnectionState : backendConnectionState
+    , consoleState : consoleState
+    }
+
 
 update :: Action -> State -> EffModel State Action GlobalEffects
 update (CellsAction action) state =

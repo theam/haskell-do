@@ -19,3 +19,7 @@ body {
     background: transparent;
     border: none;
 }
+
+.hidden-col {
+    margin-left: "100%";
+}

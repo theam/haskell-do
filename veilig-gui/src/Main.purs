@@ -1,33 +1,47 @@
 module Main where
 
 import Prelude
-import App.State as App
-import App.Types
-import WebSocket
-import Signal
-import Control.Monad.Aff (Aff)
-import Control.Monad.Aff.AVar (AVAR)
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Exception (EXCEPTION)
-import Control.Monad.Eff.Var (($=))
-import Data.Either (Either(Left))
-import Data.Maybe (Maybe(Nothing))
-import Pux (CoreEffects, renderToDOM, fromSimple, start)
-import Signal.Channel (subscribe, channel, CHANNEL)
-import DOM
-import App.View (view)
 
-{- Lets omit this right now }
-main :: Eff (CoreEffects (ws :: WEBSOCKET, dom :: DOM)) Unit
+import Notebook.Types
+import App.Types
+import App.State as App
+import App.View as App
+import BackendConnection.Types as BackendConnection
+import BackendConnection.State as BackendConnection
+import Cells.Types as Cells
+import Cells.State as Cells
+import Console.Types as Console
+import Console.State as Console
+import Columns.Types as Columns
+import Columns.State as Columns
+
+import WebSocket
+import DOM
+import Signal
+import Control.Monad.Eff (Eff)
+import Global.Effects (GlobalEffects)
+import Pux (CoreEffects, renderToDOM, fromSimple, start)
+import Signal.Channel (subscribe, channel, CHANNEL, Channel)
+
+main :: Eff (CoreEffects GlobalEffects) Unit
 main = do
-    wsInput <- channel NoOp
-    appState <- App.initialAppState wsInput "ws://127.0.0.1:3000"
-    let wsSignal = subscribe wsInput :: Signal Action
+    cellsChannel <- channel Cells.NoOp
+    backendConnectionChannel <- channel (BackendConnection.NoOp :: BackendConnection.Action Notebook)
+    consoleChannel <- channel Console.NoOp
+    backendConnectionState <- BackendConnection.initialState backendConnectionChannel (URL "ws://127.0.0.1:3000")
+    let cellsState             = Cells.initialState cellsChannel
+        consoleState           = Console.initialState consoleChannel
+        inputSignals = 
+            [ cellsChannel `mapSub` CellsAction
+            , backendConnectionChannel `mapSub` BackendConnectionAction
+            ]
     app <- start
-        { initialState: appState
-        , update: update
-        , view: view
-        , inputs: [wsSignal]
+        { initialState : App.initialState cellsState {} backendConnectionState consoleState
+        , update : App.update
+        , view : App.view
+        , inputs : inputSignals
         }
     renderToDOM "#app" app.html
-- end -}
+
+mapSub :: forall a . Channel a -> (a -> Action) -> Signal Action
+mapSub chan act = map act $ subscribe chan

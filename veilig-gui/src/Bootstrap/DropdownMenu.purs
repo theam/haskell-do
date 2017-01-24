@@ -11,7 +11,7 @@ view icon contents =
   li
     [ className "dropdown" ]
     [ a
-        [ className $ "dropdown-toggle glyphicon" <> show icon
+        [ className $ "dropdown-toggle glyphicon " <> show icon
         , attr "data-toggle" "dropdown"
         ]
         [ text "" ]

@@ -1,6 +1,6 @@
 module Columns.View where
 
-import Prelude (const, ($))
+import Prelude (const, ($), (<>))
 
 import Pux.Html (Html, a, div, nav, text)
 import Pux.Html.Attributes (className, href, id_, style)
@@ -10,7 +10,7 @@ import Columns.Types (Action(..), State)
 
 columnStyle :: Array (Tuple String String)
 columnStyle =
-    [ Tuple "transition" "all 2s" ]
+    [ Tuple "transition" "all 0.05s" ]
 
 view :: ∀ action . Html action -> Html action -> Html action
 view leftSide rightSide =
@@ -20,7 +20,7 @@ view leftSide rightSide =
             [ className "row" ]
             [ div
                 [ id_ "right-column"
-                , style columnStyle
+                , style $ columnStyle
                 , className "col-lg-4 col-lg-push-8"
                 ]
                 [ nav
@@ -29,7 +29,7 @@ view leftSide rightSide =
                 ]
             , div
                 [ id_ "left-column"
-                , style columnStyle
+                , style columnStyle 
                 , className "col-lg-8 col-lg-pull-4"
                 ]
                 [ leftSide ]
