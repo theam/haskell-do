@@ -63,6 +63,10 @@ update (RemoveCell cId) s             =
     noEffects 
     $ removeCell cId s
 
+update (SetCurrentCell cId) s =
+    noEffects
+    $ s { currentCell = cId }
+
 update NoOp s                         = 
     noEffects
     $ s

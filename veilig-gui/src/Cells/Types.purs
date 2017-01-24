@@ -6,7 +6,7 @@ import Prelude (class Eq, class Show, ($), (/=), (<<<), (<>))
 import Data.Maybe (fromMaybe)
 import Data.Generic (class Generic)
 import Signal.Channel (Channel)
-import Data.Array (dropWhile, filter, length, tail, takeWhile)
+import Data.Array (dropWhile, filter, length, tail, takeWhile, foldr, (:))
 import Data.Argonaut (class DecodeJson, class EncodeJson, gDecodeJson, gEncodeJson)
 
 defaultCellText :: String
@@ -19,6 +19,7 @@ data Action
     | RemoveCell     CellId
     | RenderTextCell CellId
     | RenderCodeCell CellId
+    | SetCurrentCell CellId
     | NoOp
 
 type State = 
@@ -35,7 +36,8 @@ type State =
 insertAfter :: CellId -> Cell -> State -> State
 insertAfter cId c s = s { cells = firstHalf <> [c] <> secondHalf }
   where
-    firstHalf = takeWhile cellIdIsNotTheWanted s.cells
+    takeWhileIncluding p = foldr (\x ys -> if p x then x : ys else [x]) []
+    firstHalf = takeWhileIncluding cellIdIsNotTheWanted s.cells
     secondHalf = fromMaybe [] <<< tail $ dropWhile cellIdIsNotTheWanted s.cells
     cellIdIsNotTheWanted (Cell incomingCell) = incomingCell.cellId /= cId
 

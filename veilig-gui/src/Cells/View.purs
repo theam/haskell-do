@@ -20,6 +20,7 @@ renderTextCell (Cell c) =
     li
         [ id_     $ "outer-" <> show cId
         , className "text-cell"
+        , onClick (const $ SetCurrentCell cId)
         ]
         [ textarea
             [ id_          $ show cId
@@ -39,7 +40,7 @@ renderCodeCell (Cell c) = wrapper $
         ] []
   where
     cId = c.cellId
-    wrapper content = li [] [ pre [] [ code [] [ content ] ] ]
+    wrapper content = li [] [ pre [] [ code [onClick (const $ SetCurrentCell cId)] [ content ] ] ]
 
 renderCells :: State -> Array (Html Action)
 renderCells s = map renderCell s.cells
