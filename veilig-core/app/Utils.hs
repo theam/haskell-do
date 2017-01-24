@@ -1,5 +1,9 @@
 module Utils ( clearHandle
-             , notebookFilePath) where
+             , notebookFilePath
+             , processAction
+             , setupState
+             , loadProject
+             , createNewProject ) where
 
 import GHC.IO.Handle
 import System.IO
