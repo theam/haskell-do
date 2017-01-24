@@ -1,12 +1,17 @@
 module App.State where
 
 import Prelude
+import Data.Traversable (traverse)
 
 import Cells.State   as Cells
 import Cells.Types   as Cells
 import Columns.State as Columns
 import Columns.Types as Columns
-import App.Types     as App
+import Console.State as Console
+import Console.Types as Console
+import BackendConnection.State as BackendConnection
+import BackendConnection.Types as BackendConnection
+import App.Types
 import Notebook.Types
 import Data.Array
 import Data.Lens
@@ -28,6 +33,8 @@ import Data.Lens.Traversal (traversed)
 import Pux (noEffects)
 import Signal.Channel (CHANNEL, send, Channel)
 import Data.Argonaut hiding ((:=))
+import DOM
+import Pux
 
 initialNotebook :: Notebook
 initialNotebook = Notebook
@@ -39,53 +46,26 @@ initialNotebook = Notebook
   , console: ">"
   }
 
-decodeReceived :: String -> Json
-decodeReceived s = case jsonParser s of
-    Right j -> j
-    Left _ -> fromString ""
-
-initialAppState :: ∀ e. Channel App.Action -> String -> Eff (err::EXCEPTION, ws::WEBSOCKET|e) App.State
-initialAppState chan url = do
-    connection@(Connection ws) <- newWebSocket (URL url) []
-    ws.onopen $= \event -> do
-        ws.send (Message "HaskellDO:Client")
-    ws.onmessage $= \event -> do
-        let received = runMessage (runMessageEvent event)
-        let nb = decodeJson (decodeReceived received) :: Either String Notebook
-        case nb of
-            Left s ->
-                send chan (NoOp :: App.Action)
-            Right n ->
-                send chan ((UpdateNotebook n) :: App.Action)
-    pure $ AppState
-        { notebook: initialNotebook
-        , activeChannel : chan
-        , socket : connection
-        }
-
-updateNotebook :: Notebook -> AppState -> AppState
-updateNotebook n (AppState as) =
-    (_totalCells .~ countCellsInNotebook updatedNotebook + 1) updatedNotebook
-  where
-    updatedNotebook = AppState $ as { notebook = n }
-
-update :: Action -> AppState -> EffModel AppState Action (ws :: WEBSOCKET, codemirror :: CODEMIRROR)
-update (CellAction action) as = Cells.update action (view cellsState as)
-update (ColumnsAction action) as = Columns.update action (view columnsState as)
-update (ConsoleAction action) as = ConsoleAction.update action (view consoleState as)
-update (BackendConnectionAction action) as = BackendConnection.update action (view backendConnectionState as)
-
-
-update (UpdateNotebook receivedNotebook) appState = noEffects $ updateNotebook receivedNotebook appState
+update :: Action -> State -> EffModel State Action (ws :: WEBSOCKET, dom :: DOM)
+update (CellsAction action) as = updateCells as $ Cells.update action (view cellsState as)
+update (ColumnsAction action) as           = mapEffects ColumnsAction $ Columns.update action (view columnsState as)
+update (ConsoleAction action) as           = mapEffects ConsoleAction $ Console.update action (view consoleState as)
+update (BackendConnectionAction action) as = mapEffects BackendConnectionAction $ BackendConnection.update action (view backendConnectionState as)
 update NoOp appState = noEffects $ appState
 
-checkNotebook :: ∀ eff . Connection -> Notebook -> Eff ( ws :: WEBSOCKET, err :: EXCEPTION | eff ) Action
-checkNotebook (Connection ws) n = do
-    let s = encodeJson n
-    ws.send (Message $ show s) *> pure NoOp
-
-addToConsole :: String -> AppState -> AppState
-addToConsole consoleText (AppState as) =
-    AppState $ as { consoleBuffer = consoleText }
+updateCells :: ∀ action substate eff . State -> EffModel Cells.State action eff -> EffModel State Action eff
+updateCells st subState =
+    { state : (cellsState .~ subst) st
+    , effects  : mapEffAction CellsAction ?what
+    }
   where
-    input = Str.drop 1 $ Str.dropWhile (\c -> c /= '>') consoleText
+    subst = subState.state
+    subeffs = subState.effects
+
+mapEffAction :: ∀ eff subaction superaction .
+              (subaction -> superaction) ->
+              Array (Aff eff subaction) ->
+              Array (Aff eff superaction)
+mapEffAction superActionConstructor = map convertToSuperAction
+  where
+    convertToSuperAction subAction = subAction >>= (\sa -> pure $ superActionConstructor sa)
