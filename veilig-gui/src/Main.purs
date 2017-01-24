@@ -2,7 +2,7 @@ module Main where
 
 import Prelude
 import App.State as App
-import Types
+import App.Types
 import WebSocket
 import Signal
 import Control.Monad.Aff (Aff)
@@ -15,8 +15,9 @@ import Data.Maybe (Maybe(Nothing))
 import Pux (CoreEffects, renderToDOM, fromSimple, start)
 import Signal.Channel (subscribe, channel, CHANNEL)
 import DOM
-import View (view)
+import App.View (view)
 
+{- Lets omit this right now }
 main :: Eff (CoreEffects (ws :: WEBSOCKET, dom :: DOM)) Unit
 main = do
     wsInput <- channel NoOp
@@ -29,3 +30,4 @@ main = do
         , inputs: [wsSignal]
         }
     renderToDOM "#app" app.html
+- end -}

@@ -14,12 +14,11 @@ view s =
         [ className "console", id_ "consoleWindow"]
         [ code
             []
-            [ text $ consoleCode s ]
+            [ text $ s.buffer ]
         , input 
             [id_ "consoleInput", onKeyPress sendConsole, onChange updateConsole ]
             []
         ]
   where
-    consoleCode      = Lens.view buffer 
-    sendConsole   ev = if ev.charCode == 13 then (Send $ consoleCode s) else NoOp
+    sendConsole   ev = if ev.charCode == 13 then (Send s.buffer) else NoOp
     updateConsole ev = Add ev.target.value

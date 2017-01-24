@@ -2,7 +2,7 @@ module Cells.View where
 
 import Prelude (const, map, show, ($), (<<<), (<>))
 
-import Cells.Types (Action(..), Cell, CellType(..), State, cellContent, cellId, cellType, cells)
+import Cells.Types
 import Pux.Html (Html, a, code, li, pre, text, textarea, ul)
 import Pux.Html.Attributes (className, defaultValue, href, id_)
 import Pux.Html.Events (onClick, onInput)
@@ -10,13 +10,13 @@ import Data.Lens as Lens
 
 
 renderCell :: Cell -> Html Action
-renderCell c =
-    case Lens.view cellType c of
-        TextCell -> renderTextCell c
-        CodeCell -> renderCodeCell c
+renderCell (Cell c) =
+    case c.cellType of
+        TextCell -> renderTextCell (Cell c)
+        CodeCell -> renderCodeCell (Cell c)
 
 renderTextCell :: Cell -> Html Action
-renderTextCell c =
+renderTextCell (Cell c) =
     li
         [ id_     $ "outer-" <> show cId
         , className "text-cell"
@@ -24,25 +24,25 @@ renderTextCell c =
         [ textarea
             [ id_          $ show cId
             , onInput      $ (\ev -> SaveContent cId ev.target.value)
-            , defaultValue $ Lens.view cellContent c
+            , defaultValue $ c.cellContent
             ] []
         ]
   where
-    cId = Lens.view cellId c
+    cId = c.cellId
 
 renderCodeCell :: Cell -> Html Action
-renderCodeCell c = wrapper $ 
+renderCodeCell (Cell c) = wrapper $ 
     textarea
         [ onInput      $ (\ev -> SaveContent cId ev.target.value)
         , id_          $ show cId
-        , defaultValue $ Lens.view cellContent c
+        , defaultValue $ c.cellContent
         ] []
   where
-    cId = Lens.view cellId c
+    cId = c.cellId
     wrapper content = li [] [ pre [] [ code [] [ content ] ] ]
 
 renderCells :: State -> Array (Html Action)
-renderCells = map renderCell <<< Lens.view cells
+renderCells s = map renderCell s.cells
 
 cellsDisplay :: State -> Html Action
 cellsDisplay appState = ul [] (renderCells appState)

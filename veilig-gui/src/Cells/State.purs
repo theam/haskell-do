@@ -1,38 +1,38 @@
 module Cells.State where
 
 import Prelude
-import Control.Monad.Eff.Class (liftEff)
-
 import Pux
 import Cells.Types
 import Cells.Foreign
 import Data.Lens
 import DOM
 import Signal.Channel
+import Control.Monad.Eff.Class (liftEff)
+import Global.Effects
 
 initialState :: Channel Action -> State
-initialState chan = State
-    { _currentCell   : CellId 0
-    , _cells         : [] :: Array Cell
-    , _editorChanges : chan
+initialState chan = 
+    { currentCell   : CellId 0
+    , cells         : [] :: Array Cell
+    , editorChanges : chan
     }
 
 addCodeCell :: State -> State
-addCodeCell s = insertAfter (view currentCell s) (newCodeCell $ CellId $ totalCells s) s
+addCodeCell s = insertAfter s.currentCell (newCodeCell $ CellId $ totalCells s) s
 
 addTextCell :: State -> State
-addTextCell s = insertAfter (view currentCell s) (newTextCell $ CellId $ totalCells s) s
+addTextCell s = insertAfter s.currentCell (newTextCell $ CellId $ totalCells s) s
 
 saveContent :: CellId -> String -> State -> State
-saveContent cId newContent = over cells (\cell' -> map updateCell cell')
+saveContent cId newContent s = s { cells = map updateCell s.cells }
   where
-    isCorrectCell c = view cellId c == cId
-    updateCell c =
-        if isCorrectCell c
-            then (cellContent .~ newContent) c
-            else c
+    isCorrectCell (Cell c) = c.cellId == cId
+    updateCell (Cell c) =
+        if isCorrectCell (Cell c)
+            then Cell c { cellContent = newContent }
+            else Cell c
 
-update :: Update State Action ( dom :: DOM )
+update :: Update State Action GlobalEffects
 update AddCodeCell s = 
     { state : addCodeCell s
     , effects : [ pure $ RenderCodeCell ( CellId $ totalCells s ) ]
@@ -46,13 +46,13 @@ update AddTextCell s =
 update (RenderCodeCell i) s  =
     s `onlyEffects`
     [ liftEff
-      $ makeCodeEditor (view editorChanges s) i
+      $ makeCodeEditor s.editorChanges i
     ]
 
 update (RenderTextCell i) s  =
     s `onlyEffects`
     [ liftEff
-      $ makeTextEditor (view editorChanges s) i
+      $ makeTextEditor s.editorChanges i
     ]
 
 update (SaveContent cId newContent) s = 

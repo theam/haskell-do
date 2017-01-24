@@ -11,7 +11,6 @@ import Bootstrap.DropdownMenu   as DropdownMenu
 import Bootstrap.TopFixedNavbar as TopFixedNavbar
 import Bootstrap.Glyphicon      (Glyphicon(..))
 
-import Data.Lens                as Lens
 import Pux.Html                 (Html, div, forwardTo)
 
 view :: App.State -> Html App.Action
@@ -20,15 +19,11 @@ view s =
         []
         [ TopFixedNavbar.view 
             [ DropdownMenu.view GlyphiconPlus 
-                [ forwardTo App.CellsAction $ Cells.addTextCellButton cellsSt
-                , forwardTo App.CellsAction $ Cells.addCodeCellButton cellsSt
+                [ forwardTo App.CellsAction $ Cells.addTextCellButton s.cellsState
+                , forwardTo App.CellsAction $ Cells.addCodeCellButton s.cellsState
                 ]
-            , forwardTo App.ColumnsAction $ Columns.toggleColumnsButton columnsSt
+            , forwardTo App.ColumnsAction $ Columns.toggleColumnsButton s.columnsState
             ]
-        , forwardTo App.CellsAction $ Cells.cellsDisplay cellsSt
-        , forwardTo App.ConsoleAction $ Console.view consoleSt
+        , forwardTo App.CellsAction $ Cells.cellsDisplay s.cellsState
+        , forwardTo App.ConsoleAction $ Console.view s.consoleState
         ]
-  where
-    cellsSt = Lens.view App.cellsState s
-    consoleSt = Lens.view App.consoleState s
-    columnsSt = Lens.view App.columnsState s

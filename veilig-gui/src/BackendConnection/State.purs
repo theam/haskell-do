@@ -13,6 +13,7 @@ import Data.Either
 import Pux
 import Data.Lens
 import Control.Monad.Eff
+import Global.Effects
 
 initialState :: ∀ a eff .
                 DecodeJson a =>
@@ -45,7 +46,7 @@ sendMsg :: ∀ a e . Connection -> String -> Eff ( ws :: WEBSOCKET, err :: EXCEP
 sendMsg (Connection ws) msg = 
         ws.send (Message msg) *> pure NoOp
 
-update :: ∀ a . EncodeJson a => Update (State a) (Action a) ( ws:: WEBSOCKET, channel :: CHANNEL, err :: EXCEPTION )
+update :: ∀ a . EncodeJson a => Update (State a) (Action a) GlobalEffects
 update (Send x) s = onlyEffects s $ [do
         let encodedX = encodeJson x
         let ws = view socket s
