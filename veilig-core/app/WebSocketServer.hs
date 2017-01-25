@@ -17,6 +17,8 @@ import Data.Aeson
 import Interpreter
 import Utils
 import GHC.IO.Handle
+import Language.Haskell.GhcMod as GH
+import Language.Haskell.GhcMod.Types
 import System.IO
 import System.Process
 import System.FilePath (pathSeparator)
@@ -26,18 +28,6 @@ broadcast :: Connection -> Text -> IO ()
 broadcast conn msg = do
   T.putStrLn ("Log:" <> cs msg)
   WS.sendTextData conn msg
-
-initializeState :: String -> IO State
-initializeState st = do
-  (inp, out, err, pid) <- setupState
-  return (State {
-    ghciInput = inp
-  , ghciOutput = out
-  , ghciError = err
-  , ghciProcessHandle = pid
-  , notebookProjectName = ProjectName st
-  , notebookDirectory = Directory st
-  , notebookAuthor = Nothing })
 
 application :: State -> WS.ServerApp
 application state pending = do

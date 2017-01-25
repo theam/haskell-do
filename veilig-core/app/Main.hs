@@ -6,6 +6,8 @@ import qualified Network.WebSockets as WS
 import Control.Concurrent
 import System.Environment
 import System.Process
+import Utils
+import Data.IORef
 
 address :: String
 address = "0.0.0.0"
@@ -19,10 +21,13 @@ main = do
   -- ^ The user passes their project's name to the command line
   -- when starting the Veilig server
   -- - Sam
-  state <- initializeState
-  -- ^ can be replaced when frontend ability is in place to call
-  -- functions like createNewNotebook
+  pn <- return $ ProjectName { getProjName = projectname }
+  state <- newIORef State {}
+  createNewProject state pn
+  -- above creates a new project on running the app
+  -- this is placeholder functionality
   -- - Kit
-  WS.runServer address port (application state)
+  state' <- readIORef state
+  WS.runServer address port (application state')
   -- ^ Then we run the application based on our state
   -- - Sam
