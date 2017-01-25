@@ -20,19 +20,18 @@ executable veilig-core-exe
   build-depends:       base
                      , websockets
                      , text
-                     , hint
                      , aeson
-                     , lens
-                     , lens-aeson
-                     , bytestring
                      , string-conversions
+                     , bytestring
                      , mtl
-                     , ghc
                      , filepath
                      , stm
                      , process
-                     , Chart
-                     , Chart-diagrams
+                     , ghc-mod
+  other-modules:       WebSocketServer
+                     , Types
+                     , Interpreter
+                     , Utils
   default-language:    Haskell2010
 
 test-suite veilig-core-test
