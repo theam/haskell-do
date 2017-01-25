@@ -45,7 +45,7 @@ insertAtEnd :: Cell -> State -> State
 insertAtEnd c s = s { cells = s.cells <> [c] }
 
 removeCell :: CellId -> State -> State
-removeCell cId s = s { cells = removedCell }
+removeCell cId s = s { cells = removedCell, currentCell = (CellId 0) }
   where
     removedCell = filter (\(Cell cell) -> cell.cellId /= cId) s.cells
 
