@@ -2,7 +2,7 @@ module Main where
 
 import Prelude
 
-import Notebook.Types
+import Notebook.Types (Notebook)
 import App.Types
 import App.State as App
 import App.View as App
@@ -15,7 +15,7 @@ import Console.State as Console
 import Columns.Types as Columns
 import Columns.State as Columns
 
-import WebSocket
+import WebSocket (URL(..))
 import DOM
 import Signal
 import Control.Monad.Eff (Eff)
@@ -43,5 +43,5 @@ main = do
         }
     renderToDOM "#app" app.html
 
-mapSub :: forall a . Channel a -> (a -> Action) -> Signal Action
+mapSub :: forall subaction action . Channel subaction -> (subaction -> action) -> Signal action
 mapSub chan act = map act $ subscribe chan
