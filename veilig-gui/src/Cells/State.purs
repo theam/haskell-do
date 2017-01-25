@@ -9,6 +9,7 @@ import DOM
 import Signal.Channel
 import Control.Monad.Eff.Class (liftEff)
 import Global.Effects
+import Debug.Trace
 
 initialState :: Channel Action -> State
 initialState chan = 
@@ -18,10 +19,10 @@ initialState chan =
     }
 
 addCodeCell :: State -> State
-addCodeCell s = insertAfter s.currentCell (newCodeCell $ CellId $ totalCells s) s
+addCodeCell s = insertAtEnd (newCodeCell $ CellId $ totalCells s) s
 
 addTextCell :: State -> State
-addTextCell s = insertAfter s.currentCell (newTextCell $ CellId $ totalCells s) s
+addTextCell s = insertAtEnd (newTextCell $ CellId $ totalCells s) s
 
 saveContent :: CellId -> String -> State -> State
 saveContent cId newContent s = s { cells = map updateCell s.cells }
@@ -34,14 +35,18 @@ saveContent cId newContent s = s { cells = map updateCell s.cells }
 
 update :: Update State Action GlobalEffects
 update AddCodeCell s = 
-    { state : addCodeCell s
-    , effects : [ pure $ RenderCodeCell ( CellId $ totalCells s ) ]
+    { state : newState
+    , effects : [ pure $ RenderCodeCell ( CellId $ totalCells s) ]
     }
+  where
+    newState = addCodeCell s
 
 update AddTextCell s = 
-    { state : addTextCell s
-    , effects : [ pure $ RenderTextCell ( CellId $ totalCells s ) ]
+    { state : newState
+    , effects : [ pure $ RenderTextCell ( CellId $ totalCells s) ]
     }
+  where
+    newState = addTextCell s
 
 update (RenderCodeCell i) s  =
     s `onlyEffects`

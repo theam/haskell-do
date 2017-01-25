@@ -47,3 +47,13 @@ exports._onChange = function (editor) {
         }
     }
 }
+
+exports._onClick = function (editor) {
+    return function (callback) {
+        return function () {
+            editor.on('focus', function(newStuff) {
+                return callback();
+            });
+        }
+    }
+}

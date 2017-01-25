@@ -21,7 +21,8 @@
     "purescript-foreign-callbacks": "*",
     "purescript-markdown": "^8.0.1",
     "purescript-pux-css": "^3.1.0",
-    "purescript-d3": "^0.8.1"
+    "purescript-d3": "^0.8.1",
+    "purescript-debug": "^2.0.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^2.0.0"

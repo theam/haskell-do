@@ -1,7 +1,7 @@
 module Cells.Types where
 
 import Data.Show (show)
-import Prelude (class Eq, class Show, ($), (/=), (<<<), (<>))
+import Prelude (class Eq, class Show, ($), (/=), (<<<), (<>), (-))
 
 import Data.Maybe (fromMaybe)
 import Data.Generic (class Generic)
@@ -36,10 +36,13 @@ type State =
 insertAfter :: CellId -> Cell -> State -> State
 insertAfter cId c s = s { cells = firstHalf <> [c] <> secondHalf }
   where
-    takeWhileIncluding p = foldr (\x ys -> if p x then x : ys else [x]) []
-    firstHalf = takeWhileIncluding cellIdIsNotTheWanted s.cells
+    firstHalf = takeWhileOneMore cellIdIsNotTheWanted s.cells
     secondHalf = fromMaybe [] <<< tail $ dropWhile cellIdIsNotTheWanted s.cells
     cellIdIsNotTheWanted (Cell incomingCell) = incomingCell.cellId /= cId
+    takeWhileOneMore p = foldr (\x ys -> if p x then x:ys else [x]) []
+
+insertAtEnd :: Cell -> State -> State
+insertAtEnd c s = s { cells = s.cells <> [c] }
 
 removeCell :: CellId -> State -> State
 removeCell cId s = s { cells = removedCell }

@@ -20,11 +20,9 @@ renderTextCell (Cell c) =
     li
         [ id_     $ "outer-" <> show cId
         , className "text-cell"
-        , onClick (const $ SetCurrentCell cId)
         ]
         [ textarea
             [ id_          $ show cId
-            , onInput      $ (\ev -> SaveContent cId ev.target.value)
             , defaultValue $ c.cellContent
             ] []
         ]
@@ -34,13 +32,12 @@ renderTextCell (Cell c) =
 renderCodeCell :: Cell -> Html Action
 renderCodeCell (Cell c) = wrapper $ 
     textarea
-        [ onInput      $ (\ev -> SaveContent cId ev.target.value)
-        , id_          $ show cId
+        [ id_          $ show cId
         , defaultValue $ c.cellContent
         ] []
   where
     cId = c.cellId
-    wrapper content = li [] [ pre [] [ code [onClick (const $ SetCurrentCell cId)] [ content ] ] ]
+    wrapper content = li [] [ pre [] [ code [] [ content ] ] ]
 
 renderCells :: State -> Array (Html Action)
 renderCells s = map renderCell s.cells
