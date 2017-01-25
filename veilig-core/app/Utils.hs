@@ -1,8 +1,8 @@
 module Utils ( clearHandle
-             , notebookFilePath
              , processAction
              , setupState
              , loadProject
+             , defaultPrograms
              , createNewProject ) where
 
 import GHC.IO.Handle
@@ -10,6 +10,9 @@ import System.IO
 import Types
 import System.FilePath
 import System.Process
+import Data.IORef
+import Language.Haskell.GhcMod
+import Language.Haskell.GhcMod.Types
 import Data.List (intercalate)
 
 -- | Clears the handle of any available input and returns it
@@ -22,15 +25,18 @@ clearHandle out = do
             return (x : xs)
     else pure []
 
--- | Gets the FilePath out of the Notebook
-notebookFilePath :: State -> FilePath
-notebookFilePath note = intercalate [pathSeparator] [getDir $ notebookDirectory note, "app", "Main.hs"]
+defaultPrograms :: Programs
+defaultPrograms =
+  Programs { ghcProgram = "ghc"
+           , ghcPkgProgram = "ghc-pkg"
+           , cabalProgram = "cabal"
+           , stackProgram = "stack" }
 
 -- | Undertakes the given action, producing a new State
-processAction :: ProjectAction -> IO State
-processAction pa = case pa of
-  OpenProject dir -> loadProject dir
-  NewProject pn dir -> createNewProject pn dir
+processAction :: StateVar -> ProjectAction -> IO ()
+processAction sv pa = case pa of
+  OpenProject -> loadProject sv
+  NewProject pn -> createNewProject sv pn
 
 -- | Sets up the initial state
 setupState :: IO (Handle, Handle, Handle, ProcessHandle)
@@ -45,30 +51,22 @@ setupState = do
   clearHandle out
   return (inp, out, err, pid)
 
+loadProject :: StateVar -> IO ()
+loadProject sv = do
+  (inp, out, err, pid) <- setupState
+  (res, _) <- runGhcModT defaultOptions (findCradle defaultPrograms)
+  case res of
+    Right x -> atomicWriteIORef sv $ State {
+        ghciInput = inp
+      , ghciOutput = out
+      , ghciError = err
+      , ghciProcessHandle = pid
+      , notebookCradle = x }
+    Left x -> print x
 
-createNewProject :: ProjectName -> Directory -> IO State
-createNewProject pn dir = do
+
+createNewProject :: StateVar -> ProjectName -> IO ()
+createNewProject sv pn = do
   runInteractiveCommand $ unwords ["stack", "new", getProjName pn]
   runInteractiveCommand $ "cd " ++ (getProjName pn)
-  (inp, out, err, pid) <- setupState
-  return $ State {
-     ghciInput = inp
-  , ghciOutput = out
-  , ghciError = err
-  , ghciProcessHandle = pid
-  , notebookProjectName = pn
-  , notebookDirectory = dir
-  , notebookAuthor = Nothing
-  }
-
-loadProject :: Directory -> IO State
-loadProject dir = do
-  (inp, out, err, pid) <- setupState
-  return (State {
-    ghciInput = inp
-  , ghciOutput = out
-  , ghciError = err
-  , ghciProcessHandle = pid
-  , notebookProjectName = ProjectName $ takeFileName $ getDir dir
-  , notebookDirectory = dir
-  , notebookAuthor = Nothing })
+  loadProject sv

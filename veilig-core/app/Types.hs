@@ -5,8 +5,10 @@ module Types where
 import GHC.Generics
 import Data.Aeson
 import GHC.IO.Handle
+import Language.Haskell.GhcMod (Cradle)
 import System.Process
 import Data.Text
+import Data.IORef
 
 newtype Directory = Directory { getDir :: String }
 newtype ProjectName = ProjectName { getProjName :: String }
@@ -16,9 +18,9 @@ data State = State {
   , ghciOutput :: Handle
   , ghciError :: Handle
   , ghciProcessHandle :: ProcessHandle
-  , notebookProjectName :: ProjectName
-  , notebookDirectory :: Directory
-  , notebookAuthor :: Maybe String }
+  , notebookCradle :: Cradle }
+
+type StateVar = IORef State
 
 data Notebook = Notebook
     { title :: String
@@ -27,6 +29,7 @@ data Notebook = Notebook
     , author :: String
     , cells :: [Cell]
     , console :: String
+    , notebookFilePath :: FilePath
     } deriving (Generic, Show)
 
 instance FromJSON Notebook
@@ -34,8 +37,10 @@ instance ToJSON Notebook where
     toEncoding = genericToEncoding defaultOptions
 
 data ProjectAction
-  = OpenProject Directory
-  | NewProject ProjectName Directory
+  = OpenProject
+  | NewProject ProjectName
+  -- Need to keep track of current file for stack reasons
+  -- ^Kit
 
 data Cell = Cell
     { cellType :: CellType

@@ -19,7 +19,7 @@ main = do
   -- ^ The user passes their project's name to the command line
   -- when starting the Veilig server
   -- - Sam
-  state <- initializeState projectname
+  state <- initializeState
   -- ^ can be replaced when frontend ability is in place to call
   -- functions like createNewNotebook
   -- - Kit

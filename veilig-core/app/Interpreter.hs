@@ -30,11 +30,11 @@ formatNotebook :: Notebook -> Text
 formatNotebook = T.unlines . map getCellText . cells
 
 writeNotebook :: State -> Notebook -> IO ()
-writeNotebook s = T.writeFile (notebookFilePath s) . formatNotebook
+writeNotebook s nb = T.writeFile (notebookFilePath nb) $ formatNotebook nb
 
 loadNotebook :: State -> IO ()
 loadNotebook s = do
-  hPutStrLn (ghciInput s) (":l " ++ notebookFilePath s)
+  hPutStrLn (ghciInput s) (":r")
 
 writeConsole :: State -> Notebook -> IO ()
 writeConsole s n = do
