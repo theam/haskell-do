@@ -5,13 +5,11 @@ module Interpreter
 
 import Types
 import Control.Monad.Trans
-import Language.Haskell.Interpreter
 import Control.Monad
 import Utils
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
-import Data.String.Conversions
 import System.IO
 import System.Process
 import GHC.IO.Handle

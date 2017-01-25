@@ -3,7 +3,6 @@ module WebSocketServer where
 
 import Types
 
-import Language.Haskell.Interpreter
 import Data.Monoid (mappend, (<>))
 import Data.Text (Text)
 import Data.List (intercalate)
@@ -16,7 +15,6 @@ import Network.WebSockets (Connection)
 import Data.String.Conversions
 import Data.Aeson
 import Interpreter
-import GHC
 import Utils
 import GHC.IO.Handle
 import System.IO

@@ -12,6 +12,7 @@ import System.FilePath
 import System.Process
 import Data.List (intercalate)
 
+-- | Clears the handle of any available input and returns it
 clearHandle :: Handle -> IO String
 clearHandle out = do
   test <- hReady out
@@ -21,14 +22,17 @@ clearHandle out = do
             return (x : xs)
     else pure []
 
+-- | Gets the FilePath out of the Notebook
 notebookFilePath :: State -> FilePath
 notebookFilePath note = intercalate [pathSeparator] [getDir $ notebookDirectory note, "app", "Main.hs"]
 
+-- | Undertakes the given action, producing a new State
 processAction :: ProjectAction -> IO State
 processAction pa = case pa of
   OpenProject dir -> loadProject dir
   NewProject pn dir -> createNewProject pn dir
 
+-- | Sets up the initial state
 setupState :: IO (Handle, Handle, Handle, ProcessHandle)
 setupState = do
   (inp, out, err, pid) <- runInteractiveCommand "stack repl"
@@ -40,6 +44,7 @@ setupState = do
   hFlush inp
   clearHandle out
   return (inp, out, err, pid)
+
 
 createNewProject :: ProjectName -> Directory -> IO State
 createNewProject pn dir = do
