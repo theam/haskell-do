@@ -46,23 +46,14 @@ insertAtEnd :: Cell -> State -> State
 insertAtEnd c s = s { cells = s.cells <> [c] }
 
 removeCell :: CellId -> State -> State
-removeCell cId s = s { cells = removedCell, currentCell = (CellId 0) }
+removeCell cId s = s { cells = removedCell, currentCell = 0 }
   where
     removedCell = filter (\(Cell cell) -> cell.cellId /= cId) s.cells
 
 totalCells :: State -> Int
 totalCells s = length s.cells
 
-newtype CellId = CellId Int
-
-derive instance eqCellId :: Eq CellId
-derive instance genericCellId :: Generic CellId
-instance encodeJsonCellId :: EncodeJson CellId where
-    encodeJson = fromString <<< show
-instance decodeJsonCellId :: DecodeJson CellId where
-    decodeJson = gDecodeJson
-instance showCellId :: Show CellId where
-    show (CellId i) = show i
+type CellId = Int
 
 newtype Cell = Cell
     { cellType    :: CellType
@@ -72,7 +63,7 @@ newtype Cell = Cell
 
 instance encodeJsonCell :: EncodeJson Cell where
     encodeJson (Cell c)
-        = "cellId" := show c.cellId
+        = "cellId" := c.cellId
        ~> "cellType" := c.cellType
        ~> "cellContent" := c.cellContent
        ~> jsonEmptyObject

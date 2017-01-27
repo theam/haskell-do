@@ -36,11 +36,7 @@ unpackCells (Notebook n) state =
         , currentCell = newCurrentCell
         }
   where
-    biggerThan (Cells.CellId i) i' = i > i'
-    newCurrentCell =
-        if state.currentCell `biggerThan` length state.cells
-            then Cells.CellId $ length state.cells
-            else state.currentCell
+    newCurrentCell = min state.currentCell (length state.cells)
 
 unpackConsole :: Notebook -> Console.State -> Console.State
 unpackConsole (Notebook n) state =

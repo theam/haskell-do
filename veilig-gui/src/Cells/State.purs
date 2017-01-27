@@ -13,16 +13,16 @@ import Debug.Trace
 
 initialState :: Channel Action -> State
 initialState chan = 
-    { currentCell   : CellId 0
+    { currentCell   : 0
     , cells         : [] :: Array Cell
     , editorChanges : chan
     }
 
 addCodeCell :: State -> State
-addCodeCell s = insertAtEnd (newCodeCell $ CellId $ totalCells s) s
+addCodeCell s = insertAtEnd (newCodeCell $ totalCells s) s
 
 addTextCell :: State -> State
-addTextCell s = insertAtEnd (newTextCell $ CellId $ totalCells s) s
+addTextCell s = insertAtEnd (newTextCell $ totalCells s) s
 
 saveContent :: CellId -> String -> State -> State
 saveContent cId newContent s = s { cells = map updateCell s.cells }
@@ -36,14 +36,14 @@ saveContent cId newContent s = s { cells = map updateCell s.cells }
 update :: Update State Action GlobalEffects
 update AddCodeCell s = 
     { state : newState
-    , effects : [ pure $ RenderCodeCell ( CellId $ totalCells s) ]
+    , effects : [ pure $ RenderCodeCell ( totalCells s) ]
     }
   where
     newState = addCodeCell s
 
 update AddTextCell s = 
     { state : newState
-    , effects : [ pure $ RenderTextCell ( CellId $ totalCells s) ]
+    , effects : [ pure $ RenderTextCell $ totalCells s ]
     }
   where
     newState = addTextCell s
