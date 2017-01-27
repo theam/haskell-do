@@ -30,16 +30,12 @@ main = do
     consoleChannel <- channel Console.NoOp
     backendConnectionState <- BackendConnection.initialState backendConnectionChannel (URL "ws://127.0.0.1:3000")
 
-    let sig = consoleChannel `mapSub` f
-    let sig2 = backendConnectionChannel `mapSub` g
-    let sig3 = cellsChannel `mapSub` CellsAction
-
     let cellsState             = Cells.initialState cellsChannel
         consoleState           = Console.initialState consoleChannel
         inputSignals = 
-            [ sig
-            , sig2
-            , sig3
+            [ consoleChannel `liftAction` buildAndSend
+            , backendConnectionChannel `liftAction` updateStateAfterReceiving
+            , cellsChannel `liftAction` CellsAction
             ]
     app <- start
         { initialState : App.initialState cellsState {} backendConnectionState consoleState
@@ -49,13 +45,13 @@ main = do
         }
     renderToDOM "#app" app.html
 
-f :: Console.Action -> Action
-f Console.PackAndSendToBackend = BuildAndSend
-f _ = NoOp
+buildAndSend :: Console.Action -> Action
+buildAndSend Console.PackAndSendToBackend = BuildAndSend
+buildAndSend _ = NoOp
 
-g :: BackendConnection.Action Notebook -> Action
-g (BackendConnection.Receive n) = UpdateState n
-g _ = NoOp
+updateStateAfterReceiving :: BackendConnection.Action Notebook -> Action
+updateStateAfterReceiving (BackendConnection.Receive n) = UpdateState n
+updateStateAfterReceiving _ = NoOp
 
-mapSub :: forall subaction action . Channel subaction -> (subaction -> action) -> Signal action
-mapSub chan act = map act $ subscribe chan
+liftAction :: forall subaction action . Channel subaction -> (subaction -> action) -> Signal action
+liftAction chan act = map act $ subscribe chan
