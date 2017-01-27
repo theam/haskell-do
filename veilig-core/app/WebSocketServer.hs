@@ -19,7 +19,13 @@ import GHC
 import Utils
 import GHC.IO.Handle
 import System.IO
+import System.IO.Unsafe
 import System.Process
+
+spy :: Show a => a -> a
+spy x = unsafePerformIO $ do
+  print x
+  return x
 
 broadcast :: Connection -> Text -> IO ()
 broadcast conn msg = do
@@ -60,4 +66,4 @@ talk conn state = forever $ do
   msg <- WS.receiveData conn
   maybe (distress conn)
         ((\notebook -> notebookInterpreter notebook state) >=> sendNotebook conn)
-        (decode msg)
+        (decode $ spy msg)
