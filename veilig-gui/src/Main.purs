@@ -30,13 +30,12 @@ main = do
     consoleChannel <- channel Console.NoOp
     backendConnectionState <- BackendConnection.initialState backendConnectionChannel (URL "ws://127.0.0.1:3000")
 
-    
+    let sig = consoleChannel `mapSub` f
 
     let cellsState             = Cells.initialState cellsChannel
         consoleState           = Console.initialState consoleChannel
         inputSignals = 
-            [ cellsChannel `mapSub` CellsAction
-            , backendConnectionChannel `mapSub` BackendConnectionAction
+            [ sig
             ]
     app <- start
         { initialState : App.initialState cellsState {} backendConnectionState consoleState
@@ -45,6 +44,10 @@ main = do
         , inputs : inputSignals
         }
     renderToDOM "#app" app.html
+
+f :: Console.Action -> Action
+f Console.PackAndSendToBackend = BuildAndSend
+f _ = NoOp
 
 mapSub :: forall subaction action . Channel subaction -> (subaction -> action) -> Signal action
 mapSub chan act = map act $ subscribe chan

@@ -13,6 +13,7 @@ import BackendConnection.State as BackendConnection
 import BackendConnection.Types as BackendConnection
 import App.Types
 import Notebook.Types
+import Notebook.Packer as Notebook
 
 import Pux
 import Global.Effects
@@ -47,4 +48,9 @@ update (BackendConnectionAction action) state =
   # mapState (state { backendConnectionState = _ })
   # mapEffects BackendConnectionAction
 
-update _ appState = noEffects $ appState
+update BuildAndSend state = onlyEffects state [ do
+    let notebook = Notebook.pack state.cellsState state.consoleState
+    pure $ BackendConnectionAction (BackendConnection.Send notebook)
+  ]
+
+update NoOp appState = noEffects $ appState

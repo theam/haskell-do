@@ -8,7 +8,7 @@ import Data.Lens
 data Action
     = Add String
     | Send String
-    | PackAndSendToBackend String
+    | PackAndSendToBackend
     | NoOp
 
 type State = 

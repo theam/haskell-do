@@ -1,19 +1,20 @@
 module BackendConnection.State where
 
 import Prelude
-import Control.Monad.Eff.Class (liftEff)
-import Control.Monad.Eff.Exception (EXCEPTION)
-
-import BackendConnection.Types (Action(..), State(..), socket)
 import Signal.Channel
 import WebSocket
-import Control.Monad.Eff.Var (($=))
 import Data.Argonaut
 import Data.Either
 import Pux
 import Data.Lens
 import Control.Monad.Eff
 import Global.Effects
+import BackendConnection.Types (Action(..), State(..), socket)
+import Control.Monad.Eff.Class (liftEff)
+import Control.Monad.Eff.Console (log)
+import Control.Monad.Eff.Exception (EXCEPTION)
+import Control.Monad.Eff.Var (($=))
+import Debug.Trace (spy)
 
 initialState :: ∀ a eff .
                 DecodeJson a =>
@@ -50,6 +51,6 @@ update :: ∀ a . EncodeJson a => Update (State a) (Action a) GlobalEffects
 update (Send x) s = onlyEffects s $ [do
         let encodedX = encodeJson x
         let ws = view socket s
-        liftEff $ sendMsg ws (show encodedX)
+        liftEff $ sendMsg ws (spy $ show encodedX)
     ]
 update _ s = noEffects $ s

@@ -15,7 +15,7 @@ data Action
     | ColumnsAction Columns.Action
     | ConsoleAction Console.Action
     | BackendConnectionAction (BackendConnection.Action Notebook)
-    | CheckNotebook
+    | BuildAndSend
     | NoOp
 
 type State = 

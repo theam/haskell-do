@@ -22,7 +22,7 @@ update (Add content) s =
 
 update (Send _) s = 
     onlyEffects s [ do
-            liftEff $ send s.consoleChannel (PackAndSendToBackend s.buffer)
+            liftEff $ send s.consoleChannel PackAndSendToBackend
             pure NoOp
         ]
 

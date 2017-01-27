@@ -1,13 +1,14 @@
 module Cells.Types where
 
-import Data.Show (show)
-import Prelude (class Eq, class Show, ($), (/=), (<<<), (<>), (-))
-
-import Data.Maybe (fromMaybe)
-import Data.Generic (class Generic)
-import Signal.Channel (Channel)
+import Prelude
+import Data.Argonaut
+import Data.Argonaut.Decode.Class (gDecodeJson)
 import Data.Array (dropWhile, filter, length, tail, takeWhile, foldr, (:))
-import Data.Argonaut (class DecodeJson, class EncodeJson, gDecodeJson, gEncodeJson)
+import Data.Either (Either(Left))
+import Data.Generic (class Generic)
+import Data.Maybe (fromMaybe)
+import Data.Show (show)
+import Signal.Channel (Channel)
 
 defaultCellText :: String
 defaultCellText = "Type here"
@@ -54,24 +55,35 @@ totalCells s = length s.cells
 
 newtype CellId = CellId Int
 
-derive instance genericCellId :: Generic CellId
 derive instance eqCellId :: Eq CellId
+derive instance genericCellId :: Generic CellId
+instance encodeJsonCellId :: EncodeJson CellId where
+    encodeJson = fromString <<< show
+instance decodeJsonCellId :: DecodeJson CellId where
+    decodeJson = gDecodeJson
 instance showCellId :: Show CellId where
     show (CellId i) = show i
 
-data Cell = Cell
+newtype Cell = Cell
     { cellType    :: CellType
     , cellId      :: CellId
     , cellContent :: String
     }
 
-derive instance genericCell :: Generic Cell
-
 instance encodeJsonCell :: EncodeJson Cell where
-    encodeJson = gEncodeJson
+    encodeJson (Cell c)
+        = "cellId" := show c.cellId
+       ~> "cellType" := c.cellType
+       ~> "cellContent" := c.cellContent
+       ~> jsonEmptyObject
 
 instance decodeJsonCell :: DecodeJson Cell where
-    decodeJson = gDecodeJson
+    decodeJson json = do
+        o <- decodeJson json
+        cellType <- o .? "cellType"
+        cellId <- o .? "cellId"
+        cellContent <- o .? "cellContent"
+        pure $ Cell { cellType, cellId, cellContent }
 
 newCell :: CellType -> String -> CellId -> Cell
 newCell cType cContent id' = Cell
@@ -90,10 +102,14 @@ data CellType
     = TextCell
     | CodeCell
 
-derive instance genericCellType :: Generic CellType
-
 instance encodeJsonCellType :: EncodeJson CellType where
-    encodeJson = gEncodeJson
+    encodeJson TextCell = fromString "TextCell"
+    encodeJson CodeCell = fromString "CodeCell"
 
 instance decodeJsonCellType :: DecodeJson CellType where
-    decodeJson = gDecodeJson
+    decodeJson json = do
+      s <- decodeJson json
+      case s of
+        "TextCell"    -> pure TextCell
+        "CodeCell"    -> pure CodeCell
+        _             -> Left "Could not decode display Cell"
