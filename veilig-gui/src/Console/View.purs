@@ -1,31 +1,24 @@
 module Console.View where
 
 import Prelude hiding (div)
+
 import Pux.Html
 import Pux.Html.Attributes
 import Pux.Html.Events
-import Types
-import Data.Lens as L
+import Data.Lens as Lens
+import Console.Types
 
-view :: AppState -> Html Action
-view appState = 
-    let 
-        cde = L.view (_notebook <<< _console) appState
-        inp = L.view _consoleBuffer appState
-    in
-    pre [ className "console", id_ "consoleWindow"]
+view :: State -> Html Action
+view s = 
+    pre 
+        [ className "console", id_ "consoleWindow"]
         [ code
-            [ ]
-            [ text $ cde ]
+            []
+            [ text $ s.display ]
         , input 
             [id_ "consoleInput", onKeyPress sendConsole, onChange updateConsole ]
             []
         ]
-
-sendConsole ev = 
-    if ev.charCode == 13
-        then CheckNotebook
-        else NoOp
-
-updateConsole ev =
-    AddToConsole ev.target.value
+  where
+    sendConsole   ev = if ev.charCode == 13 then (Send s.buffer) else NoOp
+    updateConsole ev = Add ev.target.value

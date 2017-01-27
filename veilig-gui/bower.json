@@ -21,7 +21,8 @@
     "purescript-foreign-callbacks": "*",
     "purescript-markdown": "^8.0.1",
     "purescript-pux-css": "^3.1.0",
-    "purescript-d3": "^0.8.1"
+    "purescript-d3": "^0.8.1",
+    "purescript-debug": "^2.0.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^2.0.0"
@@ -48,7 +49,7 @@
     "purescript-enums": "^2.0.0",
     "purescript-foreign": "^3.0.0",
     "purescript-js-date": "^3.0.0",
-    "purescript-foldable-traversable": "~2.0.0",
+    "purescript-foldable-traversable": "^2.0.0",
     "purescript-functions": "^2.0.0",
     "purescript-strings": "^2.0.0"
   }

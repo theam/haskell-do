@@ -28,6 +28,8 @@ function createWindow () {
     mainWindow = null
   })
 
+  mainWindow.maximize();
+
 }
 
 /* Mac Specific things */

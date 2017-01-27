@@ -20,9 +20,15 @@ import GHC.IO.Handle
 import Language.Haskell.GhcMod as GH
 import Language.Haskell.GhcMod.Types
 import System.IO
+import System.IO.Unsafe
 import System.Process
 import System.FilePath (pathSeparator)
 import Utils (setupState)
+
+spy :: Show a => a -> a
+spy x = unsafePerformIO $ do
+  print x
+  return x
 
 broadcast :: Connection -> Text -> IO ()
 broadcast conn msg = do
@@ -45,4 +51,4 @@ talk conn state = forever $ do
   msg <- WS.receiveData conn
   maybe (distress conn)
         ((\notebook -> notebookInterpreter notebook state) >=> sendNotebook conn)
-        (decode msg)
+        (decode $ spy msg)

@@ -10,7 +10,7 @@ function objectify(array){
     return object;
 }
 
-exports.fromTextArea = function (textAreaId) {
+exports.fromTextAreaCodeEditor = function (textAreaId) {
     return function (configArray) {
         return function () {
             if (configArray.length > 0) {
@@ -43,6 +43,16 @@ exports._onChange = function (editor) {
         return function () {
             editor.on('change', function(newStuff) {
                 return callback(newStuff.getValue());
+            });
+        }
+    }
+}
+
+exports._onClick = function (editor) {
+    return function (callback) {
+        return function () {
+            editor.on('focus', function(newStuff) {
+                return callback();
             });
         }
     }
