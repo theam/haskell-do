@@ -53,4 +53,10 @@ update BuildAndSend state = onlyEffects state [ do
     pure $ BackendConnectionAction (BackendConnection.Send notebook)
   ]
 
+update (UpdateState n) state = 
+  noEffects $ state 
+    { cellsState = Notebook.unpackCells n state.cellsState
+    , consoleState = Notebook.unpackConsole n state.consoleState
+    }
+
 update NoOp appState = noEffects $ appState

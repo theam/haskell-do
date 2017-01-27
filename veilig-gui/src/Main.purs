@@ -31,11 +31,15 @@ main = do
     backendConnectionState <- BackendConnection.initialState backendConnectionChannel (URL "ws://127.0.0.1:3000")
 
     let sig = consoleChannel `mapSub` f
+    let sig2 = backendConnectionChannel `mapSub` g
+    let sig3 = cellsChannel `mapSub` CellsAction
 
     let cellsState             = Cells.initialState cellsChannel
         consoleState           = Console.initialState consoleChannel
         inputSignals = 
             [ sig
+            , sig2
+            , sig3
             ]
     app <- start
         { initialState : App.initialState cellsState {} backendConnectionState consoleState
@@ -48,6 +52,10 @@ main = do
 f :: Console.Action -> Action
 f Console.PackAndSendToBackend = BuildAndSend
 f _ = NoOp
+
+g :: BackendConnection.Action Notebook -> Action
+g (BackendConnection.Receive n) = UpdateState n
+g _ = NoOp
 
 mapSub :: forall subaction action . Channel subaction -> (subaction -> action) -> Signal action
 mapSub chan act = map act $ subscribe chan

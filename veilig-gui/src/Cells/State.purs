@@ -48,13 +48,13 @@ update AddTextCell s =
   where
     newState = addTextCell s
 
-update (RenderCodeCell i) s  =
+update (RenderCodeCell i) s =
     s `onlyEffects`
     [ liftEff
       $ makeCodeEditor s.editorChanges i
     ]
 
-update (RenderTextCell i) s  =
+update (RenderTextCell i) s =
     s `onlyEffects`
     [ liftEff
       $ makeTextEditor s.editorChanges i
@@ -62,9 +62,9 @@ update (RenderTextCell i) s  =
 
 update (SaveContent cId newContent) s = 
     noEffects
-    $ saveContent cId newContent s
+    $ saveContent cId (spy newContent) s
 
-update (RemoveCell cId) s             = 
+update (RemoveCell cId) s = 
     noEffects 
     $ removeCell cId s
 
@@ -72,7 +72,7 @@ update (SetCurrentCell cId) s =
     noEffects
     $ s { currentCell = cId }
 
-update NoOp s                         = 
+update NoOp s = 
     noEffects
     $ s
 

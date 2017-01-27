@@ -16,6 +16,7 @@ data Action
     | ConsoleAction Console.Action
     | BackendConnectionAction (BackendConnection.Action Notebook)
     | BuildAndSend
+    | UpdateState Notebook
     | NoOp
 
 type State = 

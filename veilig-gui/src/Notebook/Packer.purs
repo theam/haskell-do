@@ -40,4 +40,4 @@ unpackCells (Notebook n) state =
 
 unpackConsole :: Notebook -> Console.State -> Console.State
 unpackConsole (Notebook n) state =
-  state { buffer = n.console }
+  state { display = n.console }
