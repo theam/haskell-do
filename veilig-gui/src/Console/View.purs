@@ -14,7 +14,7 @@ view s =
         [ className "console", id_ "consoleWindow"]
         [ code
             []
-            [ text $ s.buffer ]
+            [ text $ s.display ]
         , input 
             [id_ "consoleInput", onKeyPress sendConsole, onChange updateConsole ]
             []

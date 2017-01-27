@@ -29,6 +29,9 @@ main = do
     backendConnectionChannel <- channel (BackendConnection.NoOp :: BackendConnection.Action Notebook)
     consoleChannel <- channel Console.NoOp
     backendConnectionState <- BackendConnection.initialState backendConnectionChannel (URL "ws://127.0.0.1:3000")
+
+    
+
     let cellsState             = Cells.initialState cellsChannel
         consoleState           = Console.initialState consoleChannel
         inputSignals = 

@@ -1,6 +1,8 @@
 module Global.Effects where
 
-import WebSocket (WEBSOCKET)
 import DOM (DOM)
+import Signal.Channel (CHANNEL)
+import WebSocket (WEBSOCKET)
 
-type GlobalEffects = (ws :: WEBSOCKET, dom :: DOM)
+type GlobalEffects = (ws :: WEBSOCKET, dom :: DOM, channel :: CHANNEL)
+
