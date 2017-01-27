@@ -32,41 +32,7 @@ defaultPrograms =
            , cabalProgram = "cabal"
            , stackProgram = "stack" }
 
--- | Undertakes the given action, producing a new State
-processAction :: StateVar -> ProjectAction -> IO ()
-processAction sv pa = case pa of
-  OpenProject -> loadProject sv
-  NewProject pn -> createNewProject sv pn
-
--- | Sets up the initial state
-setupState :: IO (Handle, Handle, Handle, ProcessHandle)
-setupState = do
-  (inp, out, err, pid) <- runInteractiveCommand "stack repl"
-  hSetBinaryMode inp False
-  hSetBinaryMode out False
-  hSetBinaryMode err False
-  hPutStrLn inp $ ":l " ++ (intercalate [pathSeparator] ["app", "Main.hs"])
-  hPutStrLn inp "set prompt \">\""
-  hFlush inp
-  clearHandle out
-  return (inp, out, err, pid)
-
-loadProject :: StateVar -> IO ()
-loadProject sv = do
-  (inp, out, err, pid) <- setupState
-  (res, _) <- runGhcModT defaultOptions (findCradle defaultPrograms)
-  case res of
-    Right x -> atomicWriteIORef sv $ State {
-        ghciInput = inp
-      , ghciOutput = out
-      , ghciError = err
-      , ghciProcessHandle = pid
-      , notebookCradle = x }
-    Left x -> print x
-
-
-createNewProject :: StateVar -> ProjectName -> IO ()
+createNewProject :: ProjectName -> IO ()
 createNewProject sv pn = do
   runInteractiveCommand $ unwords ["stack", "new", getProjName pn]
   runInteractiveCommand $ "cd " ++ (getProjName pn)
-  loadProject sv
