@@ -1,9 +1,5 @@
 module Utils ( clearHandle
-             , processAction
-             , setupState
-             , loadProject
-             , defaultPrograms
-             , createNewProject ) where
+             , defaultPrograms ) where
 
 import GHC.IO.Handle
 import System.IO
@@ -31,8 +27,3 @@ defaultPrograms =
            , ghcPkgProgram = "ghc-pkg"
            , cabalProgram = "cabal"
            , stackProgram = "stack" }
-
-createNewProject :: ProjectName -> IO ()
-createNewProject sv pn = do
-  runInteractiveCommand $ unwords ["stack", "new", getProjName pn]
-  runInteractiveCommand $ "cd " ++ (getProjName pn)

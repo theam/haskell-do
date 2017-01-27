@@ -30,7 +30,7 @@ formatNotebook :: Notebook -> Text
 formatNotebook = T.unlines . map getCellText . cells
 
 writeNotebook :: State -> Notebook -> IO ()
-writeNotebook s nb = T.writeFile (notebookFilePath nb) $ formatNotebook nb
+writeNotebook s nb = T.writeFile (filepath nb) $ formatNotebook nb
 
 loadNotebook :: State -> IO ()
 loadNotebook s = do

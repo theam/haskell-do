@@ -29,7 +29,7 @@ data Notebook = Notebook
     , author :: String
     , cells :: [Cell]
     , console :: String
-    , notebookFilePath :: FilePath
+    , filepath :: FilePath
     } deriving (Generic, Show)
 
 instance FromJSON Notebook

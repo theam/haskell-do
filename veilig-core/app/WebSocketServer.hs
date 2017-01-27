@@ -13,7 +13,7 @@ import Control.Monad (forever, (>=>))
 import qualified Network.WebSockets as WS
 import Network.WebSockets (Connection)
 import Data.String.Conversions
-import Data.Aeson
+import Data.Aeson hiding (defaultOptions)
 import Interpreter
 import Utils
 import GHC.IO.Handle
@@ -22,39 +22,34 @@ import Language.Haskell.GhcMod.Types
 import System.IO
 import System.IO.Unsafe
 import System.Process
-import System.FilePath (pathSeparator)
 import Utils (defaultPrograms)
 
-spy :: Show a => a -> a
-spy x = unsafePerformIO $ do
-  print x
-  return x
-
 -- | Sets up the initial state
-setupState :: IO (Handle, Handle, Handle, ProcessHandle)
-setupState = do
+setupState :: FilePath -> IO (Handle, Handle, Handle, ProcessHandle)
+setupState x = do
   (inp, out, err, pid) <- runInteractiveCommand "stack repl"
   hSetBinaryMode inp False
   hSetBinaryMode out False
   hSetBinaryMode err False
-  hPutStrLn inp $ ":l " ++ (intercalate [pathSeparator] ["app", "Main.hs"])
+  hPutStrLn inp $ ":l " ++ x
   hPutStrLn inp "set prompt \">\""
   hFlush inp
   clearHandle out
   return (inp, out, err, pid)
 
-initializeState :: IO State
-(inp, out, err, pid) <- setupState
-(res, _) <- runGhcModT defaultOptions (findCradle defaultPrograms)
-case res of
-  Right x ->
-      Just $ State {
-      ghciInput = inp
-    , ghciOutput = out
-    , ghciError = err
-    , ghciProcessHandle = pid
-    , notebookCradle = x }
-  Left x -> error "No stack project found, please initialize a new project"
+initializeState :: FilePath -> IO State
+initializeState x = do
+  (inp, out, err, pid) <- setupState x
+  (res, _) <- runGhcModT defaultOptions (findCradle defaultPrograms)
+  case res of
+    Right x ->
+        pure $ State {
+        ghciInput = inp
+      , ghciOutput = out
+      , ghciError = err
+      , ghciProcessHandle = pid
+      , notebookCradle = x }
+    Left x -> error "No stack project found, please initialize a new project"
 
 broadcast :: Connection -> Text -> IO ()
 broadcast conn msg = do
@@ -77,4 +72,4 @@ talk conn state = forever $ do
   msg <- WS.receiveData conn
   maybe (distress conn)
         ((\notebook -> notebookInterpreter notebook state) >=> sendNotebook conn)
-        (decode $ spy msg)
+        (decode msg)

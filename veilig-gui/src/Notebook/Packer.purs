@@ -15,6 +15,7 @@ initialNotebook = Notebook
   , date: ""
   , cells: [] :: Array Cells.Cell
   , console: ">"
+  , filepath: "Main.hs"
   }
 
 -- | Grabs the cells and the console from their
@@ -28,6 +29,7 @@ pack cellsState consoleState = Notebook
     , author : ""
     , cells : cellsState.cells
     , console : consoleState.buffer
+    , filepath : "Main.hs"
     }
 
 unpackCells :: Notebook -> Cells.State -> Cells.State
