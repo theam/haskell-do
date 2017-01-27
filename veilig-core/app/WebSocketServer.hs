@@ -23,12 +23,38 @@ import System.IO
 import System.IO.Unsafe
 import System.Process
 import System.FilePath (pathSeparator)
-import Utils (setupState)
+import Utils (defaultPrograms)
 
 spy :: Show a => a -> a
 spy x = unsafePerformIO $ do
   print x
   return x
+
+-- | Sets up the initial state
+setupState :: IO (Handle, Handle, Handle, ProcessHandle)
+setupState = do
+  (inp, out, err, pid) <- runInteractiveCommand "stack repl"
+  hSetBinaryMode inp False
+  hSetBinaryMode out False
+  hSetBinaryMode err False
+  hPutStrLn inp $ ":l " ++ (intercalate [pathSeparator] ["app", "Main.hs"])
+  hPutStrLn inp "set prompt \">\""
+  hFlush inp
+  clearHandle out
+  return (inp, out, err, pid)
+
+initializeState :: IO State
+(inp, out, err, pid) <- setupState
+(res, _) <- runGhcModT defaultOptions (findCradle defaultPrograms)
+case res of
+  Right x ->
+      Just $ State {
+      ghciInput = inp
+    , ghciOutput = out
+    , ghciError = err
+    , ghciProcessHandle = pid
+    , notebookCradle = x }
+  Left x -> error "No stack project found, please initialize a new project"
 
 broadcast :: Connection -> Text -> IO ()
 broadcast conn msg = do
