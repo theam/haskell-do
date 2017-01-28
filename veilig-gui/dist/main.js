@@ -6,30 +6,41 @@ const $ = require('jquery')
 const jQuery = require('jquery')
 const app = electron.app // this is our app
 const BrowserWindow = electron.BrowserWindow // This is a Module that creates windows
+var spawn = require('child_process').execSync;
 
 let mainWindow // saves a global reference to mainWindow so it doesn't get garbage collected
 
-app.on('ready', createWindow) // called when electron has initialized
+app.on('ready', createMainWindow) // called when electron has initialized
 
-// This will create our app window, no surprise there
-function createWindow () {
-  mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600
-  })
-
-  // display the index.html file
+function createMainWindow () {
+  if (!stackIsOnPath()) {
+    electron.dialog.showErrorBox({
+      title:"HaskellDO initialization error",
+      content:"Stack not found on path. Try adding it?"
+    });
+    app.exit(-1);
+  }
+  const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
+  mainWindow = new BrowserWindow({width, height, show: false})
   mainWindow.loadURL(`file://${ __dirname }/index.html`)
-
-  // open dev tools by default so we can see any console errors
   mainWindow.webContents.openDevTools()
+
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show()
+  })
 
   mainWindow.on('closed', function () {
     mainWindow = null
   })
 
-  mainWindow.maximize();
-
+}
+function stackIsOnPath () {
+        try {
+          var out = spawn('stack --help');
+        } catch (error) {
+          return false;
+        }
+        return true;
 }
 
 /* Mac Specific things */
