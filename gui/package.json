@@ -1,0 +1,28 @@
+{
+  "name": "haskell-do-gui",
+  "productName": "Haskell DO",
+  "version": "0.0.1",
+  "description": "A Haskell editor",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "pulp build --to dist/compiled.js",
+    "watch": "pulp --watch build --to dist/compiled.js",
+    "start": "electron dist/main.js",
+    "test": "pulp test"
+  },
+  "author": "HaskellDO contributors",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "app-root-path": "^2.0.1",
+    "bootstrap": "^3.3.7",
+    "electron": "^1.4.5",
+    "jquery": "^3.1.1",
+    "jquery-ui": "^1.12.1",
+    "purescript-pux": "^7.0.0",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2"
+  }
+}
