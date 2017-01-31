@@ -21,8 +21,11 @@ The `gui` module holds the frontend of HaskellDO. Right now it is written in Pur
 * Make commits frequently with descriptive comments (detailed below)
 * Add tests to ensure proper functionality
 * Please do not submit until all tests are passed
+
 Commit messages should stick to the following format: (issue number) issue name description
+
 E.g:
+
 ```
 (HD-01) Example issue
 Steps to recreate: etc
