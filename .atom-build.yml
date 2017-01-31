@@ -1,7 +1,0 @@
-cmd: "echo Entire project is not ready yet!"
-name: "entire-project"
-atomCommandName: namespace:command
-targets:
-  gui:
-      cmd: "npm run build"
-      cwd: "{PROJECT_PATH}/veilig-gui"
