@@ -21,7 +21,7 @@ view leftSide rightSide =
             [ div
                 [ id_ "right-column"
                 , style $ columnStyle
-                , className "col-lg-4 col-lg-push-8"
+                , className ""
                 ]
                 [ nav
                     [ className "navbar navbar-default navbar-fixed-side" ]
@@ -30,7 +30,7 @@ view leftSide rightSide =
             , div
                 [ id_ "left-column"
                 , style columnStyle 
-                , className "col-lg-8 col-lg-pull-4"
+                , className "col-lg-12"
                 ]
                 [ leftSide ]
             ]
@@ -40,5 +40,6 @@ toggleColumnsButton :: State -> Html Action
 toggleColumnsButton s = a
     [ onClick $ const Toggle 
     , href "#"
+    , className "glyphicon glyphicon-console"
     ]
-    [ text "Toggle column" ]
+    [ text "" ]

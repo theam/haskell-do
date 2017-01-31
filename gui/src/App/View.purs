@@ -7,7 +7,7 @@ import Cells.View as Cells
 import Columns.View as Columns
 import Console.View as Console
 import Bootstrap.Glyphicon (Glyphicon(..))
-import Pux.Html (Html, div, forwardTo)
+import Pux.Html (Html, div, forwardTo, li)
 import Pux.Html.Attributes (className)
 import Prelude hiding (div)
 
@@ -20,7 +20,7 @@ view s =
                 [ map App.CellsAction $ Cells.addTextCellButton s.cellsState
                 , map App.CellsAction $ Cells.addCodeCellButton s.cellsState
                 ]
-            , map App.ColumnsAction $ Columns.toggleColumnsButton s.columnsState
+            , li [] [ map App.ColumnsAction $ Columns.toggleColumnsButton s.columnsState ]
             ]
         , Columns.view 
             (map App.CellsAction $ Cells.cellsDisplay s.cellsState)

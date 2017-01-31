@@ -18,7 +18,7 @@ view contents =
             []
             [ ul
                 [ className "nav navbar-nav text-center" ]
-                $ map intoLi contents
+                $ contents
             ]
         ]
     ]
