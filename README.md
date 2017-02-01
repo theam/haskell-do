@@ -1,15 +1,15 @@
 # HaskellDO
 *(pronounced "Haskell do")*
 
-HaskellDO is a Haskell code editor,  centered around  interactive development.
-This is a **pre-alpha**  version,  **not expected to be used in production**. As a
-prototype, major changes will be applied in the future and also major features
-will be implemented.
+HaskellDO is a Haskell code editor, centered around interactive development.
 
-The current version is written in [PureScript](http://www.purescript.org/) and
-[Haskell](https://www.haskell.org/). Although  the former might  change in the
-future.
+This is a **pre-release** version, **not expected to be used in production**. As a
+prototype, major changes may be applied in the future that could break backwards
+compatibility. Pull Requests will be greatly appreciated, check out [our contributing guidelines](CONTRIBUTING.md).
 
+The current version is written in [Haskell](https://www.haskell.org/) and
+[PureScript](http://www.purescript.org/), but on next releases we're aiming for
+a pure Haskell implementation.
 
 ## Downloads
 ---
@@ -74,7 +74,7 @@ some expression.
 Just click on the **toggle console** button and press return on it to
 enable it.
 
-After writing your expression, press return [twice](linkToGithubIssue) 
+After writing your expression, press return [twice](linkToGithubIssue)
 to get the result written on screen.
 
 ![Imgur](http://i.imgur.com/jgZQAvu.gif)
@@ -84,7 +84,7 @@ of our `Main.hs` file:
 
 ```haskell
 -- # Analyzing dog cuteness with genetic algorithms
--- 
+--
 -- After going **through thorough and tough thoughts**, we decided to use a simple example.
 
 a = [1..20]

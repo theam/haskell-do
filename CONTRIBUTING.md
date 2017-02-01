@@ -2,11 +2,11 @@
 
 As of right now, we're just releasing something we think is good enough to get
 going with, but the community is who really has the ability to bring an idea like
-this into focus and build it into something amazing. Though there are a few guidelines we'd like our contributers to follow so that we can keep on top of things and streamline the PR process.
+this into focus and build it into something amazing. Though there are a few guidelines we'd like our contributors to follow so that we can keep on top of things and streamline the PR process.
 
 # HaskellDO Core vs GUI
-Right now HaskellDO is separated into two modules. The `core` module holds the backend and engine of HaskellDO. `core` is written in Haskell and focuses primarily on interacting with notebooks recieved from the frontend. Anything that directly impacts a notebook or project, say adding `git` commands to HaskellDO, should be done in `core`.
-The `gui` module holds the frontend of HaskellDO. Right now it is written in PureScript, though we are thinking about converting it all to Haskell at a later date. Any gui changes, QOL improvements, etc, should be changed in `gui`.
+Right now HaskellDO is separated into two modules. The `core` module holds the backend and engine of HaskellDO. `core` is written in Haskell and focuses primarily on interacting with notebooks received from the frontend. Anything that directly impacts a notebook or project, say adding `git` commands to HaskellDO, should be done in `core`.
+The `gui` module holds the frontend of HaskellDO. Right now it is written in PureScript, though we are thinking about converting it all to Haskell at a later date. Any GUI changes, QOL improvements, etc, should be changed in `gui`.
 
 # Getting Started
 * Create a [GitHub](https://github.com) account if you do not already have one
@@ -34,10 +34,10 @@ An issue would then here go into detail describing the issue, and perhaps even s
 ```
 
 # Making Small Changes
-When changing things like documentation, it is not always necessary to create a ticket. Instead simply add the documentation, and commit with a message of the following form:
+When changing things like documentation, it is not always necessary to create a ticket. Instead simply add the documentation, and send a PR with a message of the following form:
 ```
 (doc) Added documentation to <file-name>
-<file-name> lacked proper documentation on how <function> works. 
+<file-name> lacked proper documentation on how <function> works.
 This commit adds documentation describing <function>, and provides various examples.
 ```
 
@@ -45,7 +45,6 @@ This commit adds documentation describing <function>, and provides various examp
 * Push your changes to the branch in your fork of the repository
 * Submit a pull request
 * The HaskellDO team will review your PR as quickly and provide feedback
-* After recieving feedback, either make the required changes, or your branch will be merged
+* After receiving feedback, either make the required changes, or your branch will be merged
 
 Thanks for contributing to HaskellDO, happy hacking!
-
