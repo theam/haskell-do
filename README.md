@@ -83,7 +83,7 @@ some expression.
 Just click on the **toggle console** button and press return on it to
 enable it.
 
-After writing your expression, press return [twice](linkToGithubIssue)
+After writing your expression, press return [twice](https://github.com/theam/haskell-do/issues/1)
 to get the result written on screen.
 
 ![Imgur](http://i.imgur.com/jgZQAvu.gif)
