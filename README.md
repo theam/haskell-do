@@ -24,6 +24,8 @@ You can find a binary release according to your operating system in the
 ### Initializing a project
 Begin by creating a **new** Stack project.
 
+`stack new your_project_name`
+
 After opening HaskellDO, it will ask you to open a Stack project.
 Navigate to the root of the project you just created and open that
 folder.
