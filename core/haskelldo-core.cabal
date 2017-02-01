@@ -4,7 +4,7 @@ synopsis:            The core server of HaskellDO
 description:         Please see README.md
 homepage:            https://github.com/theam/haskelldo#readme
 license:             Apache-2.0
-license-file:        ../LICENSE.md
+license-file:        ../LICENSE
 author:              HaskellDO contributors
 maintainer:          nikita@theam.io
 copyright:           2017 HaskellDO contributors
