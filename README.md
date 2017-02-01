@@ -15,7 +15,9 @@ a pure Haskell implementation.
 
 ## Usage
 
-The only *3rd-party* requirement to run HaskellDO is [Stack](http://haskellstack.org/)
+The only *3rd-party* requirement to run HaskellDO is [Stack](http://haskellstack.org/) and [NodeJS](https://nodejs.org/).
+
+Before proceeding, run a `npm install -g purescript pulp bower` to install the required NodeJS binaries.
 
 **Clone** this repository, and from the root of the project run `make build-all-<platform>`
 
