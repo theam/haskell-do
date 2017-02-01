@@ -1,6 +1,8 @@
 # HaskellDO
 *(pronounced "Haskell do")*
 
+[![Gitter](https://badges.gitter.im/theam/haskell-do.svg)](https://gitter.im/theam/haskell-do?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 HaskellDO is a Haskell code editor, centered around interactive development.
 
 This is a **pre-release** version, **not expected to be used in production**. As a
@@ -11,22 +13,27 @@ The current version is written in [Haskell](https://www.haskell.org/) and
 [PureScript](http://www.purescript.org/), but on next releases we're aiming for
 a pure Haskell implementation.
 
-## Downloads
----
+## Usage
+
 The only *3rd-party* requirement to run HaskellDO is [Stack](http://haskellstack.org/)
 
-You can find a binary release according to your operating system in the
-[releases page](https://github.com/theam/haskelldo/releases).
+**Clone** this repository, and from the root of the project run `make build-all-<platform>`
 
-## Usage
----
+Where `<platform>` is one of:
+
+- `windows`
+- `linux`
+- `osx`
+
+Choose accordingly to your platform.
 
 ### Initializing a project
 Begin by creating a **new** Stack project.
 
 `stack new your_project_name`
 
-After opening HaskellDO, it will ask you to open a Stack project.
+Fire up HaskellDO by running `make run` from the root of the project,
+it will ask you to open a Stack project.
 Navigate to the root of the project you just created and open that
 folder.
 
@@ -102,7 +109,7 @@ When you've finished testing HaskellDO, due to a bug, the `haskelldo-core`
 process is left running. Be sure to kill it!
 
 ## Building from source
----
+
 
 One could also want to build HaskellDO from source:
 ### Requirements
@@ -118,26 +125,22 @@ The project is composed of two sub-projects:
 - A Haskell back end, residing in `core`
 
 ### Compilation
-For compiling the **backend**, execute in the `core/` directory:
+For compiling the **backend**, execute in the root directory:
 
-- `stack build` - This will download the necessary dependencies and build the project.
+- `make build-back-<platform>` - This will download the necessary dependencies and build the project.
 
-For compiling the **frontend**, execute in the `gui/` directory:
+For compiling the **frontend**, execute in the root directory:
 
 - `npm install -g bower pulp purescript` - This will install:
     - **Bower** - A dependency tool used for purescript libraries
     - **Pulp** - A build tool for purescript
     - **Purescript** itself
 
-- `npm install` - Installs necessary dependencies for the desktop app
-- `bower install` - Installs purescript libraries used for the project
-- `npm run build` - Build the project
-
-Alternatively, for the last step, one can use `npm run watch` to make `pulp`
-watch for source code changes, building the frontend each time the code changes.
+- `make deps` - Installs necessary dependencies for the desktop app
+- `make build-front` - Build the GUI
 
 ## Running in dev-mode
----
+
 After building the project, run, in the following order:
 
 1. In the backend folder, `stack exec haskelldo-core`
@@ -145,9 +148,9 @@ After building the project, run, in the following order:
    dev server.
 
 ## Contributing
----
-Wanna contribute? Make sure that you've read our [contributor guidelines](linkToContributing.md).
+
+Wanna contribute? Make sure that you've read our [contributor guidelines](https://github.com/theam/haskell-do/blob/master/CONTRIBUTING.md).
 We'd like to hear from you and your ideas, get in touch with other contributors through:
 
-- [Gitter](gitterChannelLink)
-- [The issues page](githubIssues)
+- [Gitter](https://gitter.im/theam/haskell-do)
+- [The issues page](https://github.com/theam/haskell-do/blob/master/CONTRIBUTING.md)

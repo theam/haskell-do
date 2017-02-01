@@ -5,6 +5,7 @@ gui/output/
 gui/.psci*
 gui/src/.webpack.js
 gui/dist/compiled.js
+gui/dist/bin/haskelldo*
 gui/static/dist
 gui/npm-debug.log
 gui/**DS_Store
