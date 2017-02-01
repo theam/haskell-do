@@ -1,14 +1,22 @@
 build-all:
-	stack build
-	npm run build
+	cd core &&\
+		stack build &&\
+		cd ../gui &&\
+		npm run build &&\
+		cd ..
 
 build-front:
-	npm run build
+	cd gui &&\
+		npm run build &&\
+		cd ..
 
 build-back:
-	stack build
+	cd core &&\
+		stack build &&\
+		cd ..
 
 deps:
-	cd veilig-gui &&\
+	cd gui &&\
 		npm install &&\
-		bower install
+		bower install &&\
+		cd ..
