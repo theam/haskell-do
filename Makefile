@@ -10,13 +10,13 @@ build-front:
 build-back-linux:
 	cd core &&\
 		stack build &&\
-		cp $(stack path --local-install-root)/bin/haskelldo-core ../gui/dist/bin/haskelldo-core-linux
+		cp `stack path --local-install-root`/bin/haskelldo-core ../gui/dist/bin/haskelldo-core-linux
 		cd ..
 
 build-back-osx:
 	cd core &&\
 		stack build &&\
-		cp $(stack path --local-install-root)/bin/haskelldo-core ../gui/dist/bin/haskelldo-core-darwin
+		cp `stack path --local-install-root`/bin/haskelldo-core ../gui/dist/bin/haskelldo-core-darwin
 		cd ..
 
 build-back-windows:
