@@ -41,8 +41,10 @@ loadNotebook s nb = do
     if (file == formatNotebook nb) then do
       return ()
     else do
+      writeNotebook s nb
       hPutStrLn (ghciInput s) (":r")
   else do
+    writeNotebook s nb
     hPutStrLn (ghciInput s) (":r")
 
 
@@ -57,7 +59,6 @@ readConsole s = do
 
 notebookInterpreter :: Notebook -> State -> IO (Either String Notebook)
 notebookInterpreter n s = do
-  writeNotebook s n
   loadNotebook s n
   writeConsole s n
   x <- readConsole s
