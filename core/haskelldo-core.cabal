@@ -28,6 +28,10 @@ executable haskelldo-core
                      , stm
                      , process
                      , ghc-mod
+                     , wai
+                     , warp
+                     , wai-websockets
+                     , servant-server
   other-modules:       WebSocketServer
                      , Types
                      , Interpreter

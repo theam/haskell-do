@@ -1,4 +1,6 @@
 'use strict'
+const os = require('os')
+const child_process = require('child_process')
 const electron = require('electron')
 const React = require('react')
 const ReactDOM = require('react-dom')
@@ -76,6 +78,7 @@ function startBackend(path){
   }
   coreProcess = spawn("cd " + path + " && " + corePath + " \"" + path + separator + "Main.hs\"")
   setTimeout(function(){}, 3000)
+  return coreProcess
 }
 
 function initApplication () {
@@ -84,12 +87,13 @@ function initApplication () {
   }
 
   var filePath = openFileOrDie()
+  var backendProcess
 
   if (closeAfterConfirmationDialog())
     app.exit(-1)
 
   if (!devModeActivated()) {
-    startBackend(filePath)
+    backendProcess = startBackend(filePath)
   }
 
   const {width, height} = electron.screen.getPrimaryDisplay().workAreaSize
@@ -103,7 +107,9 @@ function initApplication () {
   })
 
   mainWindow.on('closed', function () {
-    electron.dialog.showMessageBox({ title: "HaskellDO quitting", message: "Remember to kill the haskelldo process"})
+    if (os.platform() == 'win32') {
+      child_process.exec('taskkill /pid ' + backendProcess.pid + ' /T /F')
+    }
     mainWindow = null
   })
 
