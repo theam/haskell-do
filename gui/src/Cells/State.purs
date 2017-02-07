@@ -7,14 +7,11 @@ import Cells.Foreign
 import Data.Lens
 import DOM
 import Signal.Channel
-import Control.Monad.Eff (foreachE)
 import Control.Monad.Eff.Class (liftEff)
-import Control.Apply
 import Global.Effects
 import Debug.Trace
 import Data.Array
 import Data.Maybe
-import Data.Traversable
 
 initialState :: Channel Action -> State
 initialState chan =
