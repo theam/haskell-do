@@ -56,9 +56,10 @@ broadcast conn msg = do
   T.putStrLn ("Log:" <> cs msg)
   WS.sendTextData conn msg
 
-application :: State -> WS.ServerApp
-application state pending = do
+application :: Notebook -> State -> WS.ServerApp
+application nb state pending = do
   conn <- WS.acceptRequest pending
+  broadcastNotebook conn nb
   talk conn state
 
 distress conn = broadcast conn "Distress!"

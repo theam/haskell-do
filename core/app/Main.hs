@@ -21,7 +21,7 @@ main = do
   nb <- loadNotebookFromFile filepath
   state <- initializeState filepath
   let server :: Server API = return filepath
-  run 3000 (websocketsOr WS.defaultConnectionOptions (application state) (serve api server))
+  run 3000 (websocketsOr WS.defaultConnectionOptions (application nb state) (serve api server))
 
 type API = "filepath" :> Get '[JSON] FilePath
 api :: Proxy API
