@@ -27,7 +27,7 @@ import Signal.Channel (subscribe, channel, CHANNEL, Channel)
 main :: Eff (CoreEffects GlobalEffects) Unit
 main = do
     cellsChannel <- channel Cells.NoOp
-    backendConnectionChannel <- channel (BackendConnection.Receive Notebook)
+    backendConnectionChannel <- channel (BackendConnection.NoOp :: BackendConnection.Action Notebook)
     consoleChannel <- channel Console.NoOp
     backendConnectionState <- BackendConnection.initialState backendConnectionChannel (URL "ws://127.0.0.1:3000")
 
@@ -38,6 +38,7 @@ main = do
             , backendConnectionChannel `liftAction` updateStateAfterReceiving
             , cellsChannel `liftAction` CellsAction
             ]
+    --Cells.renderCells cellsState
     app <- start
         { initialState : App.initialState cellsState {} backendConnectionState consoleState
         , update : App.update

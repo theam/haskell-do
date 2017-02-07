@@ -20,10 +20,11 @@ data Action
     | RemoveCell     CellId
     | RenderTextCell CellId
     | RenderCodeCell CellId
+    | RenderAllCells 
     | SetCurrentCell CellId
     | NoOp
 
-type State = 
+type State =
     { currentCell :: CellId
     , cells       :: Array Cell
     , editorChanges :: Channel Action

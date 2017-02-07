@@ -7,9 +7,14 @@ import Cells.Foreign
 import Data.Lens
 import DOM
 import Signal.Channel
+import Control.Monad.Eff (foreachE)
 import Control.Monad.Eff.Class (liftEff)
+import Control.Apply
 import Global.Effects
 import Debug.Trace
+import Data.Array
+import Data.Maybe
+import Data.Traversable
 
 initialState :: Channel Action -> State
 initialState chan =
@@ -59,6 +64,18 @@ update (RenderTextCell i) s =
     [ liftEff
       $ makeTextEditor s.editorChanges i
     ]
+
+update RenderAllCells s =
+  map' s.cells []
+  where
+    render cell = case cell of
+      Cell {cellType : TextCell, cellId : i, cellContent : _ } ->
+        pure $ liftEff $ makeTextEditor s.editorChanges i
+      Cell {cellType : CodeCell, cellId : i, cellContent : _} ->
+        pure $ liftEff $ makeCodeEditor s.editorChanges i
+    map' cells ef = case uncons cells of
+      Just { head: x, tail: xs } -> map' xs (ef <> (render x))
+      Nothing -> { state : s, effects : ef }
 
 update (SaveContent cId newContent) s =
     noEffects

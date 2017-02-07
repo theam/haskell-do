@@ -48,13 +48,13 @@ onClick editor chan f = do
 foreign import fromTextAreaCodeEditor ::
     forall e .
     TextAreaId ->
-    Configuration -> 
+    Configuration ->
     Eff ( dom :: DOM | e ) CodeEditor
 
 -- | Converts a text area into a SimpleMDE markdown editor
 foreign import fromTextAreaMarkdownEditor ::
     forall e .
-    TextAreaId -> 
+    TextAreaId ->
     Eff (dom :: DOM | e) MarkdownEditor
 
 foreign import _onChange ::
