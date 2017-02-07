@@ -10,6 +10,7 @@ import BackendConnection.Types as BackendConnection
 import BackendConnection.State as BackendConnection
 import Cells.Types as Cells
 import Cells.State as Cells
+import Cells.View as Cells
 import Console.Types as Console
 import Console.State as Console
 import Columns.Types as Columns
@@ -26,13 +27,13 @@ import Signal.Channel (subscribe, channel, CHANNEL, Channel)
 main :: Eff (CoreEffects GlobalEffects) Unit
 main = do
     cellsChannel <- channel Cells.NoOp
-    backendConnectionChannel <- channel (BackendConnection.NoOp :: BackendConnection.Action Notebook)
+    backendConnectionChannel <- channel (BackendConnection.Receive Notebook)
     consoleChannel <- channel Console.NoOp
     backendConnectionState <- BackendConnection.initialState backendConnectionChannel (URL "ws://127.0.0.1:3000")
 
     let cellsState             = Cells.initialState cellsChannel
         consoleState           = Console.initialState consoleChannel
-        inputSignals = 
+        inputSignals =
             [ consoleChannel `liftAction` buildAndSend
             , backendConnectionChannel `liftAction` updateStateAfterReceiving
             , cellsChannel `liftAction` CellsAction

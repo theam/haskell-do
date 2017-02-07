@@ -54,7 +54,7 @@ constructNotebook fp t = Notebook
   , subtitle = ""
   , date = ""
   , author = ""
-  , cells = constructCells (T.lines t) 0 []
+  , cells = (constructCells (T.lines t) 0 [])
   , console = "> "
   , filepath = fp
   }
