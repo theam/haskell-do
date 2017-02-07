@@ -18,6 +18,7 @@ address = "0.0.0.0"
 
 main = do
   filepath : _ <- getArgs
+  nb <- loadNotebookFromFile filepath
   state <- initializeState filepath
   let server :: Server API = return filepath
   run 3000 (websocketsOr WS.defaultConnectionOptions (application state) (serve api server))
@@ -25,4 +26,3 @@ main = do
 type API = "filepath" :> Get '[JSON] FilePath
 api :: Proxy API
 api = Proxy
-

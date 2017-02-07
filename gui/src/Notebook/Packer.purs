@@ -33,7 +33,7 @@ pack cellsState consoleState = Notebook
     }
 
 unpackCells :: Notebook -> Cells.State -> Cells.State
-unpackCells (Notebook n) state = 
+unpackCells (Notebook n) state =
   state { cells = n.cells
         , currentCell = newCurrentCell
         }

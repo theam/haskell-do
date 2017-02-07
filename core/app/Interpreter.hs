@@ -8,6 +8,7 @@ import Control.Monad.Trans
 import Control.Monad
 import Utils
 import Data.Text (Text)
+import Data.List
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import System.IO
@@ -31,6 +32,7 @@ formatNotebook = T.unlines . map getCellText . cells
 
 writeNotebook :: State -> Notebook -> IO ()
 writeNotebook s nb = T.writeFile (filepath nb) $ formatNotebook nb
+
 
 loadNotebook :: State -> IO ()
 loadNotebook s = do

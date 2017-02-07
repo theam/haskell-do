@@ -32,7 +32,7 @@ setupState x = do
   hSetBinaryMode out False
   hSetBinaryMode err False
   hPutStrLn inp $ ":l " ++ x
-  hPutStrLn inp "set prompt \">\""
+  hPutStrLn inp "set prompt \"> \""
   hFlush inp
   clearHandle out
   return (inp, out, err, pid)
