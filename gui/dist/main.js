@@ -110,7 +110,7 @@ function initApplication () {
     if (os.platform() == 'win32') {
       child_process.exec('taskkill /pid ' + backendProcess.pid + ' /T /F')
     }
-    electron.dialog.showMessageBox({ title: "HaskellDO quitting", message: "Remember to kill the haskelldo process"})
+    //electron.dialog.showMessageBox({ title: "HaskellDO quitting", message: "Remember to kill the haskelldo process"})
     mainWindow = null
   })
 
