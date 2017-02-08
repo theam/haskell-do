@@ -37,7 +37,8 @@ defaultPrograms =
            , stackProgram = "stack" }
 
 constructCells :: [String] -> Int -> [Cell] -> [Cell]
-constructCells [] _ curr = filter (\c -> (T.strip $ cellContent c) /=  (T.pack "")) curr
+constructCells [] _ curr = map (\c -> c { cellContent = T.strip $ cellContent c}) filtered
+  where filtered = filter (\c -> (T.stripStart $ cellContent c) /=  (T.pack "")) curr
 constructCells lst@(x:xs) i curr =
   if isPrefixOf "--" x then
     constructCells lst' (i+1) (curr ++ [textcell])
