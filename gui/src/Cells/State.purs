@@ -63,16 +63,13 @@ update (RenderTextCell i) s =
     ]
 
 update RenderAllCells s =
-  map' s.cells []
+  {state : s, effects: map render s.cells}
   where
     render cell = case cell of
       Cell {cellType : TextCell, cellId : i, cellContent : _ } ->
-        pure $ liftEff $ makeTextEditor s.editorChanges i
+        liftEff $ makeTextEditor s.editorChanges i
       Cell {cellType : CodeCell, cellId : i, cellContent : _} ->
-        pure $ liftEff $ makeCodeEditor s.editorChanges i
-    map' cells ef = case uncons cells of
-      Just { head: x, tail: xs } -> map' xs (ef <> (render x))
-      Nothing -> { state : s, effects : ef }
+        liftEff $ makeCodeEditor s.editorChanges i
 
 update (SaveContent cId newContent) s =
     noEffects
