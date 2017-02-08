@@ -6,6 +6,7 @@ import Notebook.Types
 import Cells.Types as Cells
 import Console.Types as Console
 import Data.Array
+import Node.Path (sep)
 
 initialNotebook :: Notebook
 initialNotebook = Notebook

@@ -22,6 +22,7 @@ executable haskelldo-core
                      , text
                      , aeson
                      , string-conversions
+                     , directory
                      , bytestring
                      , mtl
                      , filepath

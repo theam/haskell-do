@@ -10,6 +10,7 @@ import GHC.IO.Handle
 import System.IO
 import Types
 import System.FilePath
+import System.Directory
 import System.Process
 import Data.IORef
 import Language.Haskell.GhcMod
@@ -64,5 +65,11 @@ constructNotebook fp t = Notebook
 
 loadNotebookFromFile :: FilePath -> IO Notebook
 loadNotebookFromFile fp = do
-  file <- readFile fp
-  return $ constructNotebook fp file
+  exists <- doesFileExist fp
+  if exists then do
+    file <- readFile fp
+    return $ constructNotebook fp file
+  else do
+    writeFile fp ""
+    file <- readFile fp
+    return $ constructNotebook fp file
