@@ -76,7 +76,7 @@ function startBackend(path){
     corePath = appRoot + "/dist/bin/haskelldo-core-linux"
     separator = "/"
   }
-  coreProcess = spawn("cd " + path + " && " + corePath + " \"" + path + separator + "app" + separator + "Main.hs\"")
+  coreProcess = spawn("cd " + path + " && " + corePath + " \"" + path + separator + "Main.hs\"")
   setTimeout(function(){}, 3000)
   return coreProcess
 }

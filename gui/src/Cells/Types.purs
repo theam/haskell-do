@@ -20,7 +20,7 @@ data Action
     | RemoveCell     CellId
     | RenderTextCell CellId
     | RenderCodeCell CellId
-    | RenderAllCells 
+    | RenderAllCells
     | SetCurrentCell CellId
     | NoOp
 

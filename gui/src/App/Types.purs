@@ -17,9 +17,10 @@ data Action
     | BackendConnectionAction (BackendConnection.Action Notebook)
     | BuildAndSend
     | UpdateState Notebook
+    | LoadNotebook Notebook
     | NoOp
 
-type State = 
+type State =
     { cellsState              :: Cells.State
     , columnsState            :: Columns.State
     , consoleState            :: Console.State

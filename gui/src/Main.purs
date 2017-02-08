@@ -15,6 +15,7 @@ import Console.Types as Console
 import Console.State as Console
 import Columns.Types as Columns
 import Columns.State as Columns
+import Notebook.Types
 
 import WebSocket (URL(..))
 import DOM
@@ -38,7 +39,7 @@ main = do
             , backendConnectionChannel `liftAction` updateStateAfterReceiving
             , cellsChannel `liftAction` CellsAction
             ]
-    --Cells.renderCells cellsState
+
     app <- start
         { initialState : App.initialState cellsState {} backendConnectionState consoleState
         , update : App.update
@@ -52,7 +53,9 @@ buildAndSend Console.PackAndSendToBackend = BuildAndSend
 buildAndSend _ = NoOp
 
 updateStateAfterReceiving :: BackendConnection.Action Notebook -> Action
-updateStateAfterReceiving (BackendConnection.Receive n) = UpdateState n
+updateStateAfterReceiving (BackendConnection.Receive n) = case n of
+  Notebook { title : t, subtitle : st, date : d, author : a, cells: c, console: cl, filepath : fp, loaded : true } -> UpdateState $ Notebook { title : t, subtitle : st, date : d, author : a, cells: c, console: cl, filepath : fp, loaded : true }
+  Notebook { title : t, subtitle : st, date : d, author : a, cells: c, console: cl, filepath : fp, loaded : false } -> LoadNotebook $ Notebook { title : t, subtitle : st, date : d, author : a, cells: c, console: cl, filepath : fp, loaded : true }
 updateStateAfterReceiving _ = NoOp
 
 liftAction :: forall subaction action . Channel subaction -> (subaction -> action) -> Signal action

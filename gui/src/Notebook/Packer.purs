@@ -16,6 +16,7 @@ initialNotebook = Notebook
   , cells: [] :: Array Cells.Cell
   , console: ">"
   , filepath: "Main.hs"
+  , loaded : true
   }
 
 -- | Grabs the cells and the console from their
@@ -30,6 +31,7 @@ pack cellsState consoleState = Notebook
     , cells : cellsState.cells
     , console : consoleState.buffer
     , filepath : "Main.hs"
+    , loaded : true
     }
 
 unpackCells :: Notebook -> Cells.State -> Cells.State

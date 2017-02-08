@@ -17,6 +17,7 @@ import Language.Haskell.GhcMod.Types
 import Data.List (intercalate)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
+import Data.List
 
 -- | Clears the handle of any available input and returns it
 clearHandle :: Handle -> IO String
@@ -35,31 +36,32 @@ defaultPrograms =
            , cabalProgram = "cabal"
            , stackProgram = "stack" }
 
-constructCells :: [T.Text] -> Int -> [Cell] -> [Cell]
-constructCells [] _ curr = curr
+constructCells :: [String] -> Int -> [Cell] -> [Cell]
+constructCells [] _ curr = filter (\c -> (T.strip $ cellContent c) /=  (T.pack "")) curr
 constructCells lst@(x:xs) i curr =
-  if T.isPrefixOf "--" x then
+  if isPrefixOf "--" x then
     constructCells lst' (i+1) (curr ++ [textcell])
   else
     constructCells lst'' (i+1) (curr ++ [codecell])
   where
-    lst' = dropWhile (\x -> T.isPrefixOf "--" x) lst
-    textcell = Cell TextCell i (T.unlines $ takeWhile (\x -> T.isPrefixOf "--" x) lst)
-    lst'' = dropWhile (\x -> not $ T.isPrefixOf "--" x) lst
-    codecell = Cell CodeCell i (T.unlines $ takeWhile (\x -> not $ T.isPrefixOf "--" x) lst)
+    lst' = dropWhile (\x -> isPrefixOf "--" x) lst
+    textcell = Cell TextCell i (T.pack $ unlines $ map (\('-':'-':' ':xs) -> xs) $ takeWhile (\x -> isPrefixOf "--" x) lst)
+    lst'' = dropWhile (\x -> not $ isPrefixOf "--" x) lst
+    codecell = Cell CodeCell i (T.pack $ unlines $ takeWhile (\x -> not $ isPrefixOf "--" x) lst)
 
-constructNotebook :: FilePath -> T.Text -> Notebook
+constructNotebook :: FilePath -> String -> Notebook
 constructNotebook fp t = Notebook
   { title = ""
   , subtitle = ""
   , date = ""
   , author = ""
-  , cells = (constructCells (T.lines t) 0 [])
+  , cells = (constructCells (lines t) 0 [])
   , console = "> "
   , filepath = fp
+  , loaded = False
   }
 
 loadNotebookFromFile :: FilePath -> IO Notebook
 loadNotebookFromFile fp = do
-  file <- T.readFile fp
+  file <- readFile fp
   return $ constructNotebook fp file
