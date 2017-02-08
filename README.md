@@ -142,14 +142,6 @@ For compiling the **frontend**, execute in the root directory:
 - `make deps` - Installs necessary dependencies for the desktop app
 - `make build-front` - Build the GUI
 
-## Running in dev-mode
-
-After building the project, run, in the following order:
-
-1. In the backend folder, `stack exec haskelldo-core`
-2. In the frontend folder, `npm run start dev`, to make the GUI connect to the running
-   dev server.
-
 ## Contributing
 
 Wanna contribute? Make sure that you've read our [contributor guidelines](https://github.com/theam/haskell-do/blob/master/CONTRIBUTING.md).
