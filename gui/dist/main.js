@@ -89,8 +89,8 @@ function initApplication () {
   var filePath = openFileOrDie()
   var backendProcess
 
-  if (closeAfterConfirmationDialog())
-    app.exit(-1)
+  //if (closeAfterConfirmationDialog())
+  //  app.exit(-1)
 
   if (!devModeActivated()) {
     backendProcess = startBackend(filePath)
