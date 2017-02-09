@@ -25,8 +25,9 @@ view s =
 
 clickSaveButton :: State -> Html Action
 clickSaveButton s = a
-    [ onClick $ const (Send "")
+    [ onClick $ const Save
     , href "#"
+    , id_ "save-button"
     , className "glyphicon glyphicon-floppy-disk"
     ]
     [ text "" ]
