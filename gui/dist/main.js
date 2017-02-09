@@ -37,7 +37,7 @@ function showStackNotOnPathError(){
 function openFile() {
   return electron.dialog.showOpenDialog({
     title: "HaskellDO - Open stack project",
-    properties: ['openDirectory'],
+    properties: ['openFile'],
   })
 }
 
@@ -76,7 +76,8 @@ function startBackend(path){
     corePath = appRoot + "/dist/bin/haskelldo-core-linux"
     separator = "/"
   }
-  coreProcess = spawn("cd " + path + " && " + corePath + " \"" + path + separator + "Main.hs\"")
+  var dirpath = path.substring(0,path.lastIndexOf(separator)+1);
+  coreProcess = spawn("cd " + dirpath + " && " + corePath + " \"" + path) //cd into directory and then load file
   setTimeout(function(){}, 3000)
   return coreProcess
 }
