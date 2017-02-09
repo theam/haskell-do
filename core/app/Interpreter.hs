@@ -12,7 +12,6 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import System.IO
 import System.Process
-import System.Directory
 import GHC.IO.Handle
 
 preprocess x = do
@@ -35,14 +34,6 @@ writeNotebook s nb = T.writeFile (filepath nb) $ formatNotebook nb
 
 loadNotebook :: State -> Notebook -> IO ()
 loadNotebook s nb = do
-  exists <- doesFileExist $ filepath nb
-  if exists then do
-    file <- T.readFile $ filepath nb
-    if (file == formatNotebook nb) then do
-      return ()
-    else do
-      hPutStrLn (ghciInput s) (":r")
-  else do
     hPutStrLn (ghciInput s) (":r")
 
 
@@ -58,7 +49,7 @@ readConsole s = do
 notebookInterpreter :: Notebook -> State -> IO (Either String Notebook)
 notebookInterpreter n s = do
   writeNotebook s n
-  loadNotebook s n
+  loadNotebook s
   writeConsole s n
   x <- readConsole s
   return (Right ( n { console = x } ))
