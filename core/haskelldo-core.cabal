@@ -32,6 +32,7 @@ executable haskelldo-core
                      , warp
                      , wai-websockets
                      , servant-server
+                     , directory
   other-modules:       WebSocketServer
                      , Types
                      , Interpreter

@@ -12,6 +12,7 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import System.IO
 import System.Process
+import System.Directory
 import GHC.IO.Handle
 
 preprocess x = do
@@ -32,9 +33,18 @@ formatNotebook = T.unlines . map getCellText . cells
 writeNotebook :: State -> Notebook -> IO ()
 writeNotebook s nb = T.writeFile (filepath nb) $ formatNotebook nb
 
-loadNotebook :: State -> IO ()
-loadNotebook s = do
-  hPutStrLn (ghciInput s) (":r")
+loadNotebook :: State -> Notebook -> IO ()
+loadNotebook s nb = do
+  exists <- doesFileExist $ filepath nb
+  if exists then do
+    file <- T.readFile $ filepath nb
+    if (file == formatNotebook nb) then do
+      return ()
+    else do
+      hPutStrLn (ghciInput s) (":r")
+  else do
+    hPutStrLn (ghciInput s) (":r")
+
 
 writeConsole :: State -> Notebook -> IO ()
 writeConsole s n = do
@@ -48,7 +58,7 @@ readConsole s = do
 notebookInterpreter :: Notebook -> State -> IO (Either String Notebook)
 notebookInterpreter n s = do
   writeNotebook s n
-  loadNotebook s
+  loadNotebook s n
   writeConsole s n
   x <- readConsole s
   return (Right ( n { console = x } ))
