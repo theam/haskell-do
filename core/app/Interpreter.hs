@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module Interpreter
   ( notebookInterpreter
   ) where
@@ -32,7 +33,6 @@ formatNotebook = T.unlines . map getCellText . cells
 
 writeNotebook :: State -> Notebook -> IO ()
 writeNotebook s nb = T.writeFile (filepath nb) $ formatNotebook nb
-
 
 loadNotebook :: State -> IO ()
 loadNotebook s = do
