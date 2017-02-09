@@ -56,11 +56,11 @@ broadcast conn msg = do
   T.putStrLn ("Log:" <> cs msg)
   WS.sendTextData conn msg
 
-application :: Notebook -> State -> WS.ServerApp
-application nb state pending = do
+application :: FilePath -> Notebook -> State -> WS.ServerApp
+application fp nb state pending = do
   conn <- WS.acceptRequest pending
   broadcastNotebook conn nb
-  talk conn state
+  talk conn state fp
 
 distress conn = broadcast conn "Distress!"
 
@@ -68,9 +68,9 @@ broadcastNotebook conn n = broadcast conn (cs (encode n))
 
 sendNotebook conn = either (broadcast conn . T.pack) (broadcastNotebook conn)
 
-talk :: Connection -> State -> IO ()
-talk conn state = forever $ do
+talk :: Connection -> State -> FilePath -> IO ()
+talk conn state fp = forever $ do
   msg <- WS.receiveData conn
   maybe (distress conn)
-        ((\notebook -> notebookInterpreter notebook state) >=> sendNotebook conn)
+        ((\notebook -> notebookInterpreter (notebook { filepath = fp }) state) >=> sendNotebook conn)
         (decode msg)

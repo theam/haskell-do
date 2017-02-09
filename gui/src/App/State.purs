@@ -27,7 +27,6 @@ initialState cellsState columnsState backendConnectionState consoleState =
     , consoleState : consoleState
     }
 
-
 update :: Action -> State -> EffModel State Action GlobalEffects
 update (CellsAction action) state =
   Cells.update action state.cellsState

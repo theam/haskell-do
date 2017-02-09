@@ -8,17 +8,17 @@ import Console.Types as Console
 import Data.Array
 import Node.Path (sep)
 
-initialNotebook :: Notebook
-initialNotebook = Notebook
-  { title: ""
-  , subtitle: ""
-  , author: ""
-  , date: ""
-  , cells: [] :: Array Cells.Cell
-  , console: ">"
-  , filepath: "Main.hs"
-  , loaded : true
-  }
+-- initialNotebook :: Notebook
+-- initialNotebook = Notebook
+--   { title: ""
+--   , subtitle: ""
+--   , author: ""
+--   , date: ""
+--   , cells: [] :: Array Cells.Cell
+--   , console: ">"
+--   , filepath: "Main.hs"
+--   , loaded : true
+--   }
 
 -- | Grabs the cells and the console from their
 --   respective states, and packs everything into
@@ -31,7 +31,7 @@ pack cellsState consoleState = Notebook
     , author : ""
     , cells : cellsState.cells
     , console : consoleState.buffer
-    , filepath : "Main.hs"
+    , filepath : ""
     , loaded : true
     }
 
