@@ -107,11 +107,11 @@ function initApplication () {
     mainWindow.show()
   })
 
-  mainWindow.on('closed', function () {
+  mainWindow.on('close', function () {
     if (os.platform() == 'win32') {
       child_process.exec('taskkill /pid ' + backendProcess.pid + ' /T /F')
     }
-    electron.dialog.showMessageBox({ title: "HaskellDO quitting", message: "Remember to kill the haskelldo process"})
+    electron.dialog.showMessageBox({ title: "HaskellDO quitting", message: "Thanks for using HaskellDO"})
     mainWindow = null
   })
 
@@ -129,6 +129,7 @@ function stackIsOnPath () {
 
 // when you close all the windows on a non-mac OS it quits the app
 app.on('window-all-closed', () => {
+
   if (process.platform !== 'darwin') { app.quit() }
 })
 
