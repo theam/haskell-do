@@ -37,6 +37,7 @@ function showStackNotOnPathError(){
 function openFile() {
   return electron.dialog.showOpenDialog({
     title: "HaskellDO - Open stack project",
+    filters: [ {name : 'Haskell', extensions: ['hs']}],
     properties: ['openFile'],
   })
 }
@@ -51,16 +52,6 @@ function openFileOrDie() {
   return filePath
 }
 
-function closeAfterConfirmationDialog() {
-  return electron.dialog.showMessageBox({
-    type: "warning",
-    buttons: ["Yes", "No"],
-    defaultId: 0,
-    title: "HaskellDO - Warning",
-    message: "The current version of HaskellDO will overwrite the contents of the Main.hs file, do you want to continue?",
-    cancelId : 1
-  })
-}
 
 function startBackend(path){
   var os = require('os').platform()
