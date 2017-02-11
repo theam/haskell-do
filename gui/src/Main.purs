@@ -55,7 +55,23 @@ buildAndSend _ = NoOp
 updateStateAfterReceiving :: BackendConnection.Action Notebook -> Action
 updateStateAfterReceiving (BackendConnection.Receive n) = case n of
   Notebook { loaded : true } -> UpdateState n
-  Notebook { title : t, subtitle : st, date : d, author : a, cells: c, console: cl, filepath : fp, loaded : false } -> LoadNotebook $ Notebook { title : t, subtitle : st, date : d, author : a, cells: c, console: cl, filepath : fp, loaded : true }
+  Notebook
+    { title : t
+    , subtitle : st
+    , date : d
+    , author : a
+    , cells: c
+    , console: cl
+    , filepath : fp
+    , loaded : false } -> LoadNotebook $ Notebook
+                            { title : t
+                            , subtitle : st
+                            , date : d
+                            , author : a
+                            , cells: c
+                            , console: cl
+                            , filepath : fp
+                            , loaded : true }
 updateStateAfterReceiving _ = NoOp
 
 liftAction :: forall subaction action . Channel subaction -> (subaction -> action) -> Signal action

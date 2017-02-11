@@ -19,6 +19,7 @@ import Data.List (intercalate)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Data.List
+import Data.List.Split
 
 -- | Clears the handle of any available input and returns it
 clearHandle :: Handle -> IO String
@@ -37,19 +38,28 @@ defaultPrograms =
            , cabalProgram = "cabal"
            , stackProgram = "stack" }
 
-constructCells :: [String] -> Int -> [Cell] -> [Cell]
-constructCells [] _ curr = map (\c -> c { cellContent = T.strip $ cellContent c}) filtered
-  where filtered = filter (\c -> (T.stripStart $ cellContent c) /=  (T.pack "")) curr
-constructCells lst@(x:xs) i curr =
-  if isPrefixOf "--" x then
-    constructCells lst' (i+1) (curr ++ [textcell])
-  else
-    constructCells lst'' (i+1) (curr ++ [codecell])
+listofCellContentLines :: [String] -> [[String]]
+listofCellContentLines fileLines = split whenLineIsFromATextCell fileLines
   where
-    lst' = dropWhile (\x -> isPrefixOf "--" x) lst
-    textcell = Cell TextCell i (T.pack $ unlines $ map (\('-':'-':' ':xs) -> xs) $ takeWhile (\x -> isPrefixOf "--" x) lst)
-    lst'' = dropWhile (\x -> not $ isPrefixOf "--" x) lst
-    codecell = Cell CodeCell i (T.pack $ unlines $ takeWhile (\x -> not $ isPrefixOf "--" x) lst)
+    whenLineIsFromATextCell = dropBlanks . condense $ whenElt (isPrefixOf "--")
+
+indexedCellContents :: [[String]] -> [(Int, [String])]
+indexedCellContents cellContentLines = zip [0..length cellContentLines] cellContentLines
+
+buildCell :: (Int, [String]) -> Cell
+buildCell (cellId, cellContent)
+  | cellContent `areFrom` TextCell = Cell TextCell cellId $ processedContents cellContent
+  | cellContent`areFrom` CodeCell = Cell CodeCell cellId $ processedContents cellContent
+  where
+    areFrom cc TextCell  = any (isPrefixOf "--") cc
+    areFrom cc CodeCell  = any (not . isPrefixOf "--") cc
+    processedContents = T.pack . unlines . map (removeCommentCharacters)
+    removeCommentCharacters line = if "--" `isPrefixOf` line then drop 3 line else line
+
+constructCells :: [String] -> [Cell]
+constructCells = map buildCell
+               . indexedCellContents
+               . listofCellContentLines
 
 constructNotebook :: FilePath -> String -> Notebook
 constructNotebook fp t = Notebook
@@ -57,7 +67,7 @@ constructNotebook fp t = Notebook
   , subtitle = ""
   , date = ""
   , author = ""
-  , cells = (constructCells (lines t) 0 [])
+  , cells = constructCells $ lines t
   , console = "> "
   , filepath = fp
   , loaded = False
