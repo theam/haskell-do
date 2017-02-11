@@ -56,6 +56,9 @@ buildCell (cellId, cellContent)
     processedContents = T.pack . unlines . map (removeCommentCharacters)
     removeCommentCharacters line = if "--" `isPrefixOf` line then drop 3 line else line
 
+killEmptyCell :: Cell -> Bool
+killEmptyCell c = (T.stripStart $ cellContent c) /= (T.pack "")
+
 constructCells :: [String] -> [Cell]
 constructCells = map buildCell
                . indexedCellContents
@@ -67,7 +70,7 @@ constructNotebook fp t = Notebook
   , subtitle = ""
   , date = ""
   , author = ""
-  , cells = constructCells $ lines t
+  , cells = filter killEmptyCell $ constructCells $ lines t
   , console = "> "
   , filepath = fp
   , loaded = False
