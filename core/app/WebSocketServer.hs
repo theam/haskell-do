@@ -22,7 +22,6 @@ import Language.Haskell.GhcMod.Types
 import System.IO
 import System.IO.Unsafe
 import System.Process
-import Utils (defaultPrograms)
 
 -- | Sets up the initial state
 setupState :: FilePath -> IO (Handle, Handle, Handle, ProcessHandle)
@@ -43,7 +42,7 @@ initializeState x = do
   (res, _) <- runGhcModT defaultOptions (findCradle defaultPrograms)
   case res of
     Right x ->
-        pure $ State {
+        pure State {
         ghciInput = inp
       , ghciOutput = out
       , ghciError = err

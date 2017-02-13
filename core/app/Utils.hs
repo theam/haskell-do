@@ -39,7 +39,7 @@ defaultPrograms =
            , stackProgram = "stack" }
 
 listofCellContentLines :: [String] -> [[String]]
-listofCellContentLines fileLines = split whenLineIsFromATextCell fileLines
+listofCellContentLines = split whenLineIsFromATextCell
   where
     whenLineIsFromATextCell = dropBlanks . condense $ whenElt (isPrefixOf "--")
 
@@ -53,11 +53,11 @@ buildCell (cellId, cellContent)
   where
     areFrom cc TextCell  = any (isPrefixOf "--") cc
     areFrom cc CodeCell  = any (not . isPrefixOf "--") cc
-    processedContents = T.pack . unlines . map (removeCommentCharacters)
+    processedContents = T.pack . unlines . map removeCommentCharacters
     removeCommentCharacters line = if "--" `isPrefixOf` line then drop 3 line else line
 
-killEmptyCell :: Cell -> Bool
-killEmptyCell c = (T.stripStart $ cellContent c) /= (T.pack "")
+killEmptyCells :: Cell -> Bool
+killEmptyCells c = T.stripStart (cellContent c) /= T.pack ""
 
 constructCells :: [String] -> [Cell]
 constructCells = map buildCell
@@ -70,7 +70,7 @@ constructNotebook fp t = Notebook
   , subtitle = ""
   , date = ""
   , author = ""
-  , cells = filter killEmptyCell $ constructCells $ lines t
+  , cells = filter killEmptyCells $ constructCells $ lines t
   , console = "> "
   , filepath = fp
   , loaded = False

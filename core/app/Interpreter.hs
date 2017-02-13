@@ -16,12 +16,6 @@ import System.IO
 import System.Process
 import GHC.IO.Handle
 
-preprocess x = do
-  a <- x
-  case a of
-    Left a -> pure (Left (show a))
-    Right x -> pure (Right x)
-
 getCellText :: Cell -> Text
 getCellText c = case cellType c of
   TextCell    -> T.unlines $ map (mappend "-- ") (T.lines $ cellContent c)
@@ -35,8 +29,7 @@ writeNotebook :: State -> Notebook -> IO ()
 writeNotebook s nb = T.writeFile (filepath nb) $ formatNotebook nb
 
 loadNotebook :: State -> IO ()
-loadNotebook s = do
-  hPutStrLn (ghciInput s) (":r")
+loadNotebook s = hPutStrLn (ghciInput s) ":r"
 
 writeConsole :: State -> Notebook -> IO ()
 writeConsole s n = do
@@ -44,8 +37,7 @@ writeConsole s n = do
   hFlush (ghciInput s)
 
 readConsole :: State -> IO String
-readConsole s = do
-  clearHandle (ghciOutput s)
+readConsole s = clearHandle (ghciOutput s)
 
 notebookInterpreter :: Notebook -> State -> IO (Either String Notebook)
 notebookInterpreter n s = do

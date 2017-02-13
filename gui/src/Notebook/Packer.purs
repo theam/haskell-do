@@ -6,7 +6,6 @@ import Notebook.Types
 import Cells.Types as Cells
 import Console.Types as Console
 import Data.Array
-import Node.Path (sep)
 
 -- | Grabs the cells and the console from their
 --   respective states, and packs everything into
