@@ -51,10 +51,11 @@ buildCell (cellId, cellContent)
   | cellContent `areFrom` TextCell = Cell TextCell cellId $ processedContents cellContent
   | cellContent`areFrom` CodeCell = Cell CodeCell cellId $ processedContents cellContent
   where
-    areFrom cc TextCell  = any (isPrefixOf "--") cc
+    areFrom cc TextCell  = any (T.isPrefixOf "--" . T.stripStart . T.pack) cc
     areFrom cc CodeCell  = any (not . isPrefixOf "--") cc
     processedContents = T.pack . unlines . map removeCommentCharacters
     removeCommentCharacters line = if "--" `isPrefixOf` line then drop 3 line else line
+    
 
 killEmptyCells :: Cell -> Bool
 killEmptyCells c = T.stripStart (cellContent c) /= T.pack ""
