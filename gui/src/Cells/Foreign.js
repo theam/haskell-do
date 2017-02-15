@@ -31,14 +31,17 @@ exports.fromTextAreaMarkdownEditor = function (textAreaId) {
             editor.codemirror.on("blur", function () {
                 editor.togglePreview();
             });
-            editor.codemirror.on("refresh", function () {
-                editor.togglePreview();
-            });
             $('#'+outerId+"> .CodeMirror").dblclick(function () {
                 editor.togglePreview();
             });
             return editor;
         }
+}
+
+exports.toggleEditor = function (editor) {
+    return function() {
+        editor.togglePreview();
+    }
 }
 
 exports._onChange = function (editor) {

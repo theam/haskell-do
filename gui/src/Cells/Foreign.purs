@@ -69,6 +69,8 @@ foreign import _onClick ::
     Callback0 Unit ->
     Eff ( dom :: DOM | e) Unit
 
+foreign import toggleEditor :: forall e . MarkdownEditor -> Eff ( dom :: DOM | e) Unit
+ 
 makeCodeEditor :: ∀ eff . Channel Action -> CellId -> Eff ( channel :: CHANNEL, dom :: DOM | eff ) Action
 makeCodeEditor chan i = do
     editor <- liftEff $ fromTextAreaCodeEditor (show i) { mode : "haskell" }
@@ -79,6 +81,7 @@ makeCodeEditor chan i = do
 makeTextEditor :: ∀ eff . Channel Action -> CellId -> Eff (channel :: CHANNEL, dom :: DOM | eff ) Action
 makeTextEditor chan i = do
     editor <- fromTextAreaMarkdownEditor (show i)
+    toggleEditor editor
     onChange editor.codemirror chan (\txt -> SaveContent i txt)
     onClick editor.codemirror chan $ SetCurrentCell i
     pure NoOp
