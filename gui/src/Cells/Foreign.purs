@@ -81,7 +81,16 @@ makeCodeEditor chan i = do
 makeTextEditor :: ∀ eff . Channel Action -> CellId -> Eff (channel :: CHANNEL, dom :: DOM | eff ) Action
 makeTextEditor chan i = do
     editor <- fromTextAreaMarkdownEditor (show i)
+    onChange editor.codemirror chan (\txt -> SaveContent i txt)
+    onClick editor.codemirror chan $ SetCurrentCell i
+    pure NoOp
+
+loadTextEditor :: ∀ eff . Channel Action -> CellId -> Eff (channel :: CHANNEL, dom :: DOM | eff ) Action
+loadTextEditor chan i = do
+    editor <- fromTextAreaMarkdownEditor (show i)
     toggleEditor editor
     onChange editor.codemirror chan (\txt -> SaveContent i txt)
     onClick editor.codemirror chan $ SetCurrentCell i
     pure NoOp
+
+

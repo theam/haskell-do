@@ -67,7 +67,7 @@ update RenderAllCells s =
   where
     render cell = case cell of
       Cell {cellType : TextCell, cellId : i, cellContent : _ } ->
-        liftEff $ makeTextEditor s.editorChanges i
+        liftEff $ loadTextEditor s.editorChanges i
       Cell {cellType : CodeCell, cellId : i, cellContent : _} ->
         liftEff $ makeCodeEditor s.editorChanges i
 
