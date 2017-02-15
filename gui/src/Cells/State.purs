@@ -63,13 +63,18 @@ update (RenderTextCell i) s =
     ]
 
 update RenderAllCells s =
-  {state : s, effects: map render s.cells}
+  {state : modifiedState , effects: map render s.cells}
   where
     render cell = case cell of
       Cell {cellType : TextCell, cellId : i, cellContent : _ } ->
         liftEff $ loadTextEditor s.editorChanges i
       Cell {cellType : CodeCell, cellId : i, cellContent : _} ->
         liftEff $ makeCodeEditor s.editorChanges i
+    modifiedState = 
+        { currentCell : 0
+        , cells : s.cells
+        , editorChanges : s.editorChanges
+        }
 
 update (SaveContent cId newContent) s =
     noEffects

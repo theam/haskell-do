@@ -15,7 +15,6 @@ import System.Process
 import Data.IORef
 import Language.Haskell.GhcMod
 import Language.Haskell.GhcMod.Types
-import Data.List (intercalate)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Data.List
@@ -53,7 +52,7 @@ buildCell (cellId, cellContent)
   where
     areFrom cc TextCell  = any (T.isPrefixOf "--" . T.stripStart . T.pack) cc
     areFrom cc CodeCell  = any (not . isPrefixOf "--") cc
-    processedContents = T.pack . unlines . map removeCommentCharacters
+    processedContents = T.strip . T.pack . unlines . map removeCommentCharacters
     removeCommentCharacters line = if "--" `isPrefixOf` line then drop 3 line else line
     
 
