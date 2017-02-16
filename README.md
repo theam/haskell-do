@@ -43,18 +43,6 @@ it will ask you to open a Stack project.
 Navigate to the root of the project you just created and open that
 folder.
 
-After opening the project, it will notify you of the following fact:
-
-> The current version of HaskellDO **does not** support opening projects,
-  therefore, after opening the project, it will override the `Main.hs`
-  file in the root of the project. (Not any file in `app` or `src`, just
-  the root.)
-
-![Confirmation Dialog](http://imgur.com/DgspZip.jpg)
-
-Therefore, if you re-open a project, the `<project-root>/Main.hs` file will
-be deleted and re-created from scratch.
-
 ### Main interface
 Let's begin by adding a text cell for documenting our analysis:
 
