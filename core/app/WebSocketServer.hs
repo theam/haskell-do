@@ -22,7 +22,6 @@ import Language.Haskell.GhcMod.Types
 import System.IO
 import System.IO.Unsafe
 import System.Process
-import Utils (defaultPrograms)
 
 -- | Sets up the initial state
 setupState :: FilePath -> IO (Handle, Handle, Handle, ProcessHandle)
@@ -32,7 +31,7 @@ setupState x = do
   hSetBinaryMode out False
   hSetBinaryMode err False
   hPutStrLn inp $ ":l " ++ x
-  hPutStrLn inp "set prompt \">\""
+  hPutStrLn inp "set prompt \"> \""
   hFlush inp
   clearHandle out
   return (inp, out, err, pid)
@@ -43,7 +42,7 @@ initializeState x = do
   (res, _) <- runGhcModT defaultOptions (findCradle defaultPrograms)
   case res of
     Right x ->
-        pure $ State {
+        pure State {
         ghciInput = inp
       , ghciOutput = out
       , ghciError = err
@@ -56,10 +55,11 @@ broadcast conn msg = do
   T.putStrLn ("Log:" <> cs msg)
   WS.sendTextData conn msg
 
-application :: State -> WS.ServerApp
-application state pending = do
+application :: FilePath -> Notebook -> State -> WS.ServerApp
+application fp nb state pending = do
   conn <- WS.acceptRequest pending
-  talk conn state
+  broadcastNotebook conn nb
+  talk conn state fp
 
 distress conn = broadcast conn "Distress!"
 
@@ -67,9 +67,9 @@ broadcastNotebook conn n = broadcast conn (cs (encode n))
 
 sendNotebook conn = either (broadcast conn . T.pack) (broadcastNotebook conn)
 
-talk :: Connection -> State -> IO ()
-talk conn state = forever $ do
+talk :: Connection -> State -> FilePath -> IO ()
+talk conn state fp = forever $ do
   msg <- WS.receiveData conn
   maybe (distress conn)
-        ((\notebook -> notebookInterpreter notebook state) >=> sendNotebook conn)
+        ((\notebook -> notebookInterpreter (notebook { filepath = fp }) state) >=> sendNotebook conn)
         (decode msg)

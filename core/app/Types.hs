@@ -30,17 +30,13 @@ data Notebook = Notebook
     , cells :: [Cell]
     , console :: String
     , filepath :: FilePath
+    , loaded :: Bool
     } deriving (Generic, Show)
 
 instance FromJSON Notebook
 instance ToJSON Notebook where
     toEncoding = genericToEncoding defaultOptions
 
-data ProjectAction
-  = OpenProject
-  | NewProject ProjectName
-  -- Need to keep track of current file for stack reasons
-  -- ^Kit
 
 data Cell = Cell
     { cellType :: CellType

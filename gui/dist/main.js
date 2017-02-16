@@ -37,7 +37,8 @@ function showStackNotOnPathError(){
 function openFile() {
   return electron.dialog.showOpenDialog({
     title: "HaskellDO - Open stack project",
-    properties: ['openDirectory'],
+    filters: [ {name : 'Haskell', extensions: ['hs']}],
+    properties: ['openFile'],
   })
 }
 
@@ -51,16 +52,6 @@ function openFileOrDie() {
   return filePath
 }
 
-function closeAfterConfirmationDialog() {
-  return electron.dialog.showMessageBox({
-    type: "warning",
-    buttons: ["Yes", "No"],
-    defaultId: 0,
-    title: "HaskellDO - Warning",
-    message: "The current version of HaskellDO will overwrite the contents of the Main.hs file, do you want to continue?",
-    cancelId : 1
-  })
-}
 
 function startBackend(path){
   var os = require('os').platform()
@@ -76,7 +67,8 @@ function startBackend(path){
     corePath = appRoot + "/dist/bin/haskelldo-core-linux"
     separator = "/"
   }
-  coreProcess = spawn("cd " + path + " && " + corePath + " \"" + path + separator + "Main.hs\"")
+  var dirpath = path.substring(0,path.lastIndexOf(separator)+1);
+  coreProcess = spawn("cd " + dirpath + " && " + corePath + " \"" + path) //cd into directory and then load file
   setTimeout(function(){}, 3000)
   return coreProcess
 }
@@ -88,9 +80,6 @@ function initApplication () {
 
   var filePath = openFileOrDie()
   var backendProcess
-
-  if (closeAfterConfirmationDialog())
-    app.exit(-1)
 
   if (!devModeActivated()) {
     backendProcess = startBackend(filePath)
@@ -106,11 +95,11 @@ function initApplication () {
     mainWindow.show()
   })
 
-  mainWindow.on('closed', function () {
+  mainWindow.on('close', function () {
     if (os.platform() == 'win32') {
       child_process.exec('taskkill /pid ' + backendProcess.pid + ' /T /F')
     }
-    electron.dialog.showMessageBox({ title: "HaskellDO quitting", message: "Remember to kill the haskelldo process"})
+    electron.dialog.showMessageBox({ title: "HaskellDO quitting", message: "Thanks for using HaskellDO"})
     mainWindow = null
   })
 
@@ -128,6 +117,7 @@ function stackIsOnPath () {
 
 // when you close all the windows on a non-mac OS it quits the app
 app.on('window-all-closed', () => {
+
   if (process.platform !== 'darwin') { app.quit() }
 })
 

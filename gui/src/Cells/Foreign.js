@@ -38,6 +38,12 @@ exports.fromTextAreaMarkdownEditor = function (textAreaId) {
         }
 }
 
+exports.toggleEditor = function (editor) {
+    return function() {
+        editor.togglePreview();
+    }
+}
+
 exports._onChange = function (editor) {
     return function (callback) {
         return function () {

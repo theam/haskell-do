@@ -7,17 +7,6 @@ import Cells.Types as Cells
 import Console.Types as Console
 import Data.Array
 
-initialNotebook :: Notebook
-initialNotebook = Notebook
-  { title: ""
-  , subtitle: ""
-  , author: ""
-  , date: ""
-  , cells: [] :: Array Cells.Cell
-  , console: ">"
-  , filepath: "Main.hs"
-  }
-
 -- | Grabs the cells and the console from their
 --   respective states, and packs everything into
 --   a Notebook.
@@ -29,11 +18,12 @@ pack cellsState consoleState = Notebook
     , author : ""
     , cells : cellsState.cells
     , console : consoleState.buffer
-    , filepath : "Main.hs"
+    , filepath : ""
+    , loaded : true
     }
 
 unpackCells :: Notebook -> Cells.State -> Cells.State
-unpackCells (Notebook n) state = 
+unpackCells (Notebook n) state =
   state { cells = n.cells
         , currentCell = newCurrentCell
         }

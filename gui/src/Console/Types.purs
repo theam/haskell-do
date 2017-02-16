@@ -3,10 +3,10 @@ module Console.Types where
 import Prelude
 
 import Signal.Channel
-import Data.Lens
 
 data Action
     = Add String
+    | Save
     | Send String
     | PackAndSendToBackend
     | NoOp

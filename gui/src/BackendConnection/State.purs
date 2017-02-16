@@ -19,7 +19,7 @@ import Debug.Trace (spy)
 initialState :: ∀ a eff .
                 DecodeJson a =>
                 Channel (Action a) ->
-                URL -> 
+                URL ->
                 Eff ( ws :: WEBSOCKET, err :: EXCEPTION | eff ) (State a)
 initialState chan url = do
     connection@(Connection ws) <- newWebSocket url []
@@ -44,7 +44,7 @@ initialState chan url = do
                 send chan ((Receive n) :: Action a)
 
 sendMsg :: ∀ a e . Connection -> String -> Eff ( ws :: WEBSOCKET, err :: EXCEPTION | e ) (Action a)
-sendMsg (Connection ws) msg = 
+sendMsg (Connection ws) msg =
         ws.send (Message msg) *> pure NoOp
 
 update :: ∀ a . EncodeJson a => Update (State a) (Action a) GlobalEffects

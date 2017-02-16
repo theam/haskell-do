@@ -10,10 +10,12 @@ import BackendConnection.Types as BackendConnection
 import BackendConnection.State as BackendConnection
 import Cells.Types as Cells
 import Cells.State as Cells
+import Cells.View as Cells
 import Console.Types as Console
 import Console.State as Console
 import Columns.Types as Columns
 import Columns.State as Columns
+import Notebook.Types
 
 import WebSocket (URL(..))
 import DOM
@@ -32,11 +34,12 @@ main = do
 
     let cellsState             = Cells.initialState cellsChannel
         consoleState           = Console.initialState consoleChannel
-        inputSignals = 
+        inputSignals =
             [ consoleChannel `liftAction` buildAndSend
             , backendConnectionChannel `liftAction` updateStateAfterReceiving
             , cellsChannel `liftAction` CellsAction
             ]
+
     app <- start
         { initialState : App.initialState cellsState {} backendConnectionState consoleState
         , update : App.update
@@ -50,7 +53,25 @@ buildAndSend Console.PackAndSendToBackend = BuildAndSend
 buildAndSend _ = NoOp
 
 updateStateAfterReceiving :: BackendConnection.Action Notebook -> Action
-updateStateAfterReceiving (BackendConnection.Receive n) = UpdateState n
+updateStateAfterReceiving (BackendConnection.Receive n) = case n of
+  Notebook { loaded : true } -> UpdateState n
+  Notebook
+    { title : t
+    , subtitle : st
+    , date : d
+    , author : a
+    , cells: c
+    , console: cl
+    , filepath : fp
+    , loaded : false } -> LoadNotebook $ Notebook
+                            { title : t
+                            , subtitle : st
+                            , date : d
+                            , author : a
+                            , cells: c
+                            , console: cl
+                            , filepath : fp
+                            , loaded : true }
 updateStateAfterReceiving _ = NoOp
 
 liftAction :: forall subaction action . Channel subaction -> (subaction -> action) -> Signal action

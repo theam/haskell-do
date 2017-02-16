@@ -14,6 +14,7 @@ newtype Notebook = Notebook
     , cells :: Array Cells.Cell
     , console :: String
     , filepath :: String
+    , loaded :: Boolean
     }
 
 instance encodeJsonNotebook :: EncodeJson Notebook where
@@ -25,6 +26,7 @@ instance encodeJsonNotebook :: EncodeJson Notebook where
        ~> "cells" := n.cells
        ~> "console" := n.console
        ~> "filepath" := n.filepath
+       ~> "loaded" := n.loaded
        ~> jsonEmptyObject
 
 instance decodeJsonNotebook :: DecodeJson Notebook where
@@ -37,4 +39,5 @@ instance decodeJsonNotebook :: DecodeJson Notebook where
         cells <- o.? "cells"
         console <- o.? "console"
         filepath <- o.? "filepath"
-        pure $ Notebook {title, subtitle, date, author, cells, console, filepath}
+        loaded <- o.? "loaded"
+        pure $ Notebook {title, subtitle, date, author, cells, console, filepath, loaded}
