@@ -48,13 +48,13 @@ onClick editor chan f = do
 foreign import fromTextAreaCodeEditor ::
     forall e .
     TextAreaId ->
-    Configuration -> 
+    Configuration ->
     Eff ( dom :: DOM | e ) CodeEditor
 
 -- | Converts a text area into a SimpleMDE markdown editor
 foreign import fromTextAreaMarkdownEditor ::
     forall e .
-    TextAreaId -> 
+    TextAreaId ->
     Eff (dom :: DOM | e) MarkdownEditor
 
 foreign import _onChange ::
@@ -69,6 +69,8 @@ foreign import _onClick ::
     Callback0 Unit ->
     Eff ( dom :: DOM | e) Unit
 
+foreign import toggleEditor :: forall e . MarkdownEditor -> Eff ( dom :: DOM | e) Unit
+ 
 makeCodeEditor :: ∀ eff . Channel Action -> CellId -> Eff ( channel :: CHANNEL, dom :: DOM | eff ) Action
 makeCodeEditor chan i = do
     editor <- liftEff $ fromTextAreaCodeEditor (show i) { mode : "haskell" }
@@ -82,3 +84,13 @@ makeTextEditor chan i = do
     onChange editor.codemirror chan (\txt -> SaveContent i txt)
     onClick editor.codemirror chan $ SetCurrentCell i
     pure NoOp
+
+loadTextEditor :: ∀ eff . Channel Action -> CellId -> Eff (channel :: CHANNEL, dom :: DOM | eff ) Action
+loadTextEditor chan i = do
+    editor <- fromTextAreaMarkdownEditor (show i)
+    toggleEditor editor
+    onChange editor.codemirror chan (\txt -> SaveContent i txt)
+    onClick editor.codemirror chan $ SetCurrentCell i
+    pure NoOp
+
+

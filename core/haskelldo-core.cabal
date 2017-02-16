@@ -21,7 +21,9 @@ executable haskelldo-core
                      , websockets
                      , text
                      , aeson
+                     , split
                      , string-conversions
+                     , directory
                      , bytestring
                      , mtl
                      , filepath

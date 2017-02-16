@@ -4,7 +4,7 @@ import Prelude
 
 
 import Cells.Types as Cells
-import Cells.State (update) as Cells
+import Cells.State (update, initialState) as Cells
 import Columns.State as Columns
 import Columns.Types as Columns
 import Console.State as Console
@@ -17,6 +17,7 @@ import Notebook.Packer as Notebook
 
 import Pux
 import Global.Effects
+import Signal.Channel (subscribe, channel, CHANNEL, Channel)
 
 initialState :: Cells.State -> Columns.State -> BackendConnection.State Notebook -> Console.State -> State
 initialState cellsState columnsState backendConnectionState consoleState =
@@ -25,7 +26,6 @@ initialState cellsState columnsState backendConnectionState consoleState =
     , backendConnectionState : backendConnectionState
     , consoleState : consoleState
     }
-
 
 update :: Action -> State -> EffModel State Action GlobalEffects
 update (CellsAction action) state =
@@ -53,10 +53,20 @@ update BuildAndSend state = onlyEffects state [ do
     pure $ BackendConnectionAction (BackendConnection.Send notebook)
   ]
 
-update (UpdateState n) state = 
-  noEffects $ state 
-    { cellsState = Notebook.unpackCells n state.cellsState
-    , consoleState = Notebook.unpackConsole n state.consoleState
-    }
+update (LoadNotebook n) state =
+  { state : newState
+  , effects : [ do
+    pure $ CellsAction Cells.RenderAllCells ]
+  }
+  where
+    newState = state { cellsState = cellsState', consoleState = consoleState' }
+    cellsState' = Notebook.unpackCells n state.cellsState
+    consoleState' = Notebook.unpackConsole n state.consoleState
+
+update (UpdateState n) state =
+ noEffects $ state
+   { cellsState = Notebook.unpackCells n state.cellsState
+   , consoleState = Notebook.unpackConsole n state.consoleState
+   }
 
 update NoOp appState = noEffects $ appState

@@ -9,16 +9,25 @@ import Data.Lens as Lens
 import Console.Types
 
 view :: State -> Html Action
-view s = 
-    pre 
+view s =
+    pre
         [ className "console", id_ "consoleWindow"]
         [ code
             []
             [ text $ s.display ]
-        , input 
+        , input
             [id_ "consoleInput", onKeyPress sendConsole, onChange updateConsole ]
             []
         ]
   where
     sendConsole   ev = if ev.charCode == 13 then (Send s.buffer) else NoOp
     updateConsole ev = Add ev.target.value
+
+clickSaveButton :: State -> Html Action
+clickSaveButton s = a
+    [ onClick $ const Save
+    , href "#"
+    , id_ "save-button"
+    , className "glyphicon glyphicon-floppy-disk"
+    ]
+    [ text "" ]

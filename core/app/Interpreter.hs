@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module Interpreter
   ( notebookInterpreter
   ) where
@@ -8,17 +9,12 @@ import Control.Monad.Trans
 import Control.Monad
 import Utils
 import Data.Text (Text)
+import Data.List
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import System.IO
 import System.Process
 import GHC.IO.Handle
-
-preprocess x = do
-  a <- x
-  case a of
-    Left a -> pure (Left (show a))
-    Right x -> pure (Right x)
 
 getCellText :: Cell -> Text
 getCellText c = case cellType c of
@@ -32,10 +28,8 @@ formatNotebook = T.unlines . map getCellText . cells
 writeNotebook :: State -> Notebook -> IO ()
 writeNotebook s nb = T.writeFile (filepath nb) $ formatNotebook nb
 
-loadNotebook :: State -> Notebook -> IO ()
-loadNotebook s nb = do
-    hPutStrLn (ghciInput s) (":r")
-
+loadNotebook :: State -> IO ()
+loadNotebook s = hPutStrLn (ghciInput s) ":r"
 
 writeConsole :: State -> Notebook -> IO ()
 writeConsole s n = do
@@ -43,8 +37,7 @@ writeConsole s n = do
   hFlush (ghciInput s)
 
 readConsole :: State -> IO String
-readConsole s = do
-  clearHandle (ghciOutput s)
+readConsole s = clearHandle (ghciOutput s)
 
 notebookInterpreter :: Notebook -> State -> IO (Either String Notebook)
 notebookInterpreter n s = do

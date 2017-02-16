@@ -10,9 +10,11 @@ import Signal.Channel
 import Control.Monad.Eff.Class (liftEff)
 import Global.Effects
 import Debug.Trace
+import Data.Array
+import Data.Maybe
 
 initialState :: Channel Action -> State
-initialState chan = 
+initialState chan =
     { currentCell   : 0
     , cells         : [] :: Array Cell
     , editorChanges : chan
@@ -34,14 +36,14 @@ saveContent cId newContent s = s { cells = map updateCell s.cells }
             else Cell c
 
 update :: Update State Action GlobalEffects
-update AddCodeCell s = 
+update AddCodeCell s =
     { state : newState
     , effects : [ pure $ RenderCodeCell ( totalCells s) ]
     }
   where
     newState = addCodeCell s
 
-update AddTextCell s = 
+update AddTextCell s =
     { state : newState
     , effects : [ pure $ RenderTextCell $ totalCells s ]
     }
@@ -60,19 +62,32 @@ update (RenderTextCell i) s =
       $ makeTextEditor s.editorChanges i
     ]
 
-update (SaveContent cId newContent) s = 
+update RenderAllCells s =
+  {state : modifiedState , effects: map render s.cells}
+  where
+    render cell = case cell of
+      Cell {cellType : TextCell, cellId : i, cellContent : _ } ->
+        liftEff $ loadTextEditor s.editorChanges i
+      Cell {cellType : CodeCell, cellId : i, cellContent : _} ->
+        liftEff $ makeCodeEditor s.editorChanges i
+    modifiedState = 
+        { currentCell : 0
+        , cells : s.cells
+        , editorChanges : s.editorChanges
+        }
+
+update (SaveContent cId newContent) s =
     noEffects
     $ saveContent cId (spy newContent) s
 
-update (RemoveCell cId) s = 
-    noEffects 
+update (RemoveCell cId) s =
+    noEffects
     $ removeCell cId s
 
 update (SetCurrentCell cId) s =
     noEffects
     $ s { currentCell = cId }
 
-update NoOp s = 
+update NoOp s =
     noEffects
     $ s
-
