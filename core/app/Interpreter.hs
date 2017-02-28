@@ -37,7 +37,14 @@ writeConsole s n = do
   hFlush (ghciInput s)
 
 readConsole :: State -> IO String
-readConsole s = clearHandle (ghciOutput s)
+readConsole s = do
+  ready <- hReady (ghciError s)
+  if ready then do
+    err <- clearHandle (ghciError s)
+    out <- clearHandle (ghciOutput s)
+    return $ err ++ out 
+  else
+    clearHandle (ghciOutput s)
 
 notebookInterpreter :: Notebook -> State -> IO (Either String Notebook)
 notebookInterpreter n s = do
