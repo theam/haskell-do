@@ -19,9 +19,11 @@ import Utils
 import GHC.IO.Handle
 import Language.Haskell.GhcMod as GH
 import Language.Haskell.GhcMod.Types
+import Data.Either.Unwrap
 import System.IO
 import System.IO.Unsafe
 import System.Process
+import System.Directory
 
 -- | Sets up the initial state
 setupState :: FilePath -> IO (Handle, Handle, Handle, ProcessHandle)
@@ -30,24 +32,24 @@ setupState x = do
   hSetBinaryMode inp False
   hSetBinaryMode out False
   hSetBinaryMode err False
-  hPutStrLn inp $ ":l " ++ x
+  -- hPutStrLn inp $ ":l " ++ x
   hFlush inp
   clearHandle out
   return (inp, out, err, pid)
 
 initializeState :: FilePath -> IO State
 initializeState x = do
-  (inp, out, err, pid) <- setupState x
+  
   (res, _) <- runGhcModT defaultOptions (findCradle defaultPrograms)
-  case res of
-    Right x ->
-        pure State {
-        ghciInput = inp
-      , ghciOutput = out
-      , ghciError = err
-      , ghciProcessHandle = pid
-      , notebookCradle = x }
-    Left x -> error "No stack project found, please initialize a new project"
+  let cradle = fromRight res 
+  setCurrentDirectory $ cradleRootDir cradle 
+  (inp, out, err, pid) <- setupState x
+  pure State {
+  ghciInput = inp
+  , ghciOutput = out
+  , ghciError = err
+  , ghciProcessHandle = pid
+  , notebookCradle = cradle }
 
 broadcast :: Connection -> Text -> IO ()
 broadcast conn msg = do
