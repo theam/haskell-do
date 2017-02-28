@@ -71,7 +71,7 @@ constructNotebook fp t = Notebook
   , date = ""
   , author = ""
   , cells = filter killEmptyCells $ constructCells $ lines t
-  , console = "> "
+  , console = ""
   , filepath = fp
   , loaded = False
   }
