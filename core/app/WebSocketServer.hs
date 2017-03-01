@@ -42,7 +42,6 @@ setupState x = do
 
 initializeState :: FilePath -> IO State
 initializeState x = do
-  
   (res, _) <- runGhcModT defaultOptions (findCradle defaultPrograms)
   let cradle = fromRight res 
   setCurrentDirectory $ cradleRootDir cradle 
