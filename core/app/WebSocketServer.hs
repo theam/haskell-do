@@ -33,9 +33,8 @@ setupState x = do
   hSetBinaryMode inp False
   hSetBinaryMode out False
   hSetBinaryMode err False
-  let fileDir = takeDirectory x 
   curDir <- getCurrentDirectory
-  when (fileDir == curDir) $ hPutStrLn inp $ ":l " ++ x -- if we're not in a stack project, load the file
+  when (curDir == takeDirectory x) $ hPutStrLn inp $ ":l " ++ x -- if we're not in a stack project, load the file
   hFlush inp
   clearHandle out
   return (inp, out, err, pid)
