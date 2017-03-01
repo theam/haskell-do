@@ -5,7 +5,7 @@ module Utils ( clearHandle
              , loadNotebookFromFile
              , constructCells
              , constructNotebook ) where
-
+             
 import GHC.IO.Handle
 import System.IO
 import Types
