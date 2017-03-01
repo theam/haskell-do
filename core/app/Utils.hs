@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, LambdaCase #-}
 
 module Utils ( clearHandle
              , defaultPrograms
@@ -22,13 +22,13 @@ import Data.List.Split
 
 -- | Clears the handle of any available input and returns it
 clearHandle :: Handle -> IO String
-clearHandle out = do
-  test <- hReady out
-  if test
-    then do x <- hGetChar out
-            xs <- clearHandle out
-            return (x : xs)
-    else pure []
+clearHandle out =
+  hReady out >>= \case 
+    True -> do 
+      x <- hGetChar out 
+      xs <- clearHandle out 
+      return (x : xs)
+    False -> pure [] 
 
 defaultPrograms :: Programs
 defaultPrograms =
