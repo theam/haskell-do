@@ -34,10 +34,13 @@ setupState x = do
   hSetBinaryMode out False
   hSetBinaryMode err False
   curDir <- getCurrentDirectory
-  when (curDir == takeDirectory x) $ hPutStrLn inp $ ":l " ++ x -- if we're not in a stack project, load the file
+  loadFileNotInStackProject curDir (takeDirectory x) inp
+  --when (curDir == takeDirectory x) $ hPutStrLn inp $ ":l " ++ x -- if we're not in a stack project, load the file
   hFlush inp
   clearHandle out
   return (inp, out, err, pid)
+  where
+    loadFileNotInStackProject fdir sdir inp = when (fdir == sdir) $ hPutStrLn inp $ ":l " ++ x
 
 initializeState :: FilePath -> IO State
 initializeState x = do
