@@ -19,7 +19,6 @@ import Utils
 import GHC.IO.Handle
 import Language.Haskell.GhcMod as GH
 import Language.Haskell.GhcMod.Types
-import Data.Either.Unwrap
 import System.IO
 import System.IO.Unsafe
 import System.Process
@@ -34,18 +33,16 @@ setupState x = do
   hSetBinaryMode out False
   hSetBinaryMode err False
   curDir <- getCurrentDirectory
-  loadFileNotInStackProject curDir (takeDirectory x) inp
-  --when (curDir == takeDirectory x) $ hPutStrLn inp $ ":l " ++ x -- if we're not in a stack project, load the file
+  loadFileIfNotInStackProject curDir (takeDirectory x) inp
   hFlush inp
   clearHandle out
   return (inp, out, err, pid)
   where
-    loadFileNotInStackProject fdir sdir inp = when (fdir == sdir) $ hPutStrLn inp $ ":l " ++ x
+    loadFileIfNotInStackProject fdir sdir inp = when (fdir == sdir) $ hPutStrLn inp $ ":l " ++ x
 
 initializeState :: FilePath -> IO State
 initializeState x = do
-  (res, _) <- runGhcModT defaultOptions (findCradle defaultPrograms)
-  let cradle = fromRight res 
+  (Right cradle, _) <- runGhcModT defaultOptions (findCradle defaultPrograms)
   setCurrentDirectory $ cradleRootDir cradle 
   (inp, out, err, pid) <- setupState x
   pure State {

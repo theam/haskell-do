@@ -35,7 +35,6 @@ executable haskelldo-core
                      , wai-websockets
                      , servant-server
                      , directory
-                     , either-unwrap
   other-modules:       WebSocketServer
                      , Types
                      , Interpreter
