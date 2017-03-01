@@ -36,9 +36,9 @@ writeConsole s n = do
   hPutStrLn (ghciInput s) (console n)
   hFlush (ghciInput s)
 
-readConsole :: State -> IO State 
-readConsole = 
-  hready (ghciError s) >>= \case
+readConsole :: State -> IO String
+readConsole s = 
+  hReady (ghciError s) >>= \case
     True -> do
       err <- clearHandle (ghciError s)
       out <- clearHandle (ghciOutput s)
