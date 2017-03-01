@@ -9,7 +9,7 @@ import Data.List (intercalate)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Control.Concurrent
-import Control.Monad (forever, (>=>))
+import Control.Monad (forever, (>=>), when)
 import qualified Network.WebSockets as WS
 import Network.WebSockets (Connection)
 import Data.String.Conversions
@@ -24,6 +24,7 @@ import System.IO
 import System.IO.Unsafe
 import System.Process
 import System.Directory
+import System.FilePath
 
 -- | Sets up the initial state
 setupState :: FilePath -> IO (Handle, Handle, Handle, ProcessHandle)
@@ -32,7 +33,9 @@ setupState x = do
   hSetBinaryMode inp False
   hSetBinaryMode out False
   hSetBinaryMode err False
-  -- hPutStrLn inp $ ":l " ++ x
+  let fileDir = takeDirectory x 
+  curDir <- getCurrentDirectory
+  when (fileDir == curDir) $ hPutStrLn inp $ ":l " ++ x -- if we're not in a stack project, load the file
   hFlush inp
   clearHandle out
   return (inp, out, err, pid)
