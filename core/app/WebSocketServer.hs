@@ -9,7 +9,7 @@ import Data.List (intercalate)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Control.Concurrent
-import Control.Monad (forever, (>=>), when)
+import Control.Monad (forever, (>=>))
 import qualified Network.WebSockets as WS
 import Network.WebSockets (Connection)
 import Data.String.Conversions
@@ -26,25 +26,26 @@ import System.Directory
 import System.FilePath
 
 -- | Sets up the initial state
-setupState :: FilePath -> IO (Handle, Handle, Handle, ProcessHandle)
-setupState x = do
+setupState :: FilePath -> Cradle -> IO (Handle, Handle, Handle, ProcessHandle)
+setupState x c = do
   (inp, out, err, pid) <- runInteractiveCommand "stack repl"
   hSetBinaryMode inp False
   hSetBinaryMode out False
   hSetBinaryMode err False
-  curDir <- getCurrentDirectory
-  loadFileIfNotInStackProject curDir (takeDirectory x) inp
+  loadFileIfNotInStackProject c x inp
   hFlush inp
   clearHandle out
   return (inp, out, err, pid)
   where
-    loadFileIfNotInStackProject fdir sdir inp = when (fdir == sdir) $ hPutStrLn inp $ ":l " ++ x
+    loadFileIfNotInStackProject c x inp = case cradleCabalFile c of
+      Just _ -> return ()
+      Nothing -> hPutStrLn inp $ ":l " ++ x
 
 initializeState :: FilePath -> IO State
 initializeState x = do
   (Right cradle, _) <- runGhcModT defaultOptions (findCradle defaultPrograms)
   setCurrentDirectory $ cradleRootDir cradle 
-  (inp, out, err, pid) <- setupState x
+  (inp, out, err, pid) <- setupState x cradle 
   pure State {
   ghciInput = inp
   , ghciOutput = out
