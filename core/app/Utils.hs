@@ -1,11 +1,11 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, LambdaCase #-}
 
 module Utils ( clearHandle
              , defaultPrograms
              , loadNotebookFromFile
              , constructCells
              , constructNotebook ) where
-
+             
 import GHC.IO.Handle
 import System.IO
 import Types
@@ -22,13 +22,13 @@ import Data.List.Split
 
 -- | Clears the handle of any available input and returns it
 clearHandle :: Handle -> IO String
-clearHandle out = do
-  test <- hReady out
-  if test
-    then do x <- hGetChar out
-            xs <- clearHandle out
-            return (x : xs)
-    else pure []
+clearHandle out =
+  hReady out >>= \case 
+    True -> do 
+      x <- hGetChar out 
+      xs <- clearHandle out 
+      return (x : xs)
+    False -> pure [] 
 
 defaultPrograms :: Programs
 defaultPrograms =
@@ -71,7 +71,7 @@ constructNotebook fp t = Notebook
   , date = ""
   , author = ""
   , cells = filter killEmptyCells $ constructCells $ lines t
-  , console = "> "
+  , console = ""
   , filepath = fp
   , loaded = False
   }

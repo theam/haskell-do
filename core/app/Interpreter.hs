@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, LambdaCase #-}
 
 module Interpreter
   ( notebookInterpreter
@@ -37,7 +37,13 @@ writeConsole s n = do
   hFlush (ghciInput s)
 
 readConsole :: State -> IO String
-readConsole s = clearHandle (ghciOutput s)
+readConsole s = 
+  hReady (ghciError s) >>= \case
+    True -> do
+      err <- clearHandle (ghciError s)
+      out <- clearHandle (ghciOutput s)
+      return $ err ++ out 
+    False -> clearHandle (ghciOutput s)
 
 notebookInterpreter :: Notebook -> State -> IO (Either String Notebook)
 notebookInterpreter n s = do

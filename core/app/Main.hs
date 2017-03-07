@@ -10,6 +10,7 @@ import WebSocketServer
 import Types
 import Utils
 import qualified Network.WebSockets as WS
+import Language.Haskell.GhcMod
 import System.Environment
 import Data.Proxy
 
@@ -18,8 +19,8 @@ address = "0.0.0.0"
 
 main = do
   filepath : _ <- getArgs
-  nb <- loadNotebookFromFile filepath
   state <- initializeState filepath
+  nb <- loadNotebookFromFile filepath
   let server :: Server API = return filepath
   run 3000 (websocketsOr WS.defaultConnectionOptions (application filepath nb state) (serve api server))
 

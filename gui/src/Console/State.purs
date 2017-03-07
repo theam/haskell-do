@@ -12,8 +12,8 @@ import Global.Effects
 
 initialState :: Channel Action -> State
 initialState chan =
-    { buffer : ">"
-    , display : ">"
+    { buffer : ""
+    , display : ""
     , consoleChannel : chan
     }
 
