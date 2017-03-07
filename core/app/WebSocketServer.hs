@@ -26,26 +26,23 @@ import System.Directory
 import System.FilePath
 
 -- | Sets up the initial state
-setupState :: FilePath -> Cradle -> IO (Handle, Handle, Handle, ProcessHandle)
-setupState x c = do
+setupState :: FilePath -> IO (Handle, Handle, Handle, ProcessHandle)
+setupState x = do
   (inp, out, err, pid) <- runInteractiveCommand "stack repl"
   hSetBinaryMode inp False
   hSetBinaryMode out False
   hSetBinaryMode err False
-  loadFileIfNotInStackProject c x inp
+  hPutStrLn inp $ ":l " ++ x
+  hPutStrLn inp ":set prompt \"> \""
   hFlush inp
   clearHandle out
   return (inp, out, err, pid)
-  where
-    loadFileIfNotInStackProject c x inp = case cradleCabalFile c of
-      Just _ -> return ()
-      Nothing -> hPutStrLn inp $ ":l " ++ x
 
 initializeState :: FilePath -> IO State
 initializeState x = do
-  (Right cradle, _) <- runGhcModT defaultOptions (findCradle defaultPrograms)
+  (Right cradle, _) <- runGhcModT defaultOptions $ findCradle defaultPrograms
   setCurrentDirectory $ cradleRootDir cradle 
-  (inp, out, err, pid) <- setupState x cradle 
+  (inp, out, err, pid) <- setupState x 
   pure State {
   ghciInput = inp
   , ghciOutput = out
