@@ -12,7 +12,6 @@ import Types
 import System.FilePath
 import System.Directory
 import System.Process
-import Data.IORef
 import Language.Haskell.GhcMod
 import Language.Haskell.GhcMod.Types
 import qualified Data.Text as T
