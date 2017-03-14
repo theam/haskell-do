@@ -2,10 +2,6 @@
 
 module Main where
 
-import Network.Wai
-import Network.Wai.Handler.Warp
-import Network.Wai.Handler.WebSockets
-import Servant
 import WebSocketServer
 import Types
 import Utils
@@ -17,13 +13,12 @@ import Data.Proxy
 address :: String
 address = "0.0.0.0"
 
+port :: Int 
+port = 3000
+
 main = do
   filepath : _ <- getArgs
   state <- initializeState filepath
   nb <- loadNotebookFromFile filepath
-  let server :: Server API = return filepath
-  run 3000 (websocketsOr WS.defaultConnectionOptions (application filepath nb state) (serve api server))
+  WS.runServer address port (application filepath nb state)
 
-type API = "filepath" :> Get '[JSON] FilePath
-api :: Proxy API
-api = Proxy
