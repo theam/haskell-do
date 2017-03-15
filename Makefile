@@ -29,7 +29,9 @@ deps:
 	cd gui &&\
 		npm install &&\
 		bower install &&\
-		cd ..
+		cd .. &&\
+		cd core &&\
+		stack setup
 
 run:
 	cd gui &&\
