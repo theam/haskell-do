@@ -31,7 +31,8 @@ deps:
 		bower install &&\
 		cd .. &&\
 		cd core &&\
-		stack setup
+		stack setup &&\
+		cd ..
 
 run:
 	cd gui &&\
