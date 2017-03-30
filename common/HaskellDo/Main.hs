@@ -1,4 +1,4 @@
-module Main where
+module HaskellDo.Main where
 
 import Lib
 
