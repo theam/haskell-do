@@ -1,9 +1,8 @@
-# HaskellDO
-*(pronounced "Haskell do")*
+# Haskell.do
 
 [![Gitter](https://badges.gitter.im/theam/haskell-do.svg)](https://gitter.im/theam/haskell-do?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-HaskellDO is a Haskell code editor, centered around interactive development.
+Haskell.do is a Haskell code editor, centered around interactive development.
 
 This is a **pre-release** version, **not expected to be used in production**. As a
 prototype, major changes may be applied in the future that could break backwards
@@ -15,40 +14,35 @@ a pure Haskell implementation.
 
 ## Usage
 
-The only *3rd-party* requirement to run HaskellDO is [Stack](http://haskellstack.org/) and [NodeJS](https://nodejs.org/).
+The only *3rd-party* requirement to run Haskell.do is [Stack](http://haskellstack.org/) and [NodeJS](https://nodejs.org/).
 
 Before proceeding, run a `npm install -g purescript pulp bower` to install the required NodeJS binaries.
 
-**Clone** this repository, and from the root of the project run:
+`git clone https://github.com/theam/haskell-do && cd haskell-do`
 
-`make deps` for installing the required dependencies, and
+`stack Build.hs -- --help` for detailed usage of the build file.
 
-`make build-all-<platform>`
+`stack Build.hs -- --deps` for installing the required dependencies, and
 
-Where `<platform>` is one of:
-
-- `windows`
-- `linux`
-- `osx`
-
-Choose accordingly to your platform.
+`stack Build.hs -- --all` for building the project.
 
 ### Initializing a project
-Begin by creating a **new** Stack project.
+Begin by creating a **new** Stack project in another terminal:
 
-`stack new your_project_name`
+`stack new your-project-name simple-library`. Be sure to use _hyphens_ not underscores.
 
-Fire up HaskellDO by running `make run` from the root of the project,
-it will ask you to open a Stack project.
-Navigate to the root of the project you just created and open that
-folder.
+After doing that, `cd your-project-name && stack setup && stack build`.
+
+Back in the terminal where you cloned Haskell.do, run `stack Build.hs -- --run`,
+Haskell.do will open and it will ask you to open a Stack project.
+Navigate to the root of the project you just created and open `src/Lib.hs`
 
 ### Main interface
 Let's begin by adding a text cell for documenting our analysis:
 
 ![Imgur](http://i.imgur.com/QAVI2WC.gif)
 
-HaskellDO's text editor is based on [SimpleMDE](https://simplemde.com/) for
+Haskell.do's text editor is based on [SimpleMDE](https://simplemde.com/) for
 handling the editing and rendering of the "documentation" part of our code.
 
 It supports all the features that you would expect from a normal markdown
@@ -70,11 +64,11 @@ Haskell, project. No need to export/import!
 ![Imgur](http://i.imgur.com/8jVxh6A.gif)
 
 Now we have to try our new algorithm we spent hours researching on.
-No, we do not have to spawn a `stack ghci` or a `stack repl`. HaskellDO
+No, we do not have to spawn a `stack ghci` or a `stack repl`. Haskell.do
 manages that for us and reloads the code each time we ask it to evaluate
 some expression.
 
-Just click on the **toggle console** button and press return on it to
+Just click on the **toggle console** button and press the save button to
 enable it.
 
 After writing your expression, press return [twice](https://github.com/theam/haskell-do/issues/1)
@@ -98,40 +92,6 @@ f x = x * 3 + 4
 ```
 
 Just regular Haskell! Ready for deployment!
-
-When you've finished testing HaskellDO, due to a bug, the `haskelldo-core`
-process is left running. Be sure to kill it!
-
-## Building from source
-
-
-One could also want to build HaskellDO from source:
-### Requirements
-
-- NodeJS v6.8.1 or superior
-- Stack v1.2.0 or superior
-
-Begin by cloning this repository.
-
-The project is composed of two sub-projects:
-
-- A PureScript front end, residing in `gui`
-- A Haskell back end, residing in `core`
-
-### Compilation
-For compiling the **backend**, execute in the root directory:
-
-- `make build-back-<platform>` - This will download the necessary dependencies and build the project.
-
-For compiling the **frontend**, execute in the root directory:
-
-- `npm install -g bower pulp purescript` - This will install:
-    - **Bower** - A dependency tool used for purescript libraries
-    - **Pulp** - A build tool for purescript
-    - **Purescript** itself
-
-- `make deps` - Installs necessary dependencies for the desktop app
-- `make build-front` - Build the GUI
 
 ## Contributing
 
