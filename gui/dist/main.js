@@ -113,9 +113,8 @@ function initApplication () {
     if (os.platform() == 'win32') {
         child_process.exec(`taskkill /pid ${backendProcess.pid} /T /F`);
     }else{
-        child_process.exec(`kill -9 ${backendProcess.pid}`);
+        child_process.exec(`ps -e | grep haskelldo | cut -d " " -f 2 | xargs kill`);
     }
-    electron.dialog.showMessageBox({ title: "HaskellDO quitting", message: "Thanks for using HaskellDO"});
     mainWindow = null;
   });
 }
