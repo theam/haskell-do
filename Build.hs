@@ -47,7 +47,7 @@ buildCore pdir = do
     \cd core&&\
     \stack build") ""
   Just bd <- Turtle.fold (inshell ("cd "<>pdir<>"&&cd core&&stack path --local-install-root") "") Foldl.head
-  shell ("cp " <> bd <> coreFile <> " " <> pdir <> guiBinariesDir <> "&&cd ..") ""
+  shell ("cp " <> lineToText bd <> coreFile <> " " <> pdir <> guiBinariesDir <> "&&cd ..") ""
   return ()
 
 
