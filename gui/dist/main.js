@@ -58,11 +58,8 @@ function startBackend(path){
   var corePath = ""
   var separator = ""
   if (os === "win32") {
-    corePath = appRoot + "\\dist\\bin\\haskelldo-core-w64.exe"
+    corePath = appRoot + "\\dist\\bin\\haskelldo-core.exe"
     separator = "\\"
-  } else if (os === "darwin") {
-    corePath = appRoot + "/dist/bin/haskelldo-core-darwin"
-    separator = "/"
   } else {
     corePath = appRoot + "/dist/bin/haskelldo-core-linux"
     separator = "/"
