@@ -1,17 +1,19 @@
 #!/usr/bin/env stack
 -- stack --install-ghc runghc --package turtle --package foldl
 {-# LANGUAGE OverloadedStrings #-}
+
 import Prelude hiding (FilePath)
 import Turtle
 import Control.Monad (when)
 import Data.Text as T
+import Data.Text (Text)
 import System.Info (os)
 import qualified Control.Foldl as Foldl
-import Filesystem.Path.CurrentOS
+import Filesystem.Path.CurrentOS 
 
 
 main = do
-  projectDirectory <- encode <$> pwd
+  projectDirectory <- pwdAsText
   BuildCommand all gui core deps run <- options "Haskell.do build file" buildSwitches
   if all
     then buildAll projectDirectory
@@ -34,12 +36,11 @@ buildAll projectDirectory = do
   buildCore projectDirectory
   buildGUI projectDirectory
 
-buildCore :: Text -> IO ()
 buildCore pdir = do
   echo "Building core"
   let coreExtension = if isWindows os
-      then ".exe"
-      else ""
+      then ".exe" :: Text
+      else ""     :: Text
   let coreFile = makeTextPath "/bin/haskelldo-core" <> coreExtension
   let guiBinariesDir = makeTextPath "/gui/dist/bin/haskelldo-core" <> coreExtension
   shell ("cd "<>pdir<>" &&\
@@ -81,7 +82,11 @@ runHaskellDo pdir = do
 
 -- Helpers
 isWindows operatingSystem = "mingw" `T.isPrefixOf` T.pack operatingSystem
-makeTextPath = encode . fromText
+
+makeTextPath = T.pack . encodeString . fromText
+
+pwdAsText :: IO Text
+pwdAsText = T.pack <$> encodeString <$> pwd
 
 data BuildCommand = BuildCommand
   { buildCommandAll          :: Bool
