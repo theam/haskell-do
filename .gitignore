@@ -37,3 +37,4 @@ gui/.psc-ide-port
 output/
 
 *.swp
+*.DS_Store
