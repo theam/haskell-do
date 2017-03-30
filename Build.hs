@@ -33,21 +33,20 @@ buildSwitches = BuildCommand
 buildAll projectDirectory = do
   buildCore projectDirectory
   buildGUI projectDirectory
-  buildDeps projectDirectory
 
-
+buildCore :: Text -> IO ()
 buildCore pdir = do
-  echo "Build core"
-  let coreExtension = case os of 
-                          _  | isWindows os -> ".exe"
-                             | otherwise    -> ""
-  let coreFile = encode $ fromText $ "/bin/haskelldo-core"<>coreExtension
-  let guiBinariesDir = encode $ fromText $ "/gui/dist/bin/haskelldo-core"<>coreExtension
+  echo "Building core"
+  let coreExtension = if isWindows os
+      then ".exe"
+      else ""
+  let coreFile = makeTextPath "/bin/haskelldo-core" <> coreExtension
+  let guiBinariesDir = makeTextPath "/gui/dist/bin/haskelldo-core" <> coreExtension
   shell ("cd "<>pdir<>" &&\
     \cd core&&\
-    \stack build") "" -- &&\
+    \stack build") ""
   Just bd <- Turtle.fold (inshell ("cd "<>pdir<>"&&cd core&&stack path --local-install-root") "") Foldl.head
-  shell ("cp "<>bd<>coreFile<>" "<>pdir<>guiBinariesDir<>"&&cd ..") ""
+  shell ("cp " <> bd <> coreFile <> " " <> pdir <> guiBinariesDir <> "&&cd ..") ""
   return ()
 
 
@@ -82,7 +81,8 @@ runHaskellDo pdir = do
 
 -- Helpers
 isWindows operatingSystem = "mingw" `T.isPrefixOf` T.pack operatingSystem
-isOSX operatingSystem = "darwin" `T.isPrefixOf` T.pack operatingSystem
+makeTextPath = encode . fromText
+
 data BuildCommand = BuildCommand
   { buildCommandAll          :: Bool
   , buildCommandGui          :: Bool

@@ -61,7 +61,7 @@ function startBackend(path){
     corePath = appRoot + "\\dist\\bin\\haskelldo-core.exe"
     separator = "\\"
   } else {
-    corePath = appRoot + "/dist/bin/haskelldo-core-linux"
+    corePath = appRoot + "/dist/bin/haskelldo-core"
     separator = "/"
   }
   var dirpath = path.substring(0,path.lastIndexOf(separator)+1);
