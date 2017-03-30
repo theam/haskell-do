@@ -79,7 +79,7 @@ function startBackend(path){
   if (rModeActivated()) {
     flags += " -r"
   }
-  coreProcess = spawn(`cd ${dirpath} && ${corePath} \" ${path}${flags}`); //cd into directory and then load file
+  coreProcess = spawn(`cd ${dirpath} && ${corePath} "${path}${flags}`); //cd into directory and then load file
   setTimeout(function(){}, 3000);
   return coreProcess;
 }
