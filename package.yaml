@@ -29,5 +29,7 @@ executables:
         then:
           source-dirs: gui
         else:
-          source-dirs: core
+          source-dirs:
+            - core
+            - orchestrator
 
