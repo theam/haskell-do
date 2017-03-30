@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack --install-ghc runghc --package turtle --package foldl
+-- stack --resolver lts-8.6 --install-ghc runghc --package turtle-1.3.2 --package foldl
 {-# LANGUAGE OverloadedStrings #-}
 
 import Prelude hiding (FilePath)
@@ -36,6 +36,7 @@ buildAll projectDirectory = do
   buildCore projectDirectory
   buildGUI projectDirectory
 
+buildCore :: Text -> IO ()
 buildCore pdir = do
   echo "Building core"
   let coreExtension = if isWindows os
@@ -46,8 +47,8 @@ buildCore pdir = do
   shell ("cd "<>pdir<>" &&\
     \cd core&&\
     \stack build") ""
-  Just bd <- Turtle.fold (inshell ("cd "<>pdir<>"&&cd core&&stack path --local-install-root") "") Foldl.head
-  shell ("cp " <> lineToText bd <> coreFile <> " " <> pdir <> guiBinariesDir <> "&&cd ..") ""
+  Just binaryDirectory <- Turtle.fold (inshell ("cd "<>pdir<>"&&cd core&&stack path --local-install-root") "") Foldl.head
+  shell ("cp " <> lineToText binaryDirectory <> coreFile <> " " <> pdir <> guiBinariesDir <> "&&cd ..") ""
   return ()
 
 
@@ -82,6 +83,7 @@ runHaskellDo pdir = do
 
 -- Helpers
 isWindows operatingSystem = "mingw" `T.isPrefixOf` T.pack operatingSystem
+isOSX operatingSystem = "darwin" `T.isPrefixOf` T.pack operatingSystem
 
 makeTextPath = T.pack . encodeString . fromText
 
@@ -95,3 +97,4 @@ data BuildCommand = BuildCommand
   , buildCommandOrchestrator :: Bool
   , buildCommandRun          :: Bool
   }
+
