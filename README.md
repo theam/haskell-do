@@ -20,11 +20,11 @@ Before proceeding, run a `npm install -g purescript pulp bower` to install the r
 
 `git clone https://github.com/theam/haskell-do && cd haskell-do`
 
-`stack Build.hs -- --help` for detailed usage of the build file.
+`stack Build.hs -h` for detailed usage of the build file.
 
-`stack Build.hs -- --deps` for installing the required dependencies, and
+`stack Build.hs -d` for installing the required dependencies, and
 
-`stack Build.hs -- --all` for building the project.
+`stack Build.hs -a` for building the whole Haskell.do project.
 
 ### Initializing a project
 Begin by creating a **new** Stack project in another terminal:
