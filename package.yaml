@@ -1,20 +1,33 @@
 name:                haskell-do
-version:             0.1.0.0
--- synopsis:
--- description:
-homepage:            https://github.com/githubuser/haskell-do#readme
-license:             BSD3
-author:              Author name here
-maintainer:          example@example.com
-copyright:           2017 Author name here
-category:            Web
+version:             0.0.0
+synopsis:            The Haskell code editor focused on interactive development
+description:         Please see README.md
+homepage:            https://github.com/theam/haskell-do#readme
+license:             Apache-2.0
+author:              Theam
+maintainer:          nick@theam.io
+copyright:           2017 Theam
+category:            Editor
 extra-source-files:
 - README.md
 
 dependencies:
   - base >= 4.7 && < 5
 
+when:
+  - condition: impl(ghcjs)
+    dependencies:
+      - ghcjs-base
+
 executables:
   haskell-do:
-    source-dirs:      src
+    source-dirs:      common
     main:             Main.hs
+
+    when:
+      - condition: impl(ghcjs)
+        then:
+          source-dirs: gui
+        else:
+          source-dirs: core
+

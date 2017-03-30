@@ -11,16 +11,18 @@ import System.Info (os)
 import qualified Control.Foldl as Foldl
 import Filesystem.Path.CurrentOS 
 
+clientStackYaml = "client-stack.yaml"
+serverStackYaml = "server-stack.yaml"
 
 main = do
   projectDirectory <- pwdAsText
-  BuildCommand all gui core deps run <- options "Haskell.do build file" buildSwitches
+  BuildCommand all gui core orchestrator run <- options "Haskell.do build file" buildSwitches
   if all
     then buildAll projectDirectory
     else do
       when gui          $ buildGUI          projectDirectory
       when core         $ buildCore         projectDirectory
-      when deps         $ buildDeps         projectDirectory
+      when orchestrator $ buildOrchestrator projectDirectory
       when run          $ runHaskellDo      projectDirectory
 
 
@@ -29,53 +31,37 @@ buildSwitches = BuildCommand
      <$> switch "all"          'a' "Build all subprojects, without running Haskell.do"
      <*> switch "gui"          'g' "Build GUI"
      <*> switch "core"         'c' "Build processing/compilation core"
-     <*> switch "deps"         'd' "Download dependencies"
+     <*> switch "orchestrator" 'o' "Build orchestrator"
      <*> switch "run"          'r' "Run Haskell.do"
 
 buildAll projectDirectory = do
   buildCore projectDirectory
   buildGUI projectDirectory
+  buildOrchestrator projectDirectory
 
 buildCore :: Text -> IO ()
 buildCore pdir = do
   echo "Building core"
-  let coreExtension = if isWindows os
-      then ".exe" :: Text
-      else ""     :: Text
-  let coreFile = makeTextPath "/bin/haskelldo-core" <> coreExtension
-  let guiBinariesDir = makeTextPath "/gui/dist/bin/haskelldo-core" <> coreExtension
-  shell ("cd "<>pdir<>" &&\
-    \cd core&&\
-    \stack build") ""
-  Just binaryDirectory <- Turtle.fold (inshell ("cd "<>pdir<>"&&cd core&&stack path --local-install-root") "") Foldl.head
-  shell ("cp " <> lineToText binaryDirectory <> coreFile <> " " <> pdir <> guiBinariesDir <> "&&cd ..") ""
+  shell ("stack build --stack-yaml=" <> serverStackYaml) ""
   return ()
 
 
-buildGUI pdir = do
-  echo "Building GUI"
-  shell ("cd "<>pdir<>" &&\
-    \cd gui&&\
-    \npm run build&&\
-    \cd ..") ""
-  return ()
+buildGUI pdir = 
+  if isWindows os
+    then die "GHCJS currently does not support Windows, please try from a *nix machine."
+    else do
+      echo "Building GUI"
+      shell ("stack build --stack-yaml=" <> clientStackYaml) ""
+      return ()
 
 
-buildDeps pdir = do
-  echo "Downloading dependencies"
-  shell ("cd "<>pdir<>" &&\
-    \cd gui&&\
-    \npm install && bower install && cd "<>pdir<>"&&\
-    \cd core && stack setup &&\
-    \cd ..") ""
-  return ()
+buildOrchestrator pdir = 
+  echo "Building orchestrator"
 
 
-runHaskellDo pdir = do
+runHaskellDo pdir =
   echo "Running Haskell.do"
-  shell ("cd "<>pdir<>" &&\
-    \cd gui&&\
-    \npm run start") ""
+  shell ("stack exec haskell-do --stack-yaml=" <> serverStackYaml) ""
   return ()
 
 
