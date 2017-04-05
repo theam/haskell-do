@@ -21,9 +21,11 @@ cabal.sandbox.config
 *.eventlog
 .stack-work/
 cabal.project.local
+*.cabal
 .HTF/
 
 # End of https://www.gitignore.io/api/haskell
 
 *.swp
+*.swo
 *.DS_Store

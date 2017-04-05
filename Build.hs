@@ -59,7 +59,7 @@ buildOrchestrator pdir =
   echo "Building orchestrator"
 
 
-runHaskellDo pdir =
+runHaskellDo pdir = do
   echo "Running Haskell.do"
   shell ("stack exec haskell-do --stack-yaml=" <> serverStackYaml) ""
   return ()

@@ -1,6 +1,0 @@
-module HaskellDo.Main where
-
-import Lib
-
-main :: IO ()
-main = foo

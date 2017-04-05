@@ -13,23 +13,36 @@ extra-source-files:
 
 dependencies:
   - base >= 4.7 && < 5
+  - basic-prelude
+  - flow
+  - transient
+  - transient-universe
+  - ghcjs-hplay
 
 when:
   - condition: impl(ghcjs)
     dependencies:
       - ghcjs-base
 
+library:
+  source-dirs: src
+  exposed-modules:
+    - HaskellDo
+
 executables:
   haskell-do:
-    source-dirs:      common
-    main:             Main.hs
+    source-dirs: src
+    main: Main.hs
 
-    when:
-      - condition: impl(ghcjs)
-        then:
-          source-dirs: gui
-        else:
-          source-dirs:
-            - core
-            - orchestrator
+tests:
+  spec:
+    main: Spec.hs
+    source-dirs:
+      - test
+      - src
+    dependencies:
+      - hspec == 2.*
+      - QuickCheck
+      - quickcheck-io
+      - mockery
 
