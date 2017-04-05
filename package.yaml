@@ -18,6 +18,7 @@ dependencies:
   - transient
   - transient-universe
   - ghcjs-hplay
+  - optparse-generic
 
 when:
   - condition: impl(ghcjs)

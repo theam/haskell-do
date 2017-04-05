@@ -15,11 +15,17 @@
  - limitations under the License.
  -}
 {-# Language NoImplicitPrelude #-}
+{-# Language OverloadedStrings #-}
 module HaskellDo where
 
 import BasicPrelude
 import Flow
 
-run :: [String] -> IO ()
-run = print "Hello"
+runAsNode :: Text -> Int -> IO ()
+runAsNode address port =
+  print $ "Running as node [" ++ address ++ ":" ++ tshow port ++ "]"
+
+run :: Text -> Int -> IO ()
+run address port =
+  print $ "Connecting [" ++ address ++ ":" ++ tshow port ++ "]"
 
