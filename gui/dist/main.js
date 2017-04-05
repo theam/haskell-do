@@ -108,7 +108,7 @@ function initApplication () {
 
   mainWindow.on('close', function () {
     if (os.platform() == 'win32') {
-        child_process.exec(`taskkill /IM haskelldo-core-w64.exe /F`);
+        child_process.exec(`taskkill /IM haskelldo-core.exe /F`);
     }else{
         child_process.exec(`ps -e | grep haskelldo | cut -d " " -f 2 | xargs kill`);
     }
