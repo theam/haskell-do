@@ -33,9 +33,12 @@ Begin by creating a **new** Stack project in another terminal:
 
 After doing that, `cd your-project-name && stack setup && stack build`.
 
-Back in the terminal where you cloned Haskell.do, run `stack Build.hs -- --run`,
+Back in the terminal where you cloned Haskell.do, run `stack Build.hs -r`,
 Haskell.do will open and it will ask you to open a Stack project.
+
 Navigate to the root of the project you just created and open `src/Lib.hs`
+
+> Due to a bug, the first time that Haskell.do opens, it won't show the code, and the backend won't spawn. It is recommended that you restart Haskell.do. It should run fine when you open it the second time.
 
 ### Main interface
 Let's begin by adding a text cell for documenting our analysis:
