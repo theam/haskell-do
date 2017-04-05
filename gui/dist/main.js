@@ -10,7 +10,7 @@ const app = electron.app; // this is our app
 const BrowserWindow = electron.BrowserWindow; // This is a Module that creates windows
 const appRoot = require('app-root-path');
 var syncspawn = require('child_process').execSync;
-var spawn = require('child_process').exec;
+const exec = require('child_process').exec;
 var coreProcess;
 
 let mainWindow; // saves a global reference to mainWindow so it doesn't get garbage collected
@@ -79,7 +79,7 @@ function startBackend(path){
   if (rModeActivated()) {
     flags += " -r"
   }
-  coreProcess = spawn(`cd ${dirpath} && ${corePath} \" ${path}${flags}`); //cd into directory and then load file
+  coreProcess = exec(`cd ${dirpath} && ${corePath} ${path}${flags}`); //cd into directory and then load file
   setTimeout(function(){}, 3000);
   return coreProcess;
 }
@@ -108,9 +108,10 @@ function initApplication () {
 
   mainWindow.on('close', function () {
     if (os.platform() == 'win32') {
-      child_process.exec(`taskkill /pid ${backendProcess.pid} /T /F`);
+        child_process.exec(`taskkill /IM haskelldo-core-w64.exe /F`);
+    }else{
+        child_process.exec(`ps -e | grep haskelldo | cut -d " " -f 2 | xargs kill`);
     }
-    electron.dialog.showMessageBox({ title: "HaskellDO quitting", message: "Thanks for using HaskellDO"});
     mainWindow = null;
   });
 }
