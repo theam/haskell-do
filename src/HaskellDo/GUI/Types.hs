@@ -1,5 +1,5 @@
 {-
- - src\HaskellDo.hs
+ - src\HaskellDo\GUI\Types.hs
  - Copyright (c) 2017 The Agile Monkeys S.L. <hackers@theam.io>
  - 
  - Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,26 +14,8 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-{-# Language NoImplicitPrelude #-}
-{-# Language OverloadedStrings #-}
-module HaskellDo 
-  ( ServiceType()
-  , run
-  ) where
+module HaskellDo.GUI.Types where
 
-import BasicPrelude
-import Flow
+data Action
+  = SessionSelectionAction SessionSelection.Action
 
--- | Defines how to run Haskell.do through 'run'
-data ServiceType
-  = ComputationNode
-  | DesktopApp
-  | WebApp
-
--- | Executes Haskell.do as defined in 'ServiceType', in designated 'port'
-run :: ServiceType -> Int -> IO ()
-run st port = keep' $ simpleWebApp port (app st)
-
-app :: ServiceType -> Cloud ()
-app = undefined             
-  
