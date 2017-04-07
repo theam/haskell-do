@@ -17,5 +17,5 @@
 module HaskellDo.GUI.Types where
 
 data Action
-  = SessionSelectionAction SessionSelection.Action
+  = SessionSelectionAction
 

@@ -18,5 +18,5 @@ module HaskellDo.Common.Types where
 
 data Action
   = Quit
-  | GUIAction GUI.Action
-  | CoreAction Core.Action
+  | GUIAction
+  | CoreAction

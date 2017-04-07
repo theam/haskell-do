@@ -51,7 +51,11 @@ buildGUI pdir =
     then die "GHCJS currently does not support Windows, please try from a *nix machine."
     else do
       echo "Building GUI"
+      shell "mkdir -p static" ""
+      Just directory <- fold (inshell "stack path --stack-yaml=client-stack.yaml --local-install-root" Turtle.empty) Foldl.head
       shell ("stack build --stack-yaml=" <> clientStackYaml) ""
+      shell "rm -rf static/out.jsexe" ""
+      shell ("cp -R " <> lineToText directory <> "/bin/haskell-do.jsexe static/out.jsexe") ""
       return ()
 
 
@@ -61,7 +65,7 @@ buildOrchestrator pdir =
 
 runHaskellDo pdir = do
   echo "Running Haskell.do"
-  shell ("stack exec haskell-do --stack-yaml=" <> serverStackYaml) ""
+  shell ("stack exec haskell-do --stack-yaml=" <> serverStackYaml <> " -- web") ""
   return ()
 
 

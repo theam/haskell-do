@@ -18,6 +18,9 @@ dependencies:
   - transient
   - transient-universe
   - ghcjs-hplay
+  - vector
+  - containers
+  - text
 
 when:
   - condition: impl(ghcjs)
