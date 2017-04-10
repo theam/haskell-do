@@ -30,3 +30,7 @@ static/
 *.swp
 *.swo
 *.DS_Store
+/.idea
+/.ideaHaskellLib
+/haskell-do.iml
+/out

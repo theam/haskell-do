@@ -16,13 +16,9 @@
  -}
 module Main where
 
-import System.Environment (getArgs)
-
 import HaskellDo
 
 main :: IO ()
-main = do
-  putStrLn "Starting"
-  run 8080
+main = run
 
 
