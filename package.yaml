@@ -34,6 +34,8 @@ library:
   source-dirs: src
   exposed-modules:
     - HaskellDo
+  js-sources:
+    - jsbits/*.js
 
 executables:
   haskell-do:
