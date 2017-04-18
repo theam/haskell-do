@@ -28,60 +28,99 @@ import BasicPrelude hiding (id, div, empty)
 import Flow
 
 import GHCJS.HPlay.View hiding (map, option,input)
+import Transient.Base
 import Transient.Move
+import Control.Monad.IO.Class
+import Data.IORef
+import Data.Typeable
 
-import Ulmus
+data AppState = AppState
+  { appStateMessage :: String
+  } deriving (Read, Show)
+
+data Action
+  = EditorChanged String
+  deriving (Read, Show)
+
+initialAppState = AppState ""
 
 
 -- | Executes Haskell.do in designated 'port'
 run :: IO ()
-run = startApp config
- where
-  config = AppConfig
-      { viewFunction = view
-      , updateFunction = update
-      , initialAppState = AppState 0 ""
-      , executionPort = 8080
-      }
-
-data Action
-  = ButtonClicked
-  | TextAreaChanged String
-  deriving (Read, Show)
-
-data AppState = AppState
-  { message :: Int
-  , appStateCode :: String
-  } deriving (Read, Show)
+run = simpleWebApp 8080 $ initializeApp update view display 
 
 view :: AppState -> Widget Action
 view appState = do
-  numberDisplay appState
-  codeDisplay appState
-  codeEditor appState
-  <|> myButton
+  displayPlaceholder "messageDisplay"
+  editor appState
 
-numberDisplay :: AppState -> Widget ()
-numberDisplay appState = message appState
-                       |> show
-                       |> h1
-                       |> rawHtml
-
-codeDisplay :: AppState -> Widget ()
-codeDisplay appState = "Code: " ++ appStateCode appState
-                     |> h2
-                     |> rawHtml
-
-codeEditor :: AppState -> Widget Action
-codeEditor appState = do
-  let c = appStateCode appState
-  code <- getMultilineText (fromString c) `fire` OnChange
-  return $ TextAreaChanged code
-  
-myButton :: Widget Action
-myButton = wbutton ButtonClicked (fromString "Click me")
+editor :: AppState -> Widget Action
+editor appState = do
+  newMsg <- getMultilineText (fromString "") `fire` OnKeyDown
+  return $ EditorChanged newMsg
 
 update :: Action -> AppState -> Cloud AppState
-update ButtonClicked (AppState n c) = return $ AppState (n+1) c
-update (TextAreaChanged c) appState = return $ appState { appStateCode = c }
+update (EditorChanged newMsg) appState = return $ AppState newMsg
+
+display :: AppState -> TransIO ()
+display appState = do
+  render $ at (fromString "#messageDisplay") Insert $ do
+         rawHtml $ h2 $ appStateMessage appState
+
+---------------------------------------------  State manipulation -------------------------------
+
+getState :: TransIO AppState
+getState 
+  = getRData
+  <|> (setRData initialAppState >> return initialAppState)
+
+setState :: AppState -> TransIO ()
+setState = setRData
+
+
+
+---------------------------------------- TODO: Internal functions, extract into module-----------
+
+initializeApp :: (Action -> AppState -> Cloud AppState)   -- update function
+              -> (AppState -> Widget Action)              -- view function
+              -> (AppState -> TransIO ())                 -- display function
+              -> Cloud ()
+initializeApp update view display = do
+  currentState <- local getState
+  nextAction <- local . render $ view currentState
+  renderDisplay display 
+  newState <- update nextAction currentState
+  local $ setState newState
+  renderDisplay display
+
+displayPlaceholder :: String -> Widget ()
+displayPlaceholder id' = rawHtml $ 
+  div 
+    ! id (fromString id') 
+    $ noHtml
+
+renderDisplay :: (AppState -> TransIO ()) -> Cloud ()
+renderDisplay f = do
+  state <- local getState
+  local $ f state
+
+
+---------------------------------------------  State References in the TransIO monad ------------
+newtype Ref a = Ref (IORef a)
+
+-- | An state reference that can be updated (similar to STRef in the state monad)
+--
+-- Initialized the first time it is set.
+setRData:: Typeable a => a -> TransIO ()
+setRData x= do
+     Ref ref <- getSData
+     liftIO $ atomicModifyIORef ref $ const (x,())
+   <|> do
+     ref <- liftIO (newIORef x)
+     setData $ Ref ref
+
+getRData :: Typeable a => TransIO a
+getRData= do
+    Ref ref <- getSData
+    liftIO $ readIORef ref
 
