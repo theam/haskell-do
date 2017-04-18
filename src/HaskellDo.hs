@@ -25,6 +25,7 @@ module HaskellDo
   ) where
 
 import BasicPrelude hiding (id, div, empty)
+import Flow
 
 import GHCJS.HPlay.View hiding (map, option,input)
 import Transient.Move
@@ -39,27 +40,48 @@ run = startApp config
   config = AppConfig
       { viewFunction = view
       , updateFunction = update
-      , initialAppState = AppState 0
+      , initialAppState = AppState 0 ""
       , executionPort = 8080
       }
 
 data Action
   = ButtonClicked
+  | TextAreaChanged String
   deriving (Read, Show)
 
 data AppState = AppState
   { message :: Int
+  , appStateCode :: String
   } deriving (Read, Show)
-
 
 view :: AppState -> Widget Action
 view appState = do
-  numberDisplay $ message appState
-  wbutton ButtonClicked (fromString "Click me")
+  numberDisplay appState
+  codeDisplay appState
+  codeEditor appState
+  <|> myButton
 
-numberDisplay :: Int -> Widget ()
-numberDisplay = rawHtml . h1 . show
+numberDisplay :: AppState -> Widget ()
+numberDisplay appState = message appState
+                       |> show
+                       |> h1
+                       |> rawHtml
+
+codeDisplay :: AppState -> Widget ()
+codeDisplay appState = "Code: " ++ appStateCode appState
+                     |> h2
+                     |> rawHtml
+
+codeEditor :: AppState -> Widget Action
+codeEditor appState = do
+  let c = appStateCode appState
+  code <- getMultilineText (fromString c) `fire` OnChange
+  return $ TextAreaChanged code
+  
+myButton :: Widget Action
+myButton = wbutton ButtonClicked (fromString "Click me")
 
 update :: Action -> AppState -> Cloud AppState
-update ButtonClicked (AppState n) = return $ AppState (n+1)
+update ButtonClicked (AppState n c) = return $ AppState (n+1) c
+update (TextAreaChanged c) appState = return $ appState { appStateCode = c }
 
