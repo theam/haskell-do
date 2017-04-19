@@ -26,9 +26,12 @@ import Transient.Move
 
 import qualified Ulmus 
 
+import HaskellDo.GUI.SimpleMDE
+
+
 data AppState = AppState
   { appStateMessage :: String
-  } deriving (Read, Show, Eq)
+  } deriving (Read, Show)
 
 
 data Action
@@ -62,11 +65,14 @@ view appState = do
 editor :: AppState -> Widget Action
 editor _ = do
   newMsg <- getMultilineText "" `fire` OnKeyDown
+  -- TODO: Make SimpleMDE a 'Widget a'
+  _ <- local $ liftIO (simpleMDEFromId "messageDisplay")
   return $ EditorChanged newMsg
 
 
 update :: Action -> AppState -> Cloud AppState
-update (EditorChanged newMsg) appState = return $ appState { appStateMessage = newMsg }
+update (EditorChanged newMsg) appState = do
+  return $ appState { appStateMessage = newMsg }
 
 
 updateDisplays :: AppState -> TransIO ()
@@ -76,6 +82,6 @@ updateDisplays appState = do
 
 messageDisplay :: AppState -> Widget ()
 messageDisplay appState = rawHtml $ 
-  h2 ! id "messageDisplay"
-     $ "Code: " ++ appStateMessage appState
+  textarea ! id "messageDisplay"
+           $ "Code: " ++ appStateMessage appState
 
