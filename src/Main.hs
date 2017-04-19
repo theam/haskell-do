@@ -16,6 +16,7 @@
  -}
 module Main where
 
+import BasicPrelude
 import HaskellDo
 
 main :: IO ()
