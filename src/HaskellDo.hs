@@ -16,8 +16,7 @@
  -}
 {-# Language NoImplicitPrelude #-}
 {-# Language CPP #-}
-{-# Language NoMonomorphismRestriction #-}
-{-# Language IncoherentInstances #-}
+{- Language IncoherentInstances #-}
 {-# Language OverloadedStrings #-}
 
 module HaskellDo
@@ -36,13 +35,14 @@ import Data.Typeable
 
 data AppState = AppState
   { appStateMessage :: String
-  } deriving (Read, Show)
+  , firstRun :: Bool
+  } deriving (Read, Show, Eq)
 
 data Action
   = EditorChanged String
   deriving (Read, Show)
 
-initialAppState = AppState ""
+initialAppState = AppState "" True
 
 
 -- | Executes Haskell.do in designated 'port'
@@ -51,20 +51,20 @@ run = simpleWebApp 8080 $ initializeApp update view display
 
 view :: AppState -> Widget Action
 view appState = do
-  displayPlaceholder "messageDisplay"
-  editor appState
+      displayPlaceholder "messageDisplay"
+      editor appState
 
 editor :: AppState -> Widget Action
 editor appState = do
-  newMsg <- getMultilineText (fromString "") `fire` OnKeyDown
+  newMsg <- getMultilineText "" `fire` OnKeyDown
   return $ EditorChanged newMsg
 
 update :: Action -> AppState -> Cloud AppState
-update (EditorChanged newMsg) appState = return $ AppState newMsg
+update (EditorChanged newMsg) appState = return $ appState { appStateMessage = newMsg }
 
 display :: AppState -> TransIO ()
 display appState = do
-  render $ at (fromString "#messageDisplay") Insert $ do
+  render $ at "#messageDisplay" Insert $ do
          rawHtml $ h2 $ appStateMessage appState
 
 ---------------------------------------------  State manipulation -------------------------------
@@ -87,16 +87,15 @@ initializeApp :: (Action -> AppState -> Cloud AppState)   -- update function
               -> Cloud ()
 initializeApp update view display = do
   currentState <- local getState
-  nextAction <- local . render $ view currentState
-  renderDisplay display 
+  nextAction <- local (render $ view currentState)
   newState <- update nextAction currentState
-  local $ setState newState
+  local (setState newState)
   renderDisplay display
 
 displayPlaceholder :: String -> Widget ()
 displayPlaceholder id' = rawHtml $ 
   div 
-    ! id (fromString id') 
+    ! id (fromString id')
     $ noHtml
 
 renderDisplay :: (AppState -> TransIO ()) -> Cloud ()
