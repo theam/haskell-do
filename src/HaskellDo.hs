@@ -14,74 +14,68 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-{-# Language NoImplicitPrelude #-}
-{-# Language CPP #-}
-{-# Language NoMonomorphismRestriction #-}
-{-# Language IncoherentInstances #-}
-{-# Language OverloadedStrings #-}
-
 module HaskellDo
   ( run
   ) where
 
 import BasicPrelude hiding (id, div, empty)
-import Flow
 
 import GHCJS.HPlay.View hiding (map, option,input)
+import Transient.Base
 import Transient.Move
 
-import Ulmus
+import qualified Ulmus 
+
+data AppState = AppState
+  { appStateMessage :: String
+  } deriving (Read, Show, Eq)
+
+
+data Action
+  = EditorChanged String
+  deriving (Read, Show)
+
+
+initialAppState :: AppState
+initialAppState = AppState
+  { appStateMessage = ""
+  }
 
 
 -- | Executes Haskell.do in designated 'port'
 run :: IO ()
-run = startApp config
- where
-  config = AppConfig
-      { viewFunction = view
-      , updateFunction = update
-      , initialAppState = AppState 0 ""
-      , executionPort = 8080
-      }
+run = Ulmus.initializeApp Ulmus.AppConfig
+  { Ulmus._update         = update
+  , Ulmus._view           = view
+  , Ulmus._updateDisplays = updateDisplays
+  , Ulmus._initialState   = initialAppState
+  , Ulmus._port           = 8080
+  }
 
-data Action
-  = ButtonClicked
-  | TextAreaChanged String
-  deriving (Read, Show)
-
-data AppState = AppState
-  { message :: Int
-  , appStateCode :: String
-  } deriving (Read, Show)
 
 view :: AppState -> Widget Action
 view appState = do
-  numberDisplay appState
-  codeDisplay appState
-  codeEditor appState
-  <|> myButton
+      messageDisplay appState
+      editor appState
 
-numberDisplay :: AppState -> Widget ()
-numberDisplay appState = message appState
-                       |> show
-                       |> h1
-                       |> rawHtml
 
-codeDisplay :: AppState -> Widget ()
-codeDisplay appState = "Code: " ++ appStateCode appState
-                     |> h2
-                     |> rawHtml
+editor :: AppState -> Widget Action
+editor _ = do
+  newMsg <- getMultilineText "" `fire` OnKeyDown
+  return $ EditorChanged newMsg
 
-codeEditor :: AppState -> Widget Action
-codeEditor appState = do
-  let c = appStateCode appState
-  code <- getMultilineText (fromString c) `fire` OnChange
-  return $ TextAreaChanged code
-  
-myButton :: Widget Action
-myButton = wbutton ButtonClicked (fromString "Click me")
 
 update :: Action -> AppState -> Cloud AppState
-update ButtonClicked (AppState n c) = return $ AppState (n+1) c
-update (TextAreaChanged c) appState = return $ appState { appStateCode = c }
+update (EditorChanged newMsg) appState = return $ appState { appStateMessage = newMsg }
+
+
+updateDisplays :: AppState -> TransIO ()
+updateDisplays appState = do
+  Ulmus.updateWidget "messageDisplay" (messageDisplay appState)
+
+
+messageDisplay :: AppState -> Widget ()
+messageDisplay appState = rawHtml $ 
+  h2 ! id "messageDisplay"
+     $ "Code: " ++ appStateMessage appState
 
