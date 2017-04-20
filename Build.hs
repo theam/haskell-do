@@ -12,7 +12,7 @@ import qualified Control.Foldl as Foldl
 import Filesystem.Path.CurrentOS 
 
 clientStackYaml = "client-stack.yaml"
-serverStackYaml = "server-stack.yaml"
+serverStackYaml = "stack.yaml"
 
 main = do
   projectDirectory <- pwdAsText
