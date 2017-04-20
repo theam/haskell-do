@@ -1,0 +1,4 @@
+ghc: 8.0
+
+script:
+  - cabal configure --enable-tests && cabal build && cabal test
