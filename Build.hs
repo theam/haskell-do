@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack --resolver lts-8.6 --install-ghc runghc --package turtle-1.3.2 --package foldl
+-- stack --resolver lts-8.11 --install-ghc runghc --package turtle-1.3.2 --package foldl
 {-# LANGUAGE OverloadedStrings #-}
 
 import Prelude hiding (FilePath)
@@ -9,7 +9,7 @@ import Data.Text as T
 import Data.Text (Text)
 import System.Info (os)
 import qualified Control.Foldl as Foldl
-import Filesystem.Path.CurrentOS 
+import Filesystem.Path.CurrentOS
 
 clientStackYaml = "client-stack.yaml"
 serverStackYaml = "stack.yaml"
@@ -46,7 +46,7 @@ buildCore pdir = do
   return ()
 
 
-buildGUI pdir = 
+buildGUI pdir =
   if isWindows os
     then die "GHCJS currently does not support Windows, please try from a *nix machine."
     else do
@@ -59,7 +59,7 @@ buildGUI pdir =
       return ()
 
 
-buildOrchestrator pdir = 
+buildOrchestrator pdir =
   echo "Building orchestrator"
 
 
@@ -87,4 +87,3 @@ data BuildCommand = BuildCommand
   , buildCommandOrchestrator :: Bool
   , buildCommandRun          :: Bool
   }
-
