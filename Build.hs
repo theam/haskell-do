@@ -54,8 +54,8 @@ buildGUI pdir =
       shell "mkdir -p static" ""
       Just directory <- fold (inshell "stack path --stack-yaml=client-stack.yaml --local-install-root" Turtle.empty) Foldl.head
       shell ("stack build --stack-yaml=" <> clientStackYaml) ""
-      shell "rm -rf static/out.jsexe" ""
-      shell ("cp -R " <> lineToText directory <> "/bin/haskell-do.jsexe static/out.jsexe") ""
+      shell "rm -rf static/out.jsexe/{*.js, *.js.externs}" ""
+      shell ("cp -R " <> lineToText directory <> "/bin/haskell-do.jsexe/*.js static/out.jsexe") ""
       return ()
 
 
