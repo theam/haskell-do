@@ -1,7 +1,7 @@
 {-
  - src\HaskellDo.hs
  - Copyright (c) 2017 The Agile Monkeys S.L. <hackers@theam.io>
- - 
+ -
  - Licensed under the Apache License, Version 2.0 (the "License");
  - you may not use this file except in compliance with the License.
  - You may obtain a copy of the License at
@@ -24,7 +24,7 @@ import GHCJS.HPlay.View hiding (map, option,input)
 import Transient.Base
 import Transient.Move
 
-import qualified Ulmus 
+import qualified Ulmus
 
 import HaskellDo.GUI.SimpleMDE
 
@@ -64,9 +64,7 @@ view appState = do
 
 editor :: AppState -> Widget Action
 editor _ = do
-  newMsg <- getMultilineText "" `fire` OnKeyDown
-  -- TODO: Make SimpleMDE a 'Widget a'
-  _ <- local $ liftIO (simpleMDEFromId "messageDisplay")
+  newMsg <- simpleMDEFromId "" `fire` OnKeyDown
   return $ EditorChanged newMsg
 
 
@@ -81,7 +79,6 @@ updateDisplays appState = do
 
 
 messageDisplay :: AppState -> Widget ()
-messageDisplay appState = rawHtml $ 
-  textarea ! id "messageDisplay"
+messageDisplay appState = rawHtml $
+  h1 ! id "messageDisplay"
            $ "Code: " ++ appStateMessage appState
-

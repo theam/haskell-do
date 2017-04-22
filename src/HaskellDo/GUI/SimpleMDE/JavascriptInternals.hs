@@ -1,22 +1,24 @@
-module HaskellDo.GUI.SimpleMDE.JavascriptInternals 
+module HaskellDo.GUI.SimpleMDE.JavascriptInternals
   ( SimpleMDE(..)
   , simpleMDE
   )
 where
 
-import BasicPrelude
+import BasicPrelude hiding (id, div, empty)
 import GHCJS.Types
 import Data.JSString
+
+import GHCJS.HPlay.View hiding (map, option,input)
 
 import HaskellDo.GUI.SimpleMDE.Common
 
 newtype SimpleMDE = SimpleMDE JSVal
 
-foreign import javascript "$r = new SimpleMDE({ element: document.getElementById($1) });" 
-  js_simpleMDE :: JSString -> IO JSVal
+foreign import javascript unsafe "simpleMDE = new SimpleMDE(/*{ element: document.getElementById($1) }*/);"
+  js_simpleMDE :: JSString -> IO ()
 
-
-simpleMDE :: EditorConfig -> IO SimpleMDE
-simpleMDE (EditorConfig eid) = 
-  SimpleMDE <$> js_simpleMDE (pack eid)
-
+simpleMDE :: EditorConfig -> Widget String
+simpleMDE (EditorConfig eid) = do
+  rawHtml $ textarea ! id "mde" $ (pack "")
+  _ <- rawHtml $ liftIO $ js_simpleMDE (pack "mde")
+  return "LOLASO" -- TODO: Capture and return content

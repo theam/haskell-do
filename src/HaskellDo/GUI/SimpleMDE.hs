@@ -1,4 +1,4 @@
-module HaskellDo.GUI.SimpleMDE 
+module HaskellDo.GUI.SimpleMDE
   ( simpleMDEFromId
 #ifdef ghcjs_HOST_OS
   , module HaskellDo.GUI.SimpleMDE.JavascriptInternals
@@ -16,7 +16,9 @@ import HaskellDo.GUI.SimpleMDE.ServerInternals
 
 import BasicPrelude
 
+import GHCJS.HPlay.View hiding (map, option,input)
+
 import HaskellDo.GUI.SimpleMDE.Common
 
-simpleMDEFromId :: String -> IO SimpleMDE
+simpleMDEFromId :: String -> Widget String
 simpleMDEFromId eid = simpleMDE (EditorConfig eid)
