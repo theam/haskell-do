@@ -42,7 +42,8 @@ buildAll projectDirectory = do
 buildCore :: Text -> IO ()
 buildCore pdir = do
   echo "Building core"
-  shell ("stack build --stack-yaml=" <> serverStackYaml) ""
+  exitCode <- shell ("stack build --stack-yaml=" <> serverStackYaml) ""
+  when (exitCode /= ExitSuccess) (error "Core: Build failed")
   return ()
 
 
@@ -53,7 +54,8 @@ buildGUI pdir =
       echo "Building GUI"
       shell "mkdir -p static" ""
       Just directory <- fold (inshell "stack path --stack-yaml=client-stack.yaml --local-install-root" Turtle.empty) Foldl.head
-      shell ("stack build --stack-yaml=" <> clientStackYaml) ""
+      exitCode <- shell ("stack build --stack-yaml=" <> clientStackYaml) ""
+      when (exitCode /= ExitSuccess) (error "GUI: Build failed")
       shell "rm -rf static/out.jsexe/{*.js, *.js.externs}" ""
       shell ("cp -R " <> lineToText directory <> "/bin/haskell-do.jsexe/*.js static/out.jsexe") ""
       return ()
