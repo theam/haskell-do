@@ -65,7 +65,7 @@ view appState = do
 
 editor :: AppState -> Widget Action
 editor _ = do
-  newMsg <- simpleMDEFromId "" `fire` OnKeyDown
+  newMsg <- simpleMDE `fire` OnKeyDown
   return $ EditorChanged newMsg
 
 

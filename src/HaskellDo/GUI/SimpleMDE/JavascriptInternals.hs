@@ -26,8 +26,8 @@ initializeSimpleMDE (EditorConfig eid) =
                $ noHtml
         script (pack "function initMDE() {if (typeof SimpleMDE !== 'undefined') {simpleMDE=new SimpleMDE();}else{window.setTimeout(initMDE, 10);}};initMDE()" :: JSString)
 
-simpleMDE :: EditorConfig -> Widget String
-simpleMDE (EditorConfig eid) = do
+simpleMDE :: Widget String
+simpleMDE = do
     textArea "" `fire` OnKeyUp `fire` OnClick
     content <- liftIO js_getMDEContent
     return $ unpack content

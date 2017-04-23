@@ -11,7 +11,7 @@ import GHCJS.HPlay.View hiding (map, option,input)
 
 newtype SimpleMDE = SimpleMDE () deriving (Read, Show)
 
-simpleMDE :: EditorConfig -> Widget String
+simpleMDE :: Widget String
 simpleMDE = throwBrowserError "simpleMDE"
 
 initializeSimpleMDE :: EditorConfig -> IO ()
