@@ -53,6 +53,7 @@ run = Ulmus.initializeApp Ulmus.AppConfig
   , Ulmus._updateDisplays = updateDisplays
   , Ulmus._initialState   = initialAppState
   , Ulmus._port           = 8080
+  , Ulmus._setup          = initializeSimpleMDE $ EditorConfig ""
   }
 
 
