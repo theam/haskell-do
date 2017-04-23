@@ -28,6 +28,6 @@ initializeSimpleMDE (EditorConfig eid) =
 
 simpleMDE :: EditorConfig -> Widget String
 simpleMDE (EditorConfig eid) = do
-    textArea "" `fire` OnKeyUp
+    textArea "" `fire` OnKeyUp `fire` OnClick
     content <- liftIO js_getMDEContent
     return $ unpack content
