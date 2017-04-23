@@ -1,6 +1,7 @@
+{-# LANGUAGE NoMonomorphismRestriction #-}
 module HaskellDo.GUI.SimpleMDE.JavascriptInternals
-  ( SimpleMDE(..)
-  , simpleMDE
+  ( simpleMDE
+  , initializeSimpleMDE
   )
 where
 
@@ -12,13 +13,21 @@ import GHCJS.HPlay.View hiding (map, option,input)
 
 import HaskellDo.GUI.SimpleMDE.Common
 
-newtype SimpleMDE = SimpleMDE JSVal
+foreign import javascript unsafe "simpleMDE.value()"
+    js_getMDEContent :: IO JSString
 
-foreign import javascript unsafe "simpleMDE = new SimpleMDE(/*{ element: document.getElementById($1) }*/);"
-  js_simpleMDE :: JSString -> IO ()
+initializeSimpleMDE :: EditorConfig -> IO ()
+initializeSimpleMDE (EditorConfig eid) =
+    addHeader $ do
+        link ! atr (fromString "rel") (fromString "stylesheet")
+             ! href (fromString "https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css")
+        script (pack "var simpleMDE;" :: JSString)
+        script ! src (fromString "https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js")
+               $ noHtml
+        script (pack "function initMDE() {if (typeof SimpleMDE !== 'undefined') {simpleMDE=new SimpleMDE();}else{window.setTimeout(initMDE, 10);}};initMDE()" :: JSString)
 
 simpleMDE :: EditorConfig -> Widget String
 simpleMDE (EditorConfig eid) = do
-  rawHtml $ textarea ! id "mde" $ (pack "")
-  _ <- rawHtml $ liftIO $ js_simpleMDE (pack "mde")
-  return "LOLASO" -- TODO: Capture and return content
+    textArea "" `fire` OnKeyUp
+    content <- liftIO js_getMDEContent
+    return $ unpack content

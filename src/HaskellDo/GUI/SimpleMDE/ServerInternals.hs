@@ -1,5 +1,5 @@
 module HaskellDo.GUI.SimpleMDE.ServerInternals
-  ( SimpleMDE(..)
+  ( initializeSimpleMDE
   , simpleMDE
   )
 where
@@ -12,7 +12,10 @@ import GHCJS.HPlay.View hiding (map, option,input)
 newtype SimpleMDE = SimpleMDE () deriving (Read, Show)
 
 simpleMDE :: EditorConfig -> Widget String
-simpleMDE = throwBrowserError
+simpleMDE = throwBrowserError "simpleMDE"
 
-throwBrowserError :: a
-throwBrowserError = error "This function is supposed to run on the browser"
+initializeSimpleMDE :: EditorConfig -> IO ()
+initializeSimpleMDE _ = return ()
+
+throwBrowserError :: String -> a
+throwBrowserError fName = error $ fName ++ ": This function is supposed to run on the browser"
