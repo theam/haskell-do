@@ -19,23 +19,26 @@ data AppConfig action appState = AppConfig
   , _updateDisplays :: UpdateDisplays appState
   , _initialState   :: appState
   , _port           :: Integer
+  , _setup          :: IO ()
   }
 
 
 initializeApp :: (Show appState, Show action, Read appState, Read action, Typeable appState, Typeable action)
-              => AppConfig action appState 
+              => AppConfig action appState
               -> IO ()
-initializeApp (AppConfig update view updateDisplays initialAppState port) = simpleWebApp port $ do
-  currentState <- local $ getState initialAppState
-  nextAction <- local (render $ view currentState)
-  newState <- update nextAction currentState
-  local (setState newState)
-  renderDisplay initialAppState updateDisplays
+initializeApp (AppConfig update view updateDisplays initialAppState port setup) = do
+    setup
+    simpleWebApp port $ do
+        currentState <- local $ getState initialAppState
+        nextAction <- local (render $ view currentState)
+        newState <- update nextAction currentState
+        local (setState newState)
+        renderDisplay initialAppState updateDisplays
 
 
 displayPlaceholder :: String -> Widget ()
-displayPlaceholder id' = rawHtml $ 
-  div 
+displayPlaceholder id' = rawHtml $
+  div
     ! id (fromString id')
     $ noHtml
 
@@ -82,5 +85,3 @@ getRData :: Typeable a => TransIO a
 getRData= do
     Ref ref <- getSData
     liftIO $ readIORef ref
-
-
