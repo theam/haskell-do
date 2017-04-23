@@ -5,6 +5,7 @@ module HaskellDo.GUI.SimpleMDE
 #else
   , module HaskellDo.GUI.SimpleMDE.ServerInternals
 #endif
+  , module HaskellDo.GUI.SimpleMDE.Common
   )
 where
 
