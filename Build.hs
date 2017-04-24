@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack --resolver lts-8.6 --install-ghc runghc --package turtle-1.3.2 --package foldl
+-- stack --resolver lts-8.11 --install-ghc runghc --package turtle-1.3.2 --package foldl
 {-# LANGUAGE OverloadedStrings #-}
 
 import Prelude hiding (FilePath)
@@ -9,7 +9,7 @@ import Data.Text as T
 import Data.Text (Text)
 import System.Info (os)
 import qualified Control.Foldl as Foldl
-import Filesystem.Path.CurrentOS 
+import Filesystem.Path.CurrentOS
 
 clientStackYaml = "client-stack.yaml"
 serverStackYaml = "stack.yaml"
@@ -42,24 +42,26 @@ buildAll projectDirectory = do
 buildCore :: Text -> IO ()
 buildCore pdir = do
   echo "Building core"
-  shell ("stack build --stack-yaml=" <> serverStackYaml) ""
+  exitCode <- shell ("stack build --stack-yaml=" <> serverStackYaml) ""
+  when (exitCode /= ExitSuccess) (error "Core: Build failed")
   return ()
 
 
-buildGUI pdir = 
+buildGUI pdir =
   if isWindows os
     then die "GHCJS currently does not support Windows, please try from a *nix machine."
     else do
       echo "Building GUI"
       shell "mkdir -p static" ""
       Just directory <- fold (inshell "stack path --stack-yaml=client-stack.yaml --local-install-root" Turtle.empty) Foldl.head
-      shell ("stack build --stack-yaml=" <> clientStackYaml) ""
+      exitCode <- shell ("stack build --stack-yaml=" <> clientStackYaml) ""
+      when (exitCode /= ExitSuccess) (error "GUI: Build failed")
       shell "rm -rf static/out.jsexe" ""
       shell ("cp -R " <> lineToText directory <> "/bin/haskell-do.jsexe static/out.jsexe") ""
       return ()
 
 
-buildOrchestrator pdir = 
+buildOrchestrator pdir =
   echo "Building orchestrator"
 
 
@@ -87,4 +89,3 @@ data BuildCommand = BuildCommand
   , buildCommandOrchestrator :: Bool
   , buildCommandRun          :: Bool
   }
-

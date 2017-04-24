@@ -13,10 +13,20 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module Main where
+module HaskellDo.GUI.External.SimpleMDE
+  ( module HaskellDo.GUI.External.SimpleMDE.Common
+#ifdef ghcjs_HOST_OS
+  , module HaskellDo.GUI.External.SimpleMDE.JavascriptInternals
+#else
+  , module HaskellDo.GUI.External.SimpleMDE.ServerInternals
+#endif
+  )
+where
 
-import BasicPrelude
-import HaskellDo
+#ifdef ghcjs_HOST_OS
+import HaskellDo.GUI.External.SimpleMDE.JavascriptInternals
+#else
+import HaskellDo.GUI.External.SimpleMDE.ServerInternals
+#endif
 
-main :: IO ()
-main = run
+import HaskellDo.GUI.External.SimpleMDE.Common

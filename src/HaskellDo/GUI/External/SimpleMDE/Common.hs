@@ -13,10 +13,10 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module Main where
+module HaskellDo.GUI.External.SimpleMDE.Common where
 
 import BasicPrelude
-import HaskellDo
 
-main :: IO ()
-main = run
+data EditorConfig = EditorConfig
+  { elementId :: String
+  }

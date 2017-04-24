@@ -13,10 +13,11 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module Main where
+module HaskellDo.Core.Compilation where
 
 import BasicPrelude
-import HaskellDo
 
-main :: IO ()
-main = run
+import Transient.Move
+
+compile :: String -> Cloud String
+compile inp = return $ "<h1> This was rendered at the server: " ++ inp ++ "</h1>"
