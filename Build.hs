@@ -56,8 +56,8 @@ buildGUI pdir =
       Just directory <- fold (inshell "stack path --stack-yaml=client-stack.yaml --local-install-root" Turtle.empty) Foldl.head
       exitCode <- shell ("stack build --stack-yaml=" <> clientStackYaml) ""
       when (exitCode /= ExitSuccess) (error "GUI: Build failed")
-      shell "rm -rf static/out.jsexe/{*.js, *.js.externs}" ""
-      shell ("cp -R " <> lineToText directory <> "/bin/haskell-do.jsexe/*.js static/out.jsexe") ""
+      shell "rm -rf static/out.jsexe" ""
+      shell ("cp -R " <> lineToText directory <> "/bin/haskell-do.jsexe static/out.jsexe") ""
       return ()
 
 
