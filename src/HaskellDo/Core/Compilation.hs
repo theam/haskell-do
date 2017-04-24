@@ -16,8 +16,34 @@
 module HaskellDo.Core.Compilation where
 
 import BasicPrelude
+import Flow
+import qualified System.Process as System
 
 import Transient.Move
 
+projectPath :: String
+projectPath = "/home/nick/Documents/haskell-do-test"
+
 compile :: String -> Cloud String
-compile inp = return $ "<h1> This was rendered at the server: " ++ inp ++ "</h1>"
+compile inp = local . liftIO $ performCompilation inp
+
+
+performCompilation :: String -> IO String
+performCompilation inp = do
+    writeCode (projectPath ++ "/src/Main.hs") inp
+    buildHtmlCode
+
+buildHtmlCode :: IO String
+buildHtmlCode = do
+    _ <- System.spawnCommand ("cd " ++ projectPath ++ " && stack build")
+    System.readCreateProcess (System.shell $ "cd " ++ projectPath ++ " && stack exec run-test") ""
+
+
+writeCode :: FilePath -> String -> IO ()
+writeCode path code = do
+    let fileContent = "{-# OPTIONS_GHC -F -pgmF inlitpp #-}\n" ++
+                      "```haskell hide top\n" ++
+                      "import Inliterate.Import\n" ++
+                      "```\n" ++
+                      code
+    writeFile path (fromString fileContent)

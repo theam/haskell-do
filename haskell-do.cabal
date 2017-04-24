@@ -35,6 +35,7 @@ library
     , transient-universe
     , ghcjs-hplay
     , optparse-generic
+    , process
   if impl(ghcjs)
     build-depends:
         ghcjs-base
@@ -63,6 +64,7 @@ executable haskell-do
     , transient-universe
     , ghcjs-hplay
     , optparse-generic
+    , process
   if impl(ghcjs)
     build-depends:
         ghcjs-base

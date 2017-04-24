@@ -39,6 +39,10 @@ initializeSimpleMDE =
         script (pack "var simpleMDE; var renderedCode;" :: JSString)
         script ! src (fromString "https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js")
                $ noHtml
+        link ! atr (fromString "rel") (fromString "stylesheet")
+             ! href (fromString "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/styles/atom-one-light.min.css")
+        script ! src (fromString "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/languages/haskell.min.js")
+               $ noHtml
         script (fromString initScript :: JSString)
   where
     initScript =
