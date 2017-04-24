@@ -1,3 +1,4 @@
+
 {-
  - Copyright (c) 2017 The Agile Monkeys S.L. <hackers@theam.io>
  -
@@ -13,38 +14,34 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module HaskellDo
-  ( run
-  ) where
+module HaskellDo.View where
 
-import BasicPrelude hiding (id, div, empty)
+import BasicPrelude hiding (id)
 
-import GHCJS.HPlay.View hiding (map, option,input)
+import GHCJS.HPlay.View
 import Transient.Base
-import Transient.Move
 
 import qualified Ulmus
-
 import HaskellDo.Types
-import HaskellDo.View
-import HaskellDo.State
 import HaskellDo.GUI.External.SimpleMDE
-import HaskellDo.GUI.External.Bootstrap
 
-initializeHeaders :: IO ()
-initializeHeaders = do
-    initializeJQuery
-    initializeTether
-    initializeBootstrap
-    initializeSimpleMDE
+view :: AppState -> Widget Action
+view appState = do
+      messageDisplay appState
+      editor appState
 
--- | Executes Haskell.do in designated 'port'
-run :: IO ()
-run = Ulmus.initializeApp Ulmus.AppConfig
-  { Ulmus._update         = update
-  , Ulmus._view           = view
-  , Ulmus._updateDisplays = updateDisplays
-  , Ulmus._initialState   = initialAppState
-  , Ulmus._port           = 8080
-  , Ulmus._setup          = initializeHeaders
-  }
+
+editor :: AppState -> Widget Action
+editor _ = do
+    newMsg <- simpleMDE
+    return $ EditorChanged newMsg
+
+updateDisplays :: AppState -> TransIO ()
+updateDisplays appState = do
+  Ulmus.updateWidget "messageDisplay" (messageDisplay appState)
+
+
+messageDisplay :: AppState -> Widget ()
+messageDisplay appState = rawHtml $
+  h1 ! id "messageDisplay"
+           $ "Code: " ++ appStateMessage appState
