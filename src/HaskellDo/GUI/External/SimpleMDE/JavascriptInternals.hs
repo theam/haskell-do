@@ -36,7 +36,7 @@ initializeSimpleMDE =
     addHeader $ do
         link ! atr (fromString "rel") (fromString "stylesheet")
              ! href (fromString "https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css")
-        script (pack "var simpleMDE; var renderedCode;" :: JSString)
+        script (pack "var simpleMDE;" :: JSString)
         script ! src (fromString "https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js")
                $ noHtml
         script (fromString initScript :: JSString)
@@ -45,8 +45,10 @@ initializeSimpleMDE =
         concat  [ "function initMDE() {"
                 ,    "if (typeof SimpleMDE !== 'undefined') {"
                 ,        "simpleMDE=new SimpleMDE({"
-                ,           "tabSize: 2, status: false,"
-                ,           "previewRender: function(x){return renderedCode;}"
+                ,           "tabSize: 2, "
+                ,           "status: false,"
+                ,           "toolbar: false,"
+                ,           "previewRender: function(x){return '';}"
                 ,        "});"
                 ,    "} else {"
                 ,        "window.setTimeout(initMDE, 10);"
