@@ -16,7 +16,7 @@
  -}
 module HaskellDo.View where
 
-import BasicPrelude hiding (id)
+import BasicPrelude hiding (id, div)
 
 import GHCJS.HPlay.View
 import Transient.Base
@@ -24,25 +24,35 @@ import Transient.Base
 import qualified Ulmus
 import HaskellDo.Types
 import HaskellDo.GUI.External.SimpleMDE
+import qualified HaskellDo.GUI.External.Bootstrap as Bootstrap
+
+#ifdef ghcjs_HOST_OS
+import GHCJS.Types
+#endif
 
 view :: AppState -> Widget Action
 view appState = do
-      messageDisplay appState
-      wbutton (Compile $ appStateMessage appState) "Go"
-      <|> editor appState
+      editor appState
+      <|> wbutton Compile "Go"
 
 
 editor :: AppState -> Widget Action
-editor _ = do
-    newMsg <- simpleMDE
+editor appState = do
+    newMsg <- Bootstrap.container . Bootstrap.row <<<
+        ((Bootstrap.col "sm" 6 <<< simpleMDE)
+        <** (Bootstrap.col "sm" 6 <<< outputDisplay appState))
     return $ EditorChanged newMsg
+
+outputDisplay :: AppState -> Widget ()
+outputDisplay appState = rawHtml $ setContents (div ! id "outputDisplay" $ noHtml)
+  where
+#ifdef ghcjs_HOST_OS
+    setContents f = f `setHtml` (pack $ codeHtmlOutput appState :: JSString)
+#else
+    setContents f = f
+#endif
+
 
 updateDisplays :: AppState -> TransIO ()
 updateDisplays appState = do
-  Ulmus.updateWidget "messageDisplay" (messageDisplay appState)
-
-
-messageDisplay :: AppState -> Widget ()
-messageDisplay appState = rawHtml $
-  h1 ! id "messageDisplay"
-           $ "Code: " ++ appStateMessage appState
+  Ulmus.updateWidget "outputDisplay" (outputDisplay appState)

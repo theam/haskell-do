@@ -25,16 +25,17 @@ import qualified HaskellDo.GUI.External.SimpleMDE as SimpleMDE
 
 initialAppState :: AppState
 initialAppState = AppState
-  { appStateMessage = ""
+  { editorCode     = ""
+  , codeHtmlOutput = "Not compiled yet."
   }
 
 update :: Action -> AppState -> Cloud AppState
 update (EditorChanged newMsg) appState = do
-    let newState = appState { appStateMessage = newMsg }
+    let newState = appState { editorCode = newMsg }
     return newState
 
-update (Compile code) appState = do
+update Compile appState = do
     local $ liftIO $ SimpleMDE.setRendered "Compiling..."
-    parsed <- atRemote $ Compilation.compile (appStateMessage appState)
+    parsed <- atRemote $ Compilation.compile (editorCode appState)
     local $ liftIO $ SimpleMDE.setRendered parsed
-    return appState
+    return $ appState { codeHtmlOutput = parsed }
