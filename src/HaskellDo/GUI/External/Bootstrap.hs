@@ -15,12 +15,15 @@
  -}
 module HaskellDo.GUI.External.Bootstrap where
 
-import BasicPrelude
+import BasicPrelude hiding (div, id)
 import GHCJS.HPlay.View
 
 initializeBootstrap :: IO ()
 initializeJQuery :: IO ()
 initializeTether :: IO ()
+container :: Perch -> Perch
+row :: Perch -> Perch
+col :: String -> Int -> Perch -> Perch
 
 #ifdef ghcjs_HOST_OS
 initializeBootstrap = addHeader $ do
@@ -39,9 +42,23 @@ initializeTether = addHeader $ do
     script ! src (fromString "https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js")
            $ noHtml
 
+container childs =
+    div ! atr "class" (fromString "container")
+        $ childs
+
+row childs =
+    div ! atr "class" (fromString "row")
+        $ childs
+
+col size number childs =
+    div ! atr "class" (fromString $ "col-" ++ size ++ "-" ++ show number)
+        $ childs
 
 #else
 initializeBootstrap = return ()
 initializeJQuery    = return ()
 initializeTether    = return ()
+container _ = div noHtml
+row _       = div noHtml
+col _ _ _   = div noHtml
 #endif
