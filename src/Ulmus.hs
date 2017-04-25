@@ -47,7 +47,6 @@ initializeApp (AppConfig update view updateDisplays initialAppState port setup) 
         currentState <- local $ getState initialAppState
         nextAction <- local (render $ view currentState)
         currentState <- local $ getState initialAppState
-        local $ liftIO $ print $  "Updating with: " ++ show nextAction ++ " and " ++ show currentState
         newState <- update nextAction currentState
         local (setState newState)
         renderDisplay initialAppState updateDisplays
@@ -74,23 +73,15 @@ updateWidget s f = render $ at ("#" ++ fromString s) Insert f
 ---------------------------------------------  State manipulation -------------------------------
 
 getState :: (Typeable appState, Show appState) => appState -> TransIO appState
-getState initialAppState = (do
-    liftIO $ putStrLn "Getting data"
-    x <- getRData
-    liftIO $ print x
-    liftIO $ putStrLn "\n-----------------------"
-    return x) <|> setAndReturn
+getState initialAppState = getRData <|> setAndReturn
  where
   setAndReturn = do
-      liftIO $ putStrLn $ "Data not set, setting initial state"
       setState initialAppState
       return initialAppState
 
 
 setState :: (Show appState, Typeable appState) => appState -> TransIO ()
-setState st = do
-    liftIO $ print $ "Setting data " ++ show st
-    setRData st
+setState = setRData
 
 ---------------------------------------------  State References in the TransIO monad ------------
 newtype Ref a = Ref (IORef a)
