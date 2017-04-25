@@ -20,6 +20,7 @@ import BasicPrelude
 import Transient.Move
 
 import HaskellDo.Types
+import qualified Ulmus
 import qualified HaskellDo.Core.Compilation as Compilation
 import qualified HaskellDo.GUI.External.SimpleMDE as SimpleMDE
 
@@ -30,11 +31,16 @@ initialAppState = AppState
 
 update :: Action -> AppState -> Cloud AppState
 update (EditorChanged newMsg) appState = do
-    return $ appState { appStateMessage = newMsg }
+    let newState = appState { appStateMessage = newMsg }
+    local $ liftIO $ print $ "New code: " ++ newMsg
+    local $ liftIO $ print $ "New state: " ++ show newState
+    local $ liftIO $ print appState
+    local $ Ulmus.setState newState
+    return newState
 
 update (Compile code) appState = do
     local $ liftIO $ SimpleMDE.setRendered "Compiling..."
-    local $ liftIO $ print $ "Compiling " ++ code
+    local $ liftIO $ print appState
     parsed <- atRemote $ Compilation.compile code
     local $ liftIO $ SimpleMDE.setRendered parsed
     return appState
