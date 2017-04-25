@@ -32,9 +32,9 @@ update :: Action -> AppState -> Cloud AppState
 update (EditorChanged newMsg) appState = do
     return $ appState { appStateMessage = newMsg }
 
-update Compile appState = do
+update (Compile code) appState = do
     local $ liftIO $ SimpleMDE.setRendered "Compiling..."
-    local $ liftIO $ print $ "Compiling " ++ appStateMessage appState
-    parsed <- atRemote $ Compilation.compile (appStateMessage appState)
+    local $ liftIO $ print $ "Compiling " ++ code
+    parsed <- atRemote $ Compilation.compile code
     local $ liftIO $ SimpleMDE.setRendered parsed
     return appState

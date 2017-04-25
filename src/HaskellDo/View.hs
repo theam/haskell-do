@@ -28,7 +28,7 @@ import HaskellDo.GUI.External.SimpleMDE
 view :: AppState -> Widget Action
 view appState = do
       messageDisplay appState
-      wbutton Compile "Go"
+      wbutton (Compile $ appStateMessage appState) "Go"
       <|> editor appState
 
 

@@ -24,5 +24,5 @@ data AppState = AppState
 
 data Action
   = EditorChanged String
-  | Compile
+  | Compile String
   deriving (Read, Show)
