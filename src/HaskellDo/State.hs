@@ -35,6 +35,6 @@ update (EditorChanged newMsg) appState = do
 
 update (Compile code) appState = do
     local $ liftIO $ SimpleMDE.setRendered "Compiling..."
-    parsed <- atRemote $ Compilation.compile code
+    parsed <- atRemote $ Compilation.compile (appStateMessage appState)
     local $ liftIO $ SimpleMDE.setRendered parsed
     return appState
