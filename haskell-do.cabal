@@ -37,6 +37,7 @@ library
     , optparse-generic
     , process
     , text
+    , clay
   if impl(ghcjs)
     build-depends:
         ghcjs-base
@@ -67,6 +68,7 @@ executable haskell-do
     , optparse-generic
     , process
     , text
+    , clay
   if impl(ghcjs)
     build-depends:
         ghcjs-base

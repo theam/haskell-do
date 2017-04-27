@@ -23,6 +23,8 @@ where
 import BasicPrelude hiding (id, div, empty)
 import GHCJS.Types
 import Data.JSString hiding (concat)
+import qualified Data.Text.Lazy as Text
+import Clay hiding (script, src, (!), href, link)
 
 import GHCJS.HPlay.View hiding (map, option,input)
 
@@ -30,6 +32,10 @@ import HaskellDo.GUI.External.SimpleMDE.Common
 
 foreign import javascript unsafe "simpleMDE.value()"
     js_getMDEContent :: IO JSString
+
+mdeStyle = Clay.render $
+    ".CodeMirror" ?
+        borderWidth (px 0)
 
 initializeSimpleMDE :: IO ()
 initializeSimpleMDE =
@@ -39,7 +45,10 @@ initializeSimpleMDE =
         script (pack "var simpleMDE;" :: JSString)
         script ! src (fromString "https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js")
                $ noHtml
+        script ! src (fromString "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/mode/haskell/haskell.min.js")
+               $ noHtml
         script (fromString initScript :: JSString)
+        nelem "style" `child` (fromString $ Text.unpack mdeStyle :: JSString)
   where
     initScript =
         concat  [ "function initMDE() {"
@@ -48,7 +57,10 @@ initializeSimpleMDE =
                 ,           "tabSize: 2, "
                 ,           "status: false,"
                 ,           "toolbar: false,"
-                ,           "previewRender: function(x){return '';}"
+                ,           "previewRender: function(x){return '';},"
+                ,           "autofocus: true,"
+                ,           "forceSync: true,"
+                ,           "indentWithTabs: false"
                 ,        "});"
                 ,    "} else {"
                 ,        "window.setTimeout(initMDE, 10);"
