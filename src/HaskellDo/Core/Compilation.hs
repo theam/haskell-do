@@ -57,10 +57,10 @@ buildOutput :: IO Output
 buildOutput = do
     (exitCode, out, _) <- System.readCreateProcessWithExitCode (System.shell $ "cd " ++ projectPath ++ " && stack exec run-test") ""
     case exitCode of
-        System.ExitFailure _ -> return "<span class=\"glyphicon glyphicon-refresh glyphicon-refresh-animate\"></span>"
-        System.ExitSuccess   -> return $ removeContainer out
+        System.ExitFailure _ -> return "Compiling..."
+        System.ExitSuccess   -> return $ build out
   where
-    removeContainer out =
+    build out =
         Text.pack out
         |> Text.replace "div class=\"container\"" "div"
         |> Text.unpack

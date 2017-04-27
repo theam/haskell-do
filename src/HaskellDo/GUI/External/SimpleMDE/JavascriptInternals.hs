@@ -45,8 +45,6 @@ initializeSimpleMDE =
         script (pack "var simpleMDE;" :: JSString)
         script ! src (fromString "https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js")
                $ noHtml
-        script ! src (fromString "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/mode/haskell/haskell.min.js")
-               $ noHtml
         script (fromString initScript :: JSString)
         nelem "style" `child` (fromString $ Text.unpack mdeStyle :: JSString)
   where
@@ -66,7 +64,7 @@ initializeSimpleMDE =
                 ,        "window.setTimeout(initMDE, 10);"
                 ,    "}"
                 , "};"
-                , "initMDE()"
+                , "initMDE();"
                 ]
 
 simpleMDE :: Widget String

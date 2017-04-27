@@ -67,3 +67,12 @@ updateDisplays :: AppState -> TransIO ()
 updateDisplays appState = do
   Ulmus.updateWidget "outputDisplay" (outputDisplay appState)
   Ulmus.updateWidget "errorDisplay" (errorDisplay appState)
+  liftIO $ highlightCode
+
+#ifdef ghcjs_HOST_OS
+foreign import javascript unsafe "$('.haskell').each(function(i, block){ hljs.highlightBlock(block);});"
+    highlightCode :: IO ()
+#else
+highlightCode :: IO ()
+highlightCode = return ()
+#endif
