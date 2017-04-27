@@ -21,21 +21,18 @@ import Transient.Move
 
 import HaskellDo.Types
 import qualified HaskellDo.Core.Compilation as Compilation
-import qualified HaskellDo.GUI.External.SimpleMDE as SimpleMDE
 
 initialAppState :: AppState
 initialAppState = AppState
   { editorCode     = ""
   , codeHtmlOutput = "Not compiled yet."
+  , compilationError = ""
   }
 
 update :: Action -> AppState -> Cloud AppState
 update (EditorChanged newMsg) appState = do
     let newState = appState { editorCode = newMsg }
-    return newState
-
-update Compile appState = do
-    local $ liftIO $ SimpleMDE.setRendered "Compiling..."
     parsed <- atRemote $ Compilation.compile (editorCode appState)
-    local $ liftIO $ SimpleMDE.setRendered parsed
-    return $ appState { codeHtmlOutput = parsed }
+    case parsed of
+        Left err -> return $ newState { compilationError = err }
+        Right out -> return $ newState { compilationError = "", codeHtmlOutput = out }

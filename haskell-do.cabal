@@ -36,6 +36,7 @@ library
     , ghcjs-hplay
     , optparse-generic
     , process
+    , text
   if impl(ghcjs)
     build-depends:
         ghcjs-base
@@ -65,6 +66,7 @@ executable haskell-do
     , ghcjs-hplay
     , optparse-generic
     , process
+    , text
   if impl(ghcjs)
     build-depends:
         ghcjs-base

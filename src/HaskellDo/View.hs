@@ -33,26 +33,37 @@ import GHCJS.Types
 view :: AppState -> Widget Action
 view appState = do
       editor appState
-      <|> wbutton Compile "Go"
 
 
 editor :: AppState -> Widget Action
 editor appState = do
-    newMsg <- Bootstrap.container . Bootstrap.row <<<
-        ((Bootstrap.col "sm" 6 <<< simpleMDE)
-        <** (Bootstrap.col "sm" 6 <<< outputDisplay appState))
+    newMsg <- Bootstrap.container <<<
+        ((Bootstrap.row <<<
+            ((Bootstrap.col "sm" 6 <<< simpleMDE)
+            <** (Bootstrap.col "sm" 6 <<< outputDisplay appState)))
+        <** (Bootstrap.row <<<
+                (Bootstrap.col "sm" 12 <<< errorDisplay appState)))
     return $ EditorChanged newMsg
 
 outputDisplay :: AppState -> Widget ()
 outputDisplay appState = rawHtml $ setContents (div ! id "outputDisplay" $ noHtml)
   where
 #ifdef ghcjs_HOST_OS
-    setContents f = f `setHtml` (pack $ codeHtmlOutput appState :: JSString)
+    setContents f = f `setHtml` (fromString $ codeHtmlOutput appState :: JSString)
 #else
     setContents f = f
 #endif
 
+errorDisplay :: AppState -> Widget ()
+errorDisplay appState = rawHtml $ setContents (div ! id "errorDisplay" $ noHtml)
+  where
+#ifdef ghcjs_HOST_OS
+    setContents f = f `setHtml` (fromString $ compilationError appState :: JSString)
+#else
+    setContents f = f
+#endif
 
 updateDisplays :: AppState -> TransIO ()
 updateDisplays appState = do
   Ulmus.updateWidget "outputDisplay" (outputDisplay appState)
+  Ulmus.updateWidget "errorDisplay" (errorDisplay appState)

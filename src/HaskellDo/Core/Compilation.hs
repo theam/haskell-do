@@ -18,25 +18,52 @@ module HaskellDo.Core.Compilation where
 import BasicPrelude
 import Flow
 import qualified System.Process as System
+import qualified System.Exit as System
+import qualified Data.Text as Text
 
+import Transient.Base
 import Transient.Move
+
+type Error = String
+type Output = String
 
 projectPath :: String
 projectPath = "/home/nick/Documents/haskell-do-test"
 
-compile :: String -> Cloud String
-compile inp = local . liftIO $ performCompilation inp
+compile :: String -> Cloud (Either Error Output)
+compile inp = local . oneThread . liftIO $ performCompilation inp
 
 
-performCompilation :: String -> IO String
+performCompilation :: String -> IO (Either Error Output)
 performCompilation inp = do
     writeCode (projectPath ++ "/src/Main.hs") inp
     buildHtmlCode
 
-buildHtmlCode :: IO String
+buildHtmlCode :: IO (Either Error Output)
 buildHtmlCode = do
-    _ <- System.spawnCommand ("cd " ++ projectPath ++ " && stack build")
-    System.readCreateProcess (System.shell $ "cd " ++ projectPath ++ " && stack exec run-test") ""
+    (exitCode, _, err) <- System.readCreateProcessWithExitCode (System.shell $ "cd " ++ projectPath ++ " && stack build") ""
+    case exitCode of
+        System.ExitFailure _ -> Left <$> buildError err
+        System.ExitSuccess   -> Right <$> buildOutput
+
+buildError :: String -> IO Error
+buildError err = do
+    let prettyError = "<div class=\"alert alert-danger\" role=\"alert\">"
+                ++ err
+                ++ "</div>"
+    return prettyError
+
+buildOutput :: IO Output
+buildOutput = do
+    (exitCode, out, _) <- System.readCreateProcessWithExitCode (System.shell $ "cd " ++ projectPath ++ " && stack exec run-test") ""
+    case exitCode of
+        System.ExitFailure _ -> return "<span class=\"glyphicon glyphicon-refresh glyphicon-refresh-animate\"></span>"
+        System.ExitSuccess   -> return $ removeContainer out
+  where
+    removeContainer out =
+        Text.pack out
+        |> Text.replace "div class=\"container\"" "div"
+        |> Text.unpack
 
 
 writeCode :: FilePath -> String -> IO ()

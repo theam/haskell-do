@@ -18,12 +18,12 @@ module HaskellDo.Types where
 import BasicPrelude
 
 data AppState = AppState
-  { editorCode     :: String
-  , codeHtmlOutput :: String
+  { editorCode       :: String
+  , codeHtmlOutput   :: String
+  , compilationError :: String
   } deriving (Read, Show)
 
 
 data Action
   = EditorChanged String
-  | Compile
   deriving (Read, Show)
