@@ -33,7 +33,21 @@ import HaskellDo.GUI.External.SimpleMDE.Common
 foreign import javascript unsafe "simpleMDE.value()"
     js_getMDEContent :: IO JSString
 
-mdeStyle = Clay.render $
+mdeStyle = Clay.render $ do
+    "html, body" ? do
+        backgroundColor "#ccc"
+        Clay.height (pct 100.0)
+    ".my-container" ? do
+        backgroundColor "#fff"
+        marginTop (pct 5)
+        marginLeft (pct 2)
+        marginRight (pct 2)
+        Clay.minHeight (pct 100.0)
+        bottom (px 0)
+        boxShadow (px 0) (px 19) (px 38) (rgba 0 0 0 0.25)
+        paddingTop (px 75)
+        paddingLeft (px 60)
+        paddingRight (px 60)
     ".CodeMirror" ?
         borderWidth (px 0)
 
