@@ -39,10 +39,10 @@ editor :: AppState -> Widget Action
 editor appState = do
     newMsg <- Bootstrap.container <<<
         ((Bootstrap.row <<<
-            ((Bootstrap.col "sm" 6 <<< simpleMDE)
-            <** (Bootstrap.col "sm" 6 <<< outputDisplay appState)))
+            ((Bootstrap.col "s" 6 <<< simpleMDE)
+            <** (Bootstrap.col "s" 6 <<< outputDisplay appState)))
         <** (Bootstrap.row <<<
-                (Bootstrap.col "sm" 12 <<< errorDisplay appState)))
+                (Bootstrap.col "s" 12 <<< errorDisplay appState)))
     return $ EditorChanged newMsg
 
 outputDisplay :: AppState -> Widget ()

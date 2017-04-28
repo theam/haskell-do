@@ -28,10 +28,8 @@ col :: String -> Int -> Perch -> Perch
 #ifdef ghcjs_HOST_OS
 initializeBootstrap = addHeader $ do
     link ! atr (fromString "rel") (fromString "stylesheet")
-         ! href (fromString "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css")
-    link ! atr (fromString "rel") (fromString "stylesheet")
-         ! href (fromString "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css")
-    script ! src (fromString "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js")
+         ! href (fromString "https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css")
+    script ! src (fromString "https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js")
            $ noHtml
 
 initializeJQuery = addHeader $ do
@@ -43,7 +41,7 @@ initializeTether = addHeader $ do
            $ noHtml
 
 container childs =
-    div ! atr "class" (fromString "container")
+    div ! atr "class" (fromString "my-container")
         $ childs
 
 row childs =
@@ -51,7 +49,7 @@ row childs =
         $ childs
 
 col size number childs =
-    div ! atr "class" (fromString $ "col-" ++ size ++ "-" ++ show number)
+    div ! atr "class" (fromString $ "col " ++ size ++ show number)
         $ childs
 
 #else

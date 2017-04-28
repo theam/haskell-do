@@ -48,7 +48,7 @@ buildHtmlCode = do
 
 buildError :: String -> IO Error
 buildError err = do
-    let prettyError = "<div class=\"alert alert-danger\" role=\"alert\">"
+    let prettyError = "<div class=\"card-panel red darken-1 white-text\" role=\"alert\">"
                 ++ err
                 ++ "</div>"
     return prettyError
@@ -62,7 +62,11 @@ buildOutput = do
   where
     build out =
         Text.pack out
-        |> Text.replace "div class=\"container\"" "div"
+        |> Text.replace "div class=\"container\"" "div onload=\"$('.haskell').each(function(i, block){ hljs.highlightBlock(block);})\""
+        |> Text.replace "<link href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\" rel=\"stylesheet\">" ""
+        |> Text.replace "<link href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css\" rel=\"stylesheet\">" ""
+        |> Text.replace "<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js\"></script>" ""
+        |> Text.replace "<script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js\"></script>" ""
         |> Text.unpack
 
 
