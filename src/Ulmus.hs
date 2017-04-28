@@ -46,8 +46,8 @@ initializeApp (AppConfig update view updateDisplays initialAppState port setup) 
     simpleWebApp port $ do
         currentState <- local $ getState initialAppState
         nextAction <- local (render $ view currentState)
-        currentState <- local $ getState initialAppState
-        newState <- update nextAction currentState
+        currentState' <- local $ getState initialAppState
+        newState <- update nextAction currentState'
         local (setState newState)
         renderDisplay initialAppState updateDisplays
 

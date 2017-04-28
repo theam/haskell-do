@@ -13,20 +13,19 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module HaskellDo.GUI.External.Bootstrap where
+module HaskellDo.GUI.External.Materialize where
 
 import BasicPrelude hiding (div, id)
 import GHCJS.HPlay.View
 
-initializeBootstrap :: IO ()
+initializeMaterialize :: IO ()
 initializeJQuery :: IO ()
-initializeTether :: IO ()
 container :: Perch -> Perch
 row :: Perch -> Perch
 col :: String -> Int -> Perch -> Perch
 
 #ifdef ghcjs_HOST_OS
-initializeBootstrap = addHeader $ do
+initializeMaterialize = addHeader $ do
     link ! atr (fromString "rel") (fromString "stylesheet")
          ! href (fromString "https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css")
     script ! src (fromString "https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js")
@@ -34,10 +33,6 @@ initializeBootstrap = addHeader $ do
 
 initializeJQuery = addHeader $ do
     script ! src (fromString "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js")
-           $ noHtml
-
-initializeTether = addHeader $ do
-    script ! src (fromString "https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js")
            $ noHtml
 
 container childs =
@@ -53,9 +48,8 @@ col size number childs =
         $ childs
 
 #else
-initializeBootstrap = return ()
+initializeMaterialize = return ()
 initializeJQuery    = return ()
-initializeTether    = return ()
 container _ = div noHtml
 row _       = div noHtml
 col _ _ _   = div noHtml

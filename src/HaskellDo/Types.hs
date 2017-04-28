@@ -21,6 +21,7 @@ data AppState = AppState
   { editorCode       :: String
   , codeHtmlOutput   :: String
   , compilationError :: String
+  , projectPath      :: FilePath
   } deriving (Read, Show)
 
 

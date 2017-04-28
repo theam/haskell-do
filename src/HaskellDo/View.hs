@@ -24,55 +24,33 @@ import Transient.Base
 import qualified Ulmus
 import HaskellDo.Types
 import HaskellDo.GUI.External.SimpleMDE
-import qualified HaskellDo.GUI.External.Bootstrap as Bootstrap
-
-#ifdef ghcjs_HOST_OS
-import GHCJS.Types
-#endif
+import HaskellDo.GUI.External.Highlight
+import HaskellDo.GUI.Utils
+import qualified HaskellDo.GUI.External.Materialize as Materialize
 
 view :: AppState -> Widget Action
-view appState = do
-      editor appState
-
+view appState = editor appState
 
 editor :: AppState -> Widget Action
 editor appState = do
-    newMsg <- Bootstrap.container <<<
-        ((Bootstrap.row <<<
-            ((Bootstrap.col "s" 6 <<< simpleMDE)
-            <** (Bootstrap.col "s" 6 <<< outputDisplay appState)))
-        <** (Bootstrap.row <<<
-                (Bootstrap.col "s" 12 <<< errorDisplay appState)))
+    newMsg <- Materialize.container <<<
+        ((Materialize.row <<<
+            ((Materialize.col "s" 6 <<< simpleMDE)
+            <** (Materialize.col "s" 6 <<< outputDisplay appState)))
+        <** (Materialize.row <<<
+                (Materialize.col "s" 12 <<< errorDisplay appState)))
     return $ EditorChanged newMsg
 
 outputDisplay :: AppState -> Widget ()
-outputDisplay appState = rawHtml $ setContents (div ! id "outputDisplay" $ noHtml)
-  where
-#ifdef ghcjs_HOST_OS
-    setContents f = f `setHtml` (fromString $ codeHtmlOutput appState :: JSString)
-#else
-    setContents f = f
-#endif
+outputDisplay appState = rawHtml $
+  (div ! id "outputDisplay" $ noHtml) `setContents` codeHtmlOutput appState
 
 errorDisplay :: AppState -> Widget ()
-errorDisplay appState = rawHtml $ setContents (div ! id "errorDisplay" $ noHtml)
-  where
-#ifdef ghcjs_HOST_OS
-    setContents f = f `setHtml` (fromString $ compilationError appState :: JSString)
-#else
-    setContents f = f
-#endif
+errorDisplay appState = rawHtml $
+  (div ! id "errorDisplay" $ noHtml) `setContents` (compilationError appState)
 
 updateDisplays :: AppState -> TransIO ()
 updateDisplays appState = do
   Ulmus.updateWidget "outputDisplay" (outputDisplay appState)
   Ulmus.updateWidget "errorDisplay" (errorDisplay appState)
-  liftIO $ highlightCode
-
-#ifdef ghcjs_HOST_OS
-foreign import javascript unsafe "$('.haskell').each(function(i, block){ hljs.highlightBlock(block);});"
-    highlightCode :: IO ()
-#else
-highlightCode :: IO ()
-highlightCode = return ()
-#endif
+  liftIO highlightCode

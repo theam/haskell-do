@@ -27,24 +27,21 @@ import Transient.Move
 type Error = String
 type Output = String
 
-projectPath :: String
-projectPath = "/home/nick/Documents/haskell-do-test"
-
-compile :: String -> Cloud (Either Error Output)
-compile inp = local . oneThread . liftIO $ performCompilation inp
+compile :: FilePath -> String -> Cloud (Either Error Output)
+compile projectPath inp = local . oneThread . liftIO $ performCompilation projectPath inp
 
 
-performCompilation :: String -> IO (Either Error Output)
-performCompilation inp = do
+performCompilation :: FilePath -> String -> IO (Either Error Output)
+performCompilation projectPath inp = do
     writeCode (projectPath ++ "/src/Main.hs") inp
-    buildHtmlCode
+    buildHtmlCode projectPath
 
-buildHtmlCode :: IO (Either Error Output)
-buildHtmlCode = do
+buildHtmlCode :: FilePath -> IO (Either Error Output)
+buildHtmlCode projectPath = do
     (exitCode, _, err) <- System.readCreateProcessWithExitCode (System.shell $ "cd " ++ projectPath ++ " && stack build") ""
     case exitCode of
         System.ExitFailure _ -> Left <$> buildError err
-        System.ExitSuccess   -> Right <$> buildOutput
+        System.ExitSuccess   -> Right <$> buildOutput projectPath
 
 buildError :: String -> IO Error
 buildError err = do
@@ -53,8 +50,8 @@ buildError err = do
                 ++ "</div>"
     return prettyError
 
-buildOutput :: IO Output
-buildOutput = do
+buildOutput :: FilePath -> IO Output
+buildOutput projectPath = do
     (exitCode, out, _) <- System.readCreateProcessWithExitCode (System.shell $ "cd " ++ projectPath ++ " && stack exec run-test") ""
     case exitCode of
         System.ExitFailure _ -> return "Compiling..."

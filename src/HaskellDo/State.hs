@@ -25,14 +25,15 @@ import qualified HaskellDo.Core.Compilation as Compilation
 initialAppState :: AppState
 initialAppState = AppState
   { editorCode     = ""
-  , codeHtmlOutput = "Not compiled yet."
+  , codeHtmlOutput = ""
   , compilationError = ""
+  , projectPath = "/home/nick/Documents/haskell-do-test"
   }
 
 update :: Action -> AppState -> Cloud AppState
 update (EditorChanged newMsg) appState = do
     let newState = appState { editorCode = newMsg }
-    parsed <- atRemote $ Compilation.compile (editorCode appState)
+    parsed <- atRemote $ Compilation.compile (projectPath appState) (editorCode appState)
     case parsed of
         Left err -> return $ newState { compilationError = err }
         Right out -> return $ newState { compilationError = "", codeHtmlOutput = out }
