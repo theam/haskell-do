@@ -48,7 +48,8 @@ mdeStyle = Clay.render $ do
         paddingTop (px 75)
         paddingLeft (px 60)
         paddingRight (px 60)
-    ".CodeMirror" ?
+    ".CodeMirror" ? do
+        fontFamily [] [monospace]
         borderWidth (px 0)
 
 initializeSimpleMDE :: IO ()
