@@ -14,12 +14,13 @@
  - limitations under the License.
  -}
 module HaskellDo.GUI.External.SimpleMDE.JavascriptInternals
-  ( simpleMDE
-  , initializeSimpleMDE
-  , setRendered
-  )
+--  ( simpleMDE
+--  , initializeSimpleMDE
+--  , setRendered
+--  )
 where
 
+#ifdef ghcjs_HOST_OS
 import BasicPrelude hiding (id, div, empty)
 import GHCJS.Types
 import Data.JSString hiding (concat)
@@ -93,3 +94,4 @@ foreign import javascript unsafe "renderedCode = $1;"
 
 setRendered :: String -> IO ()
 setRendered = js_setRendered . pack
+#endif
