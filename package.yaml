@@ -27,8 +27,11 @@ ghc-options:
 
 when:
   - condition: impl(ghcjs)
-    dependencies:
-      ghcjs-base
+    then:
+      dependencies: ghcjs-base
+      source-dirs: ghcjs-specific
+    else:
+      source-dirs: ghc-specific
 
 default-extensions:
   - CPP

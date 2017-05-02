@@ -23,8 +23,8 @@ import qualified Ulmus
 
 import HaskellDo.View
 import HaskellDo.State
-import HaskellDo.GUI.External.SimpleMDE
-import HaskellDo.GUI.External.Materialize
+import External.SimpleMDE
+import External.Materialize
 
 initializeHeaders :: IO ()
 initializeHeaders = do

@@ -23,10 +23,10 @@ import Transient.Base
 
 import qualified Ulmus
 import HaskellDo.Types
-import HaskellDo.GUI.External.SimpleMDE
-import HaskellDo.GUI.External.Highlight
-import HaskellDo.GUI.Utils
-import qualified HaskellDo.GUI.External.Materialize as Materialize
+import External.SimpleMDE
+import External.Highlight
+import HaskellDo.Utils
+import qualified External.Materialize as Materialize
 
 view :: AppState -> Widget Action
 view appState = editor appState

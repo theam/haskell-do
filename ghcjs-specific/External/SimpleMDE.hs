@@ -13,14 +13,8 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module HaskellDo.GUI.External.SimpleMDE.JavascriptInternals
---  ( simpleMDE
---  , initializeSimpleMDE
---  , setRendered
---  )
-where
+module External.SimpleMDE where
 
-#ifdef ghcjs_HOST_OS
 import BasicPrelude hiding (id, div, empty)
 import GHCJS.Types
 import Data.JSString hiding (concat)
@@ -28,8 +22,6 @@ import qualified Data.Text.Lazy as Text
 import Clay hiding (script, src, (!), href, link)
 
 import GHCJS.HPlay.View hiding (map, option,input)
-
-import HaskellDo.GUI.External.SimpleMDE.Common
 
 foreign import javascript unsafe "simpleMDE.value()"
     js_getMDEContent :: IO JSString
@@ -89,9 +81,8 @@ simpleMDE = do
     content <- liftIO js_getMDEContent
     return $ unpack content
 
-foreign import javascript unsafe "renderedCode = $1;"
-    js_setRendered :: JSString -> IO ()
-
-setRendered :: String -> IO ()
-setRendered = js_setRendered . pack
-#endif
+-- foreign import javascript unsafe "renderedCode = $1;"
+--     js_setRendered :: JSString -> IO ()
+--
+-- setRendered :: String -> IO ()
+-- setRendered = js_setRendered . pack

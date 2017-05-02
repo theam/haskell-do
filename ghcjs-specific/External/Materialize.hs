@@ -13,44 +13,35 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module HaskellDo.GUI.External.Materialize where
+module External.Materialize where
 
 import BasicPrelude hiding (div, id)
 import GHCJS.HPlay.View
 
-initializeMaterialize :: IO ()
-initializeJQuery :: IO ()
-container :: Perch -> Perch
-row :: Perch -> Perch
-col :: String -> Int -> Perch -> Perch
 
-#ifdef ghcjs_HOST_OS
+initializeMaterialize :: IO ()
 initializeMaterialize = addHeader $ do
     link ! atr (fromString "rel") (fromString "stylesheet")
          ! href (fromString "https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css")
     script ! src (fromString "https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js")
            $ noHtml
 
-initializeJQuery = addHeader $ do
+initializeJQuery :: IO ()
+initializeJQuery = addHeader $
     script ! src (fromString "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js")
            $ noHtml
 
+container :: Perch -> Perch
 container childs =
     div ! atr "class" (fromString "my-container")
         $ childs
 
+row :: Perch -> Perch
 row childs =
     div ! atr "class" (fromString "row")
         $ childs
 
+col :: String -> Int -> Perch -> Perch
 col size number childs =
     div ! atr "class" (fromString $ "col " ++ size ++ show number)
         $ childs
-
-#else
-initializeMaterialize = return ()
-initializeJQuery    = return ()
-container _ = div noHtml
-row _       = div noHtml
-col _ _ _   = div noHtml
-#endif

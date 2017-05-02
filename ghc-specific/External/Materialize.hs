@@ -13,10 +13,22 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module HaskellDo.GUI.External.SimpleMDE.Common where
+module External.Materialize where
 
-import BasicPrelude
+import BasicPrelude hiding (div, id)
+import GHCJS.HPlay.View
 
-data EditorConfig = EditorConfig
-  { elementId :: String
-  }
+initializeMaterialize :: IO ()
+initializeMaterialize = return ()
+
+initializeJQuery :: IO ()
+initializeJQuery    = return ()
+
+container :: Perch -> Perch
+container _ = div noHtml
+
+row :: Perch -> Perch
+row _       = div noHtml
+
+col :: String -> Int -> Perch -> Perch
+col _ _ _   = div noHtml

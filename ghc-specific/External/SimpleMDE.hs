@@ -13,7 +13,7 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module HaskellDo.GUI.External.SimpleMDE.ServerInternals
+module External.SimpleMDE
   ( initializeSimpleMDE
   , simpleMDE
   , setRendered
@@ -27,13 +27,10 @@ import GHCJS.HPlay.View hiding (map, option,input)
 newtype SimpleMDE = SimpleMDE () deriving (Read, Show)
 
 simpleMDE :: Widget String
-simpleMDE = throwBrowserError "simpleMDE"
+simpleMDE = return ""
 
 initializeSimpleMDE :: IO ()
 initializeSimpleMDE = return ()
 
 setRendered :: String -> IO ()
 setRendered _ = return ()
-
-throwBrowserError :: String -> a
-throwBrowserError fName = error $ fName ++ ": This function is supposed to run on the browser"
