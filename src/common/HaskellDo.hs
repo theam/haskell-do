@@ -17,20 +17,22 @@ module HaskellDo
   ( run
   ) where
 
-import BasicPrelude hiding (id, div, empty)
-
 import qualified Ulmus
 
 import HaskellDo.View
+import HaskellDo.Displays
 import HaskellDo.State
-import External.SimpleMDE
-import External.Materialize
+import qualified HaskellDo.SimpleMDE.View as SimpleMDE
+import qualified HaskellDo.Materialize.View as Materialize
+import qualified HaskellDo.JQuery.View as JQuery
+import qualified HaskellDo.Style.View as Style
 
 initializeHeaders :: IO ()
 initializeHeaders = do
-    initializeJQuery
-    initializeMaterialize
-    initializeSimpleMDE
+    JQuery.initialize
+    JQuery.initialize
+    SimpleMDE.initialize
+    Style.initialize
 
 -- | Executes Haskell.do in designated 'port'
 run :: IO ()

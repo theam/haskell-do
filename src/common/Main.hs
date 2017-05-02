@@ -13,18 +13,9 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module HaskellDo.Types where
+module Main where
 
-import BasicPrelude
+import HaskellDo
 
-data AppState = AppState
-  { editorCode       :: String
-  , codeHtmlOutput   :: String
-  , compilationError :: String
-  , projectPath      :: FilePath
-  } deriving (Read, Show)
-
-
-data Action
-  = EditorChanged String
-  deriving (Read, Show)
+main :: IO ()
+main = run

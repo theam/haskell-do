@@ -13,10 +13,10 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module HaskellDo.Core.Compilation where
+module HaskellDo.Compilation where
 
-import BasicPrelude
 import Flow
+import Control.Monad.IO.Class
 import qualified System.Process as System
 import qualified System.Exit as System
 import qualified Data.Text as Text
@@ -74,4 +74,4 @@ writeCode path code = do
                       "import Inliterate.Import\n" ++
                       "```\n" ++
                       code
-    writeFile path (fromString fileContent)
+    writeFile path fileContent

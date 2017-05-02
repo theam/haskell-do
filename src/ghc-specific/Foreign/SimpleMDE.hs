@@ -13,24 +13,7 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module External.SimpleMDE
-  ( initializeSimpleMDE
-  , simpleMDE
-  , setRendered
-  )
-where
+module Foreign.SimpleMDE where
 
-import BasicPrelude
-
-import GHCJS.HPlay.View hiding (map, option,input)
-
-newtype SimpleMDE = SimpleMDE () deriving (Read, Show)
-
-simpleMDE :: Widget String
-simpleMDE = return ""
-
-initializeSimpleMDE :: IO ()
-initializeSimpleMDE = return ()
-
-setRendered :: String -> IO ()
-setRendered _ = return ()
+getMDEContent :: IO String
+getMDEContent = return ""

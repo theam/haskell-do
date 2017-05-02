@@ -13,7 +13,7 @@ extra-source-files:
 
 dependencies:
   - base >= 4.7 && < 5
-  - basic-prelude
+#  - basic-prelude
   - flow
   - transient
   - transient-universe
@@ -24,28 +24,28 @@ dependencies:
 
 ghc-options:
   - -Wall
+  - -fprint-potential-instances
 
 when:
   - condition: impl(ghcjs)
     then:
       dependencies: ghcjs-base
-      source-dirs: ghcjs-specific
+      source-dirs: src/ghcjs-specific
     else:
-      source-dirs: ghc-specific
+      source-dirs: src/ghc-specific
 
 default-extensions:
   - CPP
-  - NoImplicitPrelude
   - OverloadedStrings
 
 library:
-  source-dirs: src
+  source-dirs: src/common
   exposed-modules:
     - HaskellDo
 
 executables:
   haskell-do:
-    source-dirs: src
+    source-dirs: src/common
     main: Main.hs
 
 tests:
@@ -53,7 +53,7 @@ tests:
     main: Spec.hs
     source-dirs:
       - test
-      - src
+      - src/common
     dependencies:
       - hspec == 2.*
       - QuickCheck

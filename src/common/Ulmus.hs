@@ -15,14 +15,16 @@
  -}
 module Ulmus where
 
-import BasicPrelude hiding (id, div, empty)
+import Prelude hiding (div, id)
+import Data.IORef
+import Data.Typeable
+import Control.Monad.IO.Class
 
-import GHCJS.HPlay.View hiding (map, option,input)
-
-
+import GHCJS.HPlay.View hiding (at, id)
 import Transient.Base
 import Transient.Move
-import Data.IORef
+
+import AxiomUtils
 
 type Update action appState  = action -> appState -> Cloud appState
 type View action appState    = appState -> Widget action
@@ -52,10 +54,10 @@ initializeApp (AppConfig update view updateDisplays initialAppState port setup) 
         renderDisplay initialAppState updateDisplays
 
 
-displayPlaceholder :: String -> Widget ()
-displayPlaceholder id' = rawHtml $
+widgetPlaceholder :: String -> Perch
+widgetPlaceholder id' =
   div
-    ! id (fromString id')
+    ! id id'
     $ noHtml
 
 
@@ -69,7 +71,16 @@ renderDisplay initialAppState f = do
 
 
 updateWidget :: String -> Widget () -> TransIO ()
-updateWidget s f = render $ at ("#" ++ fromString s) Insert f
+updateWidget s f = render $ at ("#" ++ s) Insert f
+
+
+withWidgets :: Widget a -> Perch -> Widget a
+withWidgets widgets perch = rawHtml perch **> widgets
+
+
+newWidget :: String -> Widget a -> Widget a
+newWidget s = at ("#" ++ s) Insert
+
 ---------------------------------------------  State manipulation -------------------------------
 
 getState :: (Typeable appState, Show appState) => appState -> TransIO appState

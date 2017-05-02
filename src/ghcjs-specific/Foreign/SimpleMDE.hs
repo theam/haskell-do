@@ -13,22 +13,13 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module External.Materialize where
+module Foreign.SimpleMDE where
 
-import BasicPrelude hiding (div, id)
-import GHCJS.HPlay.View
+import GHCJS.Types
+import Data.JSString
 
-initializeMaterialize :: IO ()
-initializeMaterialize = return ()
+getMDEContent :: IO String
+getMDEContent = unpack <$> js_getMDEContent
 
-initializeJQuery :: IO ()
-initializeJQuery    = return ()
-
-container :: Perch -> Perch
-container _ = div noHtml
-
-row :: Perch -> Perch
-row _       = div noHtml
-
-col :: String -> Int -> Perch -> Perch
-col _ _ _   = div noHtml
+foreign import javascript unsafe "simpleMDE.value()"
+    js_getMDEContent :: IO JSString

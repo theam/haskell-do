@@ -13,10 +13,18 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module Main where
+module HaskellDo.Types where
 
-import BasicPrelude
-import HaskellDo
+import qualified HaskellDo.SimpleMDE.Types as SimpleMDE
 
-main :: IO ()
-main = run
+data AppState = AppState
+  { simpleMDEState   :: SimpleMDE.State
+  , codeHtmlOutput   :: String
+  , compilationError :: String
+  , projectPath      :: FilePath
+  } deriving (Read, Show)
+
+
+data Action
+  = SimpleMDEAction SimpleMDE.Action
+  deriving (Read, Show)
