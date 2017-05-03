@@ -20,15 +20,8 @@ import Prelude hiding (div, id)
 import GHCJS.HPlay.View hiding (addHeader, atr)
 import AxiomUtils
 
-initialize :: IO ()
-initialize = addHeader $ do
-    link ! atr "rel" "stylesheet"
-         ! href "https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css"
-    script ! src "https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"
-           $ noHtml
-
 container :: Perch -> Perch
-container = div ! atr "class" "my-container"
+container = div ! atr "class" "container"
 
 row :: Perch -> Perch
 row = div ! atr "class" "row"
