@@ -18,22 +18,28 @@ module HaskellDo.State where
 import Transient.Move
 
 import HaskellDo.Types
-import qualified HaskellDo.Compilation as Compilation
 import qualified HaskellDo.SimpleMDE.State as SimpleMDE
 import qualified HaskellDo.SimpleMDE.Types as SimpleMDE
+import qualified HaskellDo.Compilation.State as Compilation
+import qualified HaskellDo.Compilation.Types as Compilation
 
 initialAppState :: AppState
 initialAppState = AppState
   { simpleMDEState = SimpleMDE.initialState
-  , codeHtmlOutput = ""
-  , compilationError = ""
-  , projectPath = "/home/nick/Documents/haskell-do-test"
+  , compilationState = Compilation.initialState
   }
 
 update :: Action -> AppState -> Cloud AppState
 update (SimpleMDEAction action) appState = do
     newSimpleMDEState <- SimpleMDE.update action (simpleMDEState appState)
-    parsed <- atRemote $ Compilation.compile (projectPath appState) (SimpleMDE.content newSimpleMDEState)
-    case parsed of
-       Left err -> return $ appState { simpleMDEState = newSimpleMDEState, compilationError = err }
-       Right out -> return $ appState { simpleMDEState = newSimpleMDEState, compilationError = "", codeHtmlOutput = out }
+    let newContent = SimpleMDE.content newSimpleMDEState
+    atRemote $ Compilation.update
+        (Compilation.WriteWorkingFile newContent)
+        (compilationState appState)
+    newCompilationState <- atRemote $ Compilation.update
+        Compilation.Compile
+        (compilationState appState)
+    return appState
+        { simpleMDEState = newSimpleMDEState
+        , compilationState = newCompilationState
+        }

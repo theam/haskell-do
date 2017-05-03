@@ -20,7 +20,6 @@ module HaskellDo
 import qualified Ulmus
 
 import HaskellDo.View
-import HaskellDo.Displays
 import HaskellDo.State
 import qualified HaskellDo.SimpleMDE.View as SimpleMDE
 import qualified HaskellDo.Style.View as Style

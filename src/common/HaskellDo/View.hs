@@ -17,14 +17,16 @@
 module HaskellDo.View where
 
 import Prelude hiding (id, div)
+import Control.Monad.IO.Class
 
+import Transient.Base
 import GHCJS.HPlay.View
 import qualified Ulmus
-import qualified HaskellDo.Materialize.View as Materialize
-import qualified HaskellDo.SimpleMDE.View as SimpleMDE
-import HaskellDo.Displays
 
 import HaskellDo.Types
+import qualified HaskellDo.Materialize.View as Materialize
+import qualified HaskellDo.SimpleMDE.View as SimpleMDE
+import qualified HaskellDo.Compilation.View as Compilation
 
 view :: AppState -> Widget Action
 view appState = Ulmus.withWidgets (widgets appState) $ do
@@ -47,4 +49,10 @@ widgets state = do
         SimpleMDE.view $ simpleMDEState state
 
 showDisplays :: AppState -> Widget ()
-showDisplays state = outputDisplay state
+showDisplays state = do
+    Ulmus.newWidget "outputDisplay" $ Compilation.outputDisplay (compilationState state)
+    Ulmus.newWidget "errorDisplay" $ Compilation.errorDisplay (compilationState state)
+
+updateDisplays :: AppState -> TransIO ()
+updateDisplays state = do
+    Compilation.updateDisplays (compilationState state)

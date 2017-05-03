@@ -16,12 +16,11 @@
 module HaskellDo.Types where
 
 import qualified HaskellDo.SimpleMDE.Types as SimpleMDE
+import qualified HaskellDo.Compilation.Types as Compilation
 
 data AppState = AppState
   { simpleMDEState   :: SimpleMDE.State
-  , codeHtmlOutput   :: String
-  , compilationError :: String
-  , projectPath      :: FilePath
+  , compilationState :: Compilation.State
   } deriving (Read, Show)
 
 
