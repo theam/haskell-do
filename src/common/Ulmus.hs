@@ -81,6 +81,10 @@ withWidgets widgets perch = rawHtml perch **> widgets
 newWidget :: String -> Widget a -> Widget a
 newWidget s = at ("#" ++ s) Insert
 
+mapAction :: (actionA -> actionB) -> Widget actionA -> Widget actionB
+mapAction actionConstructor widget = do
+    action <- widget
+    return $ actionConstructor action
 ---------------------------------------------  State manipulation -------------------------------
 
 getState :: (Typeable appState, Show appState) => appState -> TransIO appState

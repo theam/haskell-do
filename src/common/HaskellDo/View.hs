@@ -40,9 +40,11 @@ view appState = Ulmus.withWidgets (widgets appState) $ do
 
 widgets :: AppState -> Widget Action
 widgets state = do
-    outputDisplay state
-    simpleMDEWidget
+    showDisplays state
+    Ulmus.newWidget "editor" simpleMDEWidget
   where
-    simpleMDEWidget = Ulmus.newWidget "editor" $ do
-      action <- SimpleMDE.view $ simpleMDEState state
-      return $ SimpleMDEAction action
+    simpleMDEWidget = Ulmus.mapAction SimpleMDEAction $
+        SimpleMDE.view $ simpleMDEState state
+
+showDisplays :: AppState -> Widget ()
+showDisplays state = outputDisplay state
