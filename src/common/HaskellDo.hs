@@ -23,14 +23,10 @@ import HaskellDo.View
 import HaskellDo.Displays
 import HaskellDo.State
 import qualified HaskellDo.SimpleMDE.View as SimpleMDE
-import qualified HaskellDo.Materialize.View as Materialize
-import qualified HaskellDo.JQuery.View as JQuery
 import qualified HaskellDo.Style.View as Style
 
 initializeHeaders :: IO ()
 initializeHeaders = do
-    JQuery.initialize
-    JQuery.initialize
     SimpleMDE.initialize
     Style.initialize
 

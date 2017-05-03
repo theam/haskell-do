@@ -22,6 +22,7 @@ import GHCJS.HPlay.View
 import qualified Ulmus
 import qualified HaskellDo.Materialize.View as Materialize
 import qualified HaskellDo.SimpleMDE.View as SimpleMDE
+import HaskellDo.Displays
 
 import HaskellDo.Types
 
@@ -38,8 +39,10 @@ view appState = Ulmus.withWidgets (widgets appState) $ do
                 Ulmus.widgetPlaceholder "errorDisplay"
 
 widgets :: AppState -> Widget Action
-widgets state =
-    fmap SimpleMDEAction simpleMDEWidget
-  where
+widgets state = do
+    outputDisplay state
     simpleMDEWidget
-        = Ulmus.newWidget "editor" (SimpleMDE.view $ simpleMDEState state)
+  where
+    simpleMDEWidget = Ulmus.newWidget "editor" $ do
+      action <- SimpleMDE.view $ simpleMDEState state
+      return $ SimpleMDEAction action

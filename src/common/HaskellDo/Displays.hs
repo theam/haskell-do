@@ -11,11 +11,11 @@ import AxiomUtils
 import Foreign.Highlight
 
 outputDisplay :: AppState -> Widget ()
-outputDisplay appState = rawHtml $
+outputDisplay appState = Ulmus.newWidget "outputDisplay" $ rawHtml $ do
   div noHtml `setContents` codeHtmlOutput appState
 
 errorDisplay :: AppState -> Widget ()
-errorDisplay appState = rawHtml $
+errorDisplay appState = Ulmus.newWidget "errorDisplay" $ rawHtml $
   div noHtml `setContents` compilationError appState
 
 updateDisplays :: AppState -> TransIO ()

@@ -32,17 +32,8 @@ initialAppState = AppState
 
 update :: Action -> AppState -> Cloud AppState
 update (SimpleMDEAction action) appState = do
-    {-
-    FIXME:
-    rts.js:18932 Uncaught TypeError: Cannot read property 'f' of null
-        at h$e (rts.js:18932) at h$baseZCGHCziShowzishowLitString_e (out.js:14312)
-        at h$runThreadSlice (rts.js:8253)
-        at h$runSyncAction (rts.js:8414)
-        at HTMLUnknownElement.h$runSync (rts.js:8385)
-        at HTMLUnknownElement.c (rts.js:4899)
-    -}
     newSimpleMDEState <- SimpleMDE.update action (simpleMDEState appState)
     parsed <- atRemote $ Compilation.compile (projectPath appState) (SimpleMDE.content newSimpleMDEState)
     case parsed of
-        Left err -> return $ appState { simpleMDEState = newSimpleMDEState, compilationError = err }
-        Right out -> return $ appState { simpleMDEState = newSimpleMDEState, compilationError = "", codeHtmlOutput = out }
+       Left err -> return $ appState { simpleMDEState = newSimpleMDEState, compilationError = err }
+       Right out -> return $ appState { simpleMDEState = newSimpleMDEState, compilationError = "", codeHtmlOutput = out }

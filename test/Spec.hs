@@ -1,7 +1,7 @@
 {-
  - test\Spec.hs
  - Copyright (c) 2017 The Agile Monkeys S.L. <hackers@theam.io>
- - 
+ -
  - Licensed under the Apache License, Version 2.0 (the "License");
  - you may not use this file except in compliance with the License.
  - You may obtain a copy of the License at
@@ -17,7 +17,6 @@
 {-# Language NoImplicitPrelude #-}
 module Main where
 
-import BasicPrelude
 import Flow
 
 import Test.Hspec
@@ -26,4 +25,3 @@ import Test.QuickCheck.IO ()
 
 main :: IO ()
 main = print "TODO: Write tests"
-

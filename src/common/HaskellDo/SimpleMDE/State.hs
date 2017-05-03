@@ -9,5 +9,5 @@ initialState = State
     }
 
 update :: Action -> State -> Cloud State
-update (NewContent newContent) state = local $ do
+update (NewContent newContent) state = do
     return (state { content = newContent } )
