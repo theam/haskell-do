@@ -27,9 +27,11 @@ import HaskellDo.Types
 import qualified HaskellDo.Materialize.View as Materialize
 import qualified HaskellDo.SimpleMDE.View as SimpleMDE
 import qualified HaskellDo.Compilation.View as Compilation
+import qualified HaskellDo.Toolbar.View as Toolbar
 
 view :: AppState -> Widget Action
 view appState = Ulmus.withWidgets (widgets appState) $ do
+    Ulmus.widgetPlaceholder "debug"
     div ! atr "class" "editor-container" $ do
         Materialize.row $ do
             Materialize.col "s" 6 $ do
@@ -42,17 +44,30 @@ view appState = Ulmus.withWidgets (widgets appState) $ do
 
 widgets :: AppState -> Widget Action
 widgets state = do
+    Toolbar.toolbar
     showDisplays state
-    Ulmus.newWidget "editor" simpleMDEWidget
+    simpleMDEWidget
+    <|> openProjectButtonWidget
+    <|> compileButtonWidget
+    <|> pathInputWidget
   where
-    simpleMDEWidget = Ulmus.mapAction SimpleMDEAction $
-        SimpleMDE.view $ simpleMDEState state
+    simpleMDEWidget = Ulmus.newWidget "editor" $
+        Ulmus.mapAction SimpleMDEAction $
+            SimpleMDE.view $ simpleMDEState state
+    openProjectButtonWidget = Ulmus.mapAction ToolbarAction $
+        Toolbar.openProjectButton (toolbarState state)
+    compileButtonWidget = Ulmus.mapAction ToolbarAction $
+        Toolbar.compileButton (toolbarState state)
+    pathInputWidget = Ulmus.mapAction ToolbarAction $
+        Toolbar.pathInput (toolbarState state)
 
 showDisplays :: AppState -> Widget ()
 showDisplays state = do
     Ulmus.newWidget "outputDisplay" $ Compilation.outputDisplay (compilationState state)
     Ulmus.newWidget "errorDisplay" $ Compilation.errorDisplay (compilationState state)
+    Ulmus.newWidget "debug" $ rawHtml $ p (show state :: String)
 
 updateDisplays :: AppState -> TransIO ()
 updateDisplays state = do
     Compilation.updateDisplays (compilationState state)
+    Ulmus.updateWidget "debug" $ rawHtml $ p (show state :: String)

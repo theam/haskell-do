@@ -29,3 +29,7 @@ mdeStyle = Text.unpack . Clay.render $ do
     ".CodeMirror" ? do
         fontFamily [] [monospace]
         borderWidth (px 0)
+    ".fixed-action-btn" ? do
+        position fixed
+        top (pct 2)
+        right (pct 2)

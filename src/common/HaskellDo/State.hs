@@ -22,24 +22,40 @@ import qualified HaskellDo.SimpleMDE.State as SimpleMDE
 import qualified HaskellDo.SimpleMDE.Types as SimpleMDE
 import qualified HaskellDo.Compilation.State as Compilation
 import qualified HaskellDo.Compilation.Types as Compilation
+import qualified HaskellDo.Toolbar.State as Toolbar
+import qualified HaskellDo.Toolbar.Types as Toolbar
 
 initialAppState :: AppState
 initialAppState = AppState
   { simpleMDEState = SimpleMDE.initialState
   , compilationState = Compilation.initialState
+  , toolbarState = Toolbar.initialState
   }
 
 update :: Action -> AppState -> Cloud AppState
 update (SimpleMDEAction action) appState = do
     newSimpleMDEState <- SimpleMDE.update action (simpleMDEState appState)
     let newContent = SimpleMDE.content newSimpleMDEState
-    atRemote $ Compilation.update
+    _ <- atRemote $ Compilation.update
         (Compilation.WriteWorkingFile newContent)
         (compilationState appState)
+    return appState
+        { simpleMDEState = newSimpleMDEState
+        }
+
+update (ToolbarAction Toolbar.Compile) appState = do
     newCompilationState <- atRemote $ Compilation.update
         Compilation.Compile
         (compilationState appState)
     return appState
-        { simpleMDEState = newSimpleMDEState
-        , compilationState = newCompilationState
+        { compilationState = newCompilationState
         }
+
+update (ToolbarAction action) appState = do
+    newToolbarState <- Toolbar.update action (toolbarState appState)
+    let cs = compilationState appState
+    let newCompilationState = cs
+            { Compilation.projectPath = Toolbar.projectPath newToolbarState
+            , Compilation.compilationError = ""
+            }
+    return appState { compilationState = newCompilationState, toolbarState = newToolbarState }

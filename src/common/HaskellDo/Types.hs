@@ -17,13 +17,16 @@ module HaskellDo.Types where
 
 import qualified HaskellDo.SimpleMDE.Types as SimpleMDE
 import qualified HaskellDo.Compilation.Types as Compilation
+import qualified HaskellDo.Toolbar.Types as Toolbar
 
 data AppState = AppState
   { simpleMDEState   :: SimpleMDE.State
   , compilationState :: Compilation.State
+  , toolbarState     :: Toolbar.State
   } deriving (Read, Show)
 
 
 data Action
   = SimpleMDEAction SimpleMDE.Action
+  | ToolbarAction Toolbar.Action
   deriving (Read, Show)

@@ -16,6 +16,7 @@
 module HaskellDo.Compilation.State where
 
 import Flow
+import Control.Monad
 import Control.Monad.IO.Class
 import qualified System.Process as System
 import qualified System.Exit as System
@@ -29,14 +30,14 @@ import HaskellDo.Compilation.Types
 initialState :: State
 initialState = State
     { compiledOutput = ""
-    , compilationError = ""
-    , projectPath = "/home/nick/Documents/haskell-do-test"
+    , compilationError = "No project has been loaded yet, try opening one?"
+    , projectPath = ""
     , workingFile = "/src/Main.hs"
     }
 
 update :: Action -> State -> Cloud State
 update (WriteWorkingFile content) state = local . liftIO $ do
-    writeWorkingFile content state
+    unless (null $ projectPath state) (writeWorkingFile content state)
     return state
 update Compile state =
     compile state
@@ -45,7 +46,7 @@ update Compile state =
 writeWorkingFile :: String -> State -> IO ()
 writeWorkingFile content state = do
     let fullPath = projectPath state ++ workingFile state
-    writeCode fullPath content
+    unless (null $ projectPath state) (writeCode fullPath content)
 
 
 writeCode :: FilePath -> String -> IO ()
@@ -64,6 +65,7 @@ compile state = local $ liftIO $ buildHtmlCode state
 
 buildHtmlCode :: State -> IO State
 buildHtmlCode state = do
+    putStrLn $ "Attempting to build " ++ (projectPath state)
     (exitCode, _, err) <- runCommand "build" (projectPath state)
     case exitCode of
         System.ExitFailure _ ->
