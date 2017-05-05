@@ -20,10 +20,13 @@ import Transient.Move
 import HaskellDo.Types
 import qualified HaskellDo.SimpleMDE.State as SimpleMDE
 import qualified HaskellDo.SimpleMDE.Types as SimpleMDE
+import qualified Foreign.SimpleMDE as SimpleMDE
 import qualified HaskellDo.Compilation.State as Compilation
 import qualified HaskellDo.Compilation.Types as Compilation
 import qualified HaskellDo.Toolbar.State as Toolbar
 import qualified HaskellDo.Toolbar.Types as Toolbar
+
+import qualified Foreign.JQuery as JQuery
 
 initialAppState :: AppState
 initialAppState = AppState
@@ -44,16 +47,31 @@ update (SimpleMDEAction action) appState = do
         }
 
 update (ToolbarAction Toolbar.Compile) appState = do
+    localIO $ JQuery.show ".dimmedBackground"
     newCompilationState <- atRemote $ Compilation.update
         Compilation.Compile
         (compilationState appState)
+    localIO $ JQuery.hide ".dimmedBackground"
     return appState
         { compilationState = newCompilationState
         }
 
+update (ToolbarAction Toolbar.LoadProject) appState = do
+    let projectPath = Compilation.projectPath (compilationState appState)
+    let filePath = Compilation.workingFile (compilationState appState)
+    contents <- atRemote $ localIO $ readFile (projectPath ++ filePath)
+    let editorState = simpleMDEState appState
+    let parsedContents = unlines . drop 4 $ lines contents
+    let editorState' = editorState { SimpleMDE.content = parsedContents }
+    localIO $ SimpleMDE.setMDEContent parsedContents
+    return appState { simpleMDEState = editorState' }
+
 update (ToolbarAction action) appState = do
-    newToolbarState <- Toolbar.update action (toolbarState appState)
     let cs = compilationState appState
+    cs' <- atRemote $ Compilation.update Compilation.GetLastProject cs
+    let ts = toolbarState appState
+    let ts' = ts { Toolbar.projectPath = Compilation.projectPath cs' }
+    newToolbarState <- Toolbar.update action ts'
     let newCompilationState = cs
             { Compilation.projectPath = Toolbar.projectPath newToolbarState
             , Compilation.compilationError = ""

@@ -23,3 +23,9 @@ getMDEContent = unpack <$> js_getMDEContent
 
 foreign import javascript unsafe "simpleMDE.value()"
     js_getMDEContent :: IO JSString
+
+setMDEContent :: String -> IO ()
+setMDEContent = js_setMDEContent . pack
+
+foreign import javascript unsafe "simpleMDE.value($1)"
+    js_setMDEContent :: JSString -> IO ()

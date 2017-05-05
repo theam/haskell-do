@@ -29,19 +29,35 @@ import qualified HaskellDo.SimpleMDE.View as SimpleMDE
 import qualified HaskellDo.Compilation.View as Compilation
 import qualified HaskellDo.Toolbar.View as Toolbar
 
+import qualified Foreign.JQuery as JQuery
+
 view :: AppState -> Widget Action
-view appState = Ulmus.withWidgets (widgets appState) $ do
-    Ulmus.widgetPlaceholder "debug"
-    div ! atr "class" "editor-container" $ do
-        Materialize.row $ do
-            Materialize.col "s" 6 $ do
+view appState = Ulmus.withWidgets (widgets appState) $
+  div ! atr "class" "editor-container" $ do
+      Materialize.row $ do
+            Materialize.col "s" 6 $
                 Ulmus.widgetPlaceholder "editor"
-            Materialize.col "s" 6 $ do
+            Materialize.col "s" 6 ! id "outputdiv" $ do
                 Ulmus.widgetPlaceholder "outputDisplay"
-        Materialize.row $ do
-            Materialize.col "s" 12 $ do
+                loaderOverlay
+      Materialize.row $
+            Materialize.col "s" 12 $
                 Ulmus.widgetPlaceholder "errorDisplay"
 
+
+loaderOverlay :: Perch
+loaderOverlay =
+    div ! atr "class" "dimmedBackground" $
+      div ! atr "class" "loader-align" $
+         div ! atr "class" "loader-align-inner" $
+          div ! atr "class" "preloader-wrapper big active" $
+            div ! atr "class" "spinner-layer spinner-blue-only" $ do
+              div ! atr "class" "circle-clipper left" $
+                div ! atr "class" "circle" $ noHtml
+              div ! atr "class" "gap-patch" $
+                div ! atr "class" "circle" $ noHtml
+              div ! atr "class" "circle-clipper right" $
+                div ! atr "class" "circle" $ noHtml
 widgets :: AppState -> Widget Action
 widgets state = do
     Toolbar.toolbar
@@ -50,6 +66,7 @@ widgets state = do
     <|> openProjectButtonWidget
     <|> compileButtonWidget
     <|> pathInputWidget
+    <|> closeModalButtonWidget
   where
     simpleMDEWidget = Ulmus.newWidget "editor" $
         Ulmus.mapAction SimpleMDEAction $
@@ -60,6 +77,8 @@ widgets state = do
         Toolbar.compileButton (toolbarState state)
     pathInputWidget = Ulmus.mapAction ToolbarAction $
         Toolbar.pathInput (toolbarState state)
+    closeModalButtonWidget = Ulmus.mapAction ToolbarAction $
+        Toolbar.closeModalButton (toolbarState state)
 
 showDisplays :: AppState -> Widget ()
 showDisplays state = do

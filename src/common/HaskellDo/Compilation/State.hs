@@ -21,6 +21,7 @@ import Control.Monad.IO.Class
 import qualified System.Process as System
 import qualified System.Exit as System
 import qualified Data.Text as Text
+import System.Directory
 
 import Transient.Base
 import Transient.Move
@@ -35,12 +36,22 @@ initialState = State
     , workingFile = "/src/Main.hs"
     }
 
+lastProjectFile :: FilePath
+lastProjectFile = "lastproject"
+
 update :: Action -> State -> Cloud State
 update (WriteWorkingFile content) state = local . liftIO $ do
     unless (null $ projectPath state) (writeWorkingFile content state)
     return state
-update Compile state =
+update Compile state = do
+    localIO $ writeFile lastProjectFile $ projectPath state
     compile state
+update GetLastProject state = do
+    exists <- localIO $ doesFileExist lastProjectFile
+    localIO $ unless exists (writeFile lastProjectFile "")
+    pr <- localIO $ readFile lastProjectFile
+    return state { projectPath = pr }
+
 
 
 writeWorkingFile :: String -> State -> IO ()

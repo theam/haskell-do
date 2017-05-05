@@ -16,4 +16,13 @@
   <body>
   </body>
   <script language="javascript" src="runmain.js" defer></script>
+  <script type="text/javascript">
+    function hideLoader() {
+    if (typeof $('.dimmedBackground').val() !== 'undefined')
+      $('.dimmedBackground').hide();
+    else
+      setTimeout(hideLoader, 10);
+    }
+    hideLoader();
+  </script>
 </html>

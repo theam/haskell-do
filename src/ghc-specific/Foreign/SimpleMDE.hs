@@ -17,3 +17,6 @@ module Foreign.SimpleMDE where
 
 getMDEContent :: IO String
 getMDEContent = return ""
+
+setMDEContent :: String -> IO ()
+setMDEContent _ = return ()

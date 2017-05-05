@@ -20,6 +20,7 @@ dependencies:
   - clay
   - text
   - process
+  - directory
 
 ghc-options:
   - -Wall

@@ -27,9 +27,7 @@ toolbar = rawHtml $ do
             div $ do
                 b ("Path to Stack project" :: String)
                 div ! id "pathInput" $ noHtml
-        div ! atr "class" "modal-footer" $
-            a ! atr "href" "#!" ! atr "class" "modal-action modal-close waves-effect btn-flat waves-purple" $
-                ("Open project" :: String)
+        div ! atr "class" "modal-footer" ! id "closeModalButton" $ noHtml
 
 
 openProjectButton :: State -> Widget Action
@@ -42,8 +40,19 @@ compileButton _ = Ulmus.newWidget "compileButton" $ wlink Compile $
     a ! atr "class" "btn-floating purple darken-2" $
         i ! atr "class" "material-icons" $ ("play_arrow" :: String)
 
+closeModalButton :: State -> Widget Action
+closeModalButton _ = Ulmus.newWidget "closeModalButton" $ wlink LoadProject $
+    a ! atr "class" "modal-action modal-close waves-effect btn-flat waves-purple" $
+        i ! atr "class" "material-icons" $ ("input" :: String)
+
 pathInput :: State -> Widget Action
-pathInput _ = Ulmus.newWidget "pathInput" $ do
-    _ <- getString Nothing ! id "pathTextBox" `fire` OnKeyUp
+pathInput state = Ulmus.newWidget "pathInput" $ do
+    let pr = if lastProject state == ""
+             then Nothing
+             else Just $ lastProject state
+    _ <- getString pr
+            ! id "pathTextBox"
+            ! atr "placeholder" "/path/to/your/project"
+            `fire` OnKeyUp
     projPath <- liftIO $ getValueFromId "#pathTextBox"
     return $ NewPath projPath
