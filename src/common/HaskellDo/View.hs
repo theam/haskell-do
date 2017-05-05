@@ -65,9 +65,7 @@ showDisplays :: AppState -> Widget ()
 showDisplays state = do
     Ulmus.newWidget "outputDisplay" $ Compilation.outputDisplay (compilationState state)
     Ulmus.newWidget "errorDisplay" $ Compilation.errorDisplay (compilationState state)
-    Ulmus.newWidget "debug" $ rawHtml $ p (show state :: String)
 
 updateDisplays :: AppState -> TransIO ()
 updateDisplays state = do
     Compilation.updateDisplays (compilationState state)
-    Ulmus.updateWidget "debug" $ rawHtml $ p (show state :: String)
