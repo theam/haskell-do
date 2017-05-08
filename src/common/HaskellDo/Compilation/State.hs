@@ -88,8 +88,6 @@ buildHtmlCode state = do
   where
     isCommonError err =
         "package database" `Text.isInfixOf` Text.pack err
-        -- || "already exists" `Text.isInfixOf` Text.pack err
-        -- || "neither installed" `Text.isInfixOf` Text.pack err
 
 buildOutput :: State -> IO State
 buildOutput state = do
