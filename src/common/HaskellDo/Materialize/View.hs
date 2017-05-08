@@ -13,10 +13,20 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module Main where
+module HaskellDo.Materialize.View where
 
-import BasicPrelude
-import HaskellDo
+import Prelude hiding (div, id)
 
-main :: IO ()
-main = run
+import GHCJS.HPlay.View hiding (addHeader, atr)
+import AxiomUtils
+
+container :: Perch -> Perch
+container = div ! atr "class" "container"
+
+row :: Perch -> Perch
+row = div ! atr "class" "row"
+
+col :: String -> Int -> Perch -> Perch
+col size number = div ! atr "class" colClass
+  where
+    colClass = "col " ++ size ++ show number

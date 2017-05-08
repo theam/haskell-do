@@ -13,15 +13,10 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module HaskellDo.Types where
+module Foreign.SimpleMDE where
 
-import BasicPrelude
+getMDEContent :: IO String
+getMDEContent = return ""
 
-data AppState = AppState
-  { appStateMessage :: String
-  } deriving (Read, Show)
-
-
-data Action
-  = EditorChanged String
-  deriving (Read, Show)
+setMDEContent :: String -> IO ()
+setMDEContent _ = return ()

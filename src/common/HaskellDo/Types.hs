@@ -13,23 +13,20 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module HaskellDo.State where
+module HaskellDo.Types where
 
-import BasicPrelude
+import qualified HaskellDo.SimpleMDE.Types as SimpleMDE
+import qualified HaskellDo.Compilation.Types as Compilation
+import qualified HaskellDo.Toolbar.Types as Toolbar
 
-import Transient.Move
+data AppState = AppState
+  { simpleMDEState   :: SimpleMDE.State
+  , compilationState :: Compilation.State
+  , toolbarState     :: Toolbar.State
+  } deriving (Read, Show)
 
-import HaskellDo.Types
-import qualified HaskellDo.Core.Compilation as Compilation
-import qualified HaskellDo.GUI.External.SimpleMDE as SimpleMDE
 
-initialAppState :: AppState
-initialAppState = AppState
-  { appStateMessage = ""
-  }
-
-update :: Action -> AppState -> Cloud AppState
-update (EditorChanged newMsg) appState = do
-    parsed <- atRemote $ Compilation.compile newMsg
-    local $ liftIO $ SimpleMDE.setRendered parsed
-    return $ appState { appStateMessage = newMsg }
+data Action
+  = SimpleMDEAction SimpleMDE.Action
+  | ToolbarAction Toolbar.Action
+  deriving (Read, Show)

@@ -1,0 +1,61 @@
+name:                haskell-do
+version:             0.0.0
+synopsis:            The Haskell code editor focused on interactive development
+description:         Please see README.md
+homepage:            https://github.com/theam/haskell-do#readme
+license:             Apache-2.0
+author:              Theam
+maintainer:          nick@theam.io
+copyright:           2017 Theam
+category:            Editor
+extra-source-files:
+- README.md
+
+dependencies:
+  - base >= 4.7 && < 5
+  - flow
+  - transient
+  - transient-universe
+  - ghcjs-hplay
+  - clay
+  - text
+  - process
+  - directory
+
+ghc-options:
+  - -Wall
+  - -fprint-potential-instances
+
+when:
+  - condition: impl(ghcjs)
+    then:
+      dependencies: ghcjs-base
+      source-dirs: src/ghcjs-specific
+    else:
+      source-dirs: src/ghc-specific
+
+default-extensions:
+  - CPP
+  - OverloadedStrings
+
+library:
+  source-dirs: src/common
+  exposed-modules:
+    - HaskellDo
+
+executables:
+  haskell-do:
+    source-dirs: src/common
+    main: Main.hs
+
+tests:
+  spec:
+    main: Spec.hs
+    source-dirs:
+      - test
+      - src/common
+    dependencies:
+      - hspec == 2.*
+      - QuickCheck
+      - quickcheck-io
+      - mockery

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://use.fontawesome.com/2ec5556ae6.js"></script>
+    <script language="javascript" src="rts.js"></script>
+    <script language="javascript" src="lib.js"></script>
+    <script language="javascript" src="out.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/languages/haskell.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/styles/dracula.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  </head>
+  <body>
+  </body>
+  <script language="javascript" src="runmain.js" defer></script>
+  <script type="text/javascript">
+    function hideLoader() {
+    if (typeof $('.dimmedBackground').val() !== 'undefined')
+      $('.dimmedBackground').hide();
+    else
+      setTimeout(hideLoader, 10);
+    }
+    hideLoader();
+  </script>
+</html>

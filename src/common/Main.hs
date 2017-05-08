@@ -13,11 +13,9 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module HaskellDo.Core.Compilation where
+module Main where
 
-import BasicPrelude
+import HaskellDo
 
-import Transient.Move
-
-compile :: String -> Cloud String
-compile inp = return $ "<h1> This was rendered at the server: " ++ inp ++ "</h1>"
+main :: IO ()
+main = run

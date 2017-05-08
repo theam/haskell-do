@@ -13,27 +13,19 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module HaskellDo.GUI.External.SimpleMDE.ServerInternals
-  ( initializeSimpleMDE
-  , simpleMDE
-  , setRendered
-  )
-where
+module Foreign.SimpleMDE where
 
-import BasicPrelude
+import GHCJS.Types
+import Data.JSString
 
-import GHCJS.HPlay.View hiding (map, option,input)
+getMDEContent :: IO String
+getMDEContent = unpack <$> js_getMDEContent
 
-newtype SimpleMDE = SimpleMDE () deriving (Read, Show)
+foreign import javascript unsafe "simpleMDE.value()"
+    js_getMDEContent :: IO JSString
 
-simpleMDE :: Widget String
-simpleMDE = throwBrowserError "simpleMDE"
+setMDEContent :: String -> IO ()
+setMDEContent = js_setMDEContent . pack
 
-initializeSimpleMDE :: IO ()
-initializeSimpleMDE = return ()
-
-setRendered :: String -> IO ()
-setRendered _ = return ()
-
-throwBrowserError :: String -> a
-throwBrowserError fName = error $ fName ++ ": This function is supposed to run on the browser"
+foreign import javascript unsafe "simpleMDE.value($1)"
+    js_setMDEContent :: JSString -> IO ()

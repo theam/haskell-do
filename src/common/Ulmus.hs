@@ -15,14 +15,16 @@
  -}
 module Ulmus where
 
-import BasicPrelude hiding (id, div, empty)
+import Prelude hiding (div, id)
+import Data.IORef
+import Data.Typeable
+import Control.Monad.IO.Class
 
-import GHCJS.HPlay.View hiding (map, option,input)
-
-
+import GHCJS.HPlay.View hiding (at, id)
 import Transient.Base
 import Transient.Move
-import Data.IORef
+
+import AxiomUtils
 
 type Update action appState  = action -> appState -> Cloud appState
 type View action appState    = appState -> Widget action
@@ -46,15 +48,16 @@ initializeApp (AppConfig update view updateDisplays initialAppState port setup) 
     simpleWebApp port $ do
         currentState <- local $ getState initialAppState
         nextAction <- local (render $ view currentState)
-        newState <- update nextAction currentState
+        currentState' <- local $ getState initialAppState
+        newState <- update nextAction currentState'
         local (setState newState)
         renderDisplay initialAppState updateDisplays
 
 
-displayPlaceholder :: String -> Widget ()
-displayPlaceholder id' = rawHtml $
+widgetPlaceholder :: String -> Perch
+widgetPlaceholder id' =
   div
-    ! id (fromString id')
+    ! id id'
     $ noHtml
 
 
@@ -68,18 +71,31 @@ renderDisplay initialAppState f = do
 
 
 updateWidget :: String -> Widget () -> TransIO ()
-updateWidget s f = render $ at ("#" ++ fromString s) Insert f
+updateWidget s f = render $ at ("#" ++ s) Insert f
+
+
+withWidgets :: Widget a -> Perch -> Widget a
+withWidgets widgets perch = rawHtml perch **> widgets
+
+
+newWidget :: String -> Widget a -> Widget a
+newWidget s = at ("#" ++ s) Insert
+
+mapAction :: (actionA -> actionB) -> Widget actionA -> Widget actionB
+mapAction actionConstructor widget = do
+    action <- widget
+    return $ actionConstructor action
 ---------------------------------------------  State manipulation -------------------------------
 
-getState :: (Typeable appState) => appState -> TransIO appState
+getState :: (Typeable appState, Show appState) => appState -> TransIO appState
 getState initialAppState = getRData <|> setAndReturn
  where
   setAndReturn = do
-    setState initialAppState
-    return initialAppState
+      setState initialAppState
+      return initialAppState
 
 
-setState :: (Typeable appState) => appState -> TransIO ()
+setState :: (Show appState, Typeable appState) => appState -> TransIO ()
 setState = setRData
 
 ---------------------------------------------  State References in the TransIO monad ------------

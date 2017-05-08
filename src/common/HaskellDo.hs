@@ -17,26 +17,17 @@ module HaskellDo
   ( run
   ) where
 
-import BasicPrelude hiding (id, div, empty)
-
-import GHCJS.HPlay.View hiding (map, option,input)
-import Transient.Base
-import Transient.Move
-
 import qualified Ulmus
 
-import HaskellDo.Types
 import HaskellDo.View
 import HaskellDo.State
-import HaskellDo.GUI.External.SimpleMDE
-import HaskellDo.GUI.External.Bootstrap
+import qualified HaskellDo.SimpleMDE.View as SimpleMDE
+import qualified HaskellDo.Style.View as Style
 
 initializeHeaders :: IO ()
 initializeHeaders = do
-    initializeJQuery
-    initializeTether
-    initializeBootstrap
-    initializeSimpleMDE
+    SimpleMDE.initialize
+    Style.initialize
 
 -- | Executes Haskell.do in designated 'port'
 run :: IO ()

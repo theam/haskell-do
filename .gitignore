@@ -22,8 +22,9 @@ cabal.sandbox.config
 .stack-work/
 cabal.project.local
 .HTF/
-#static/out.jsexe/*js*
-static/out.jsexe
+static/out.jsexe/*js*
+static/out.jsexe/*stats*
+static/out.jsexe/*webapp*
 
 # End of https://www.gitignore.io/api/haskell
 
@@ -34,3 +35,7 @@ static/out.jsexe
 /.ideaHaskellLib
 /haskell-do.iml
 /out
+
+*.cabal
+
+lastproject
