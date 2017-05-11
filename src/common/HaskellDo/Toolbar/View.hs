@@ -37,7 +37,7 @@ openProjectModal =
 
 packageEditorModal :: Perch
 packageEditorModal =
-    div ! id "packageEditorModal" ! atr "class" "modal" $ do
+    div ! id "packageEditorModal" ! atr "class" "modal modal-fixed-footer" $ do
         div ! atr "class" "modal-content" $ do
             h4 ("Project settings" :: String)
             div $
