@@ -20,3 +20,6 @@ getMDEContent = return ""
 
 setMDEContent :: String -> IO ()
 setMDEContent _ = return ()
+
+makeSimpleMDEFromId :: String -> IO ()
+makeSimpleMDEFromId _ = return ()
