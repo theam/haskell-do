@@ -18,43 +18,24 @@ module HaskellDo.SimpleMDE.View where
 import Prelude hiding (div, id)
 import Control.Monad.IO.Class
 
-import GHCJS.HPlay.View hiding (addHeader, atr)
+import GHCJS.HPlay.View hiding (addHeader, atr, id)
 import AxiomUtils
 
 import HaskellDo.SimpleMDE.Types
 import Foreign.SimpleMDE
 
 initialize :: IO ()
-initialize =
+initialize = do
     addHeader $ do
         link ! atr "rel" "stylesheet"
              ! href "https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css"
         script ("var simpleMDE;" :: String)
         script ! src "https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"
                $ noHtml
-        script initScript
-  where
-    initScript =
-        concat  [ "function initMDE() {"
-                ,    "if (typeof SimpleMDE !== 'undefined') {"
-                ,        "simpleMDE=new SimpleMDE({"
-                ,           "tabSize: 2, "
-                ,           "status: false,"
-                ,           "toolbar: false,"
-                ,           "previewRender: function(x){return '';},"
-                ,           "autofocus: true,"
-                ,           "forceSync: true,"
-                ,           "indentWithTabs: false"
-                ,        "});"
-                ,    "} else {"
-                ,        "window.setTimeout(initMDE, 10);"
-                ,    "}"
-                , "};"
-                , "initMDE();"
-                ]
+    makeSimpleMDEFromId "mainEditor"
 
 view :: State -> Widget Action
 view _ = do
-    _ <- textArea "" `fire` OnKeyUp
+    _ <- textArea "" ! id "mainEditor" `fire` OnKeyUp
     newContent <- liftIO getMDEContent
     return (NewContent newContent)

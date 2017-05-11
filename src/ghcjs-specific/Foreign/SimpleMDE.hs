@@ -29,3 +29,32 @@ setMDEContent = js_setMDEContent . pack
 
 foreign import javascript unsafe "simpleMDE.value($1)"
     js_setMDEContent :: JSString -> IO ()
+
+makeSimpleMDEFromId :: String -> IO ()
+makeSimpleMDEFromId = js_makeSimpleMDEFromId . pack
+
+foreign import javascript unsafe
+    "function initMDE() {\
+      var ta = document.getElementById($1);\
+      if (typeof SimpleMDE !== 'undefined') {\
+        if (ta !== null) {\
+            simpleMDE=new SimpleMDE({\
+              tabSize: 2, \
+              element: ta, \
+              status: false,\
+              toolbar: false,\
+              previewRender: function(x){return '';},\
+              autofocus: true,\
+              forceSync: true,\
+              indentWithTabs: false\
+            });\
+        } else {\
+          window.setTimeout(initMDE, 10);\
+        }\
+      } else {\
+          window.setTimeout(initMDE, 10);\
+      }\
+    };\
+    initMDE();"
+
+    js_makeSimpleMDEFromId :: JSString -> IO ()
