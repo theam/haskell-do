@@ -66,6 +66,16 @@ update (ToolbarAction Toolbar.LoadProject) appState = do
     localIO $ SimpleMDE.setMDEContent parsedContents
     return appState { simpleMDEState = editorState' }
 
+update (ToolbarAction Toolbar.LoadPackageYaml) appState = do
+    let projectPath = Compilation.projectPath (compilationState appState)
+    contents <- atRemote $ localIO $ readFile (projectPath ++ "package.yaml")
+    let tbState = toolbarState appState
+    let tbState' = tbState { Toolbar.projectConfig = contents }
+    localIO $ print contents
+    localIO $ JQuery.setValueForId "#pkgTA" contents
+    _ <- Toolbar.update Toolbar.LoadPackageYaml tbState
+    return appState { toolbarState = tbState' }
+
 update (ToolbarAction action) appState = do
     let cs = compilationState appState
     cs' <- atRemote $ Compilation.update Compilation.GetLastProject cs

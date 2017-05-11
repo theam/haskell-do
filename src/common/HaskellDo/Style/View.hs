@@ -55,3 +55,5 @@ mdeStyle = Text.unpack . Clay.render $ do
     "#outputdiv" ? do
         position relative
         zIndex 1
+    "#pkgTA" ? do
+        fontFamily [] [monospace]

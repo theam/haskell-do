@@ -64,21 +64,34 @@ widgets state = do
     showDisplays state
     simpleMDEWidget
     <|> openProjectButtonWidget
+    <|> packageEditorButtonWidget
     <|> compileButtonWidget
     <|> pathInputWidget
+    <|> packageTextAreaWidget
     <|> closeModalButtonWidget
   where
     simpleMDEWidget = Ulmus.newWidget "editor" $
         Ulmus.mapAction SimpleMDEAction $
             SimpleMDE.view $ simpleMDEState state
+
     openProjectButtonWidget = Ulmus.mapAction ToolbarAction $
         Toolbar.openProjectButton (toolbarState state)
+
+    packageEditorButtonWidget = Ulmus.mapAction ToolbarAction $
+        Toolbar.packageEditorButton (toolbarState state)
+
     compileButtonWidget = Ulmus.mapAction ToolbarAction $
         Toolbar.compileButton (toolbarState state)
+
     pathInputWidget = Ulmus.mapAction ToolbarAction $
         Toolbar.pathInput (toolbarState state)
+
+    packageTextAreaWidget = Ulmus.mapAction ToolbarAction $
+        Toolbar.packageTextArea (toolbarState state)
+
     closeModalButtonWidget = Ulmus.mapAction ToolbarAction $
         Toolbar.closeModalButton (toolbarState state)
+        
 
 showDisplays :: AppState -> Widget ()
 showDisplays state = do
