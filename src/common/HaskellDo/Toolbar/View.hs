@@ -42,7 +42,9 @@ packageEditorModal =
             h4 ("Project settings" :: String)
             div $
                 div ! id "packageTextArea" $ noHtml
-        div ! atr "class" "modal-footer" ! id "closePackageEditorButton" $ noHtml
+        div ! atr "class" "modal-footer" $ do
+            div ! id "cancelPackageEditorButton" $ noHtml
+            div ! id "closePackageEditorButton" $ noHtml
 
 openProjectButton :: State -> Widget Action
 openProjectButton _ = Ulmus.newWidget "openProjectButton" $ wlink OpenProject $
@@ -69,6 +71,11 @@ closePackageEditorButton :: State -> Widget Action
 closePackageEditorButton _ = Ulmus.newWidget "closePackageEditorButton" $ wlink SavePackage $
     a ! atr "class" "modal-action modal-close waves-effect btn-flat waves-purple" $
         i ! atr "class" "material-icons" $ ("playlist_add_check" :: String)
+
+cancelPackageEditorButton :: State -> Widget Action
+cancelPackageEditorButton _ = Ulmus.newWidget "cancelPackageEditorButton" $ wlink ClosePackageModal $
+    a ! atr "class" "modal-action modal-close waves-effect btn-flat waves-purple" $
+        i ! atr "class" "material-icons" $ ("clear" :: String)
 
 pathInput :: State -> Widget Action
 pathInput state = Ulmus.newWidget "pathInput" $ do

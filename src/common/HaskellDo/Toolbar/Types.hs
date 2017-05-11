@@ -14,4 +14,5 @@ data Action
     | NewPackage String
     | LoadProject
     | SavePackage
+    | ClosePackageModal
     deriving (Read, Show)

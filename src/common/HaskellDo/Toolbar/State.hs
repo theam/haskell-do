@@ -20,6 +20,10 @@ update LoadPackageYaml state = do
     localIO $ openModal "#packageEditorModal"
     return state
 
+update ClosePackageModal state = do
+    localIO $ closeModal "#packageEditorModal"
+    return state
+
 update (NewPath newPath) state =
     if last newPath /= '/' && newPath /= ""
         then return state { projectPath = newPath ++ "/" }

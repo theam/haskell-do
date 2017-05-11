@@ -71,10 +71,17 @@ update (ToolbarAction Toolbar.LoadPackageYaml) appState = do
     contents <- atRemote $ localIO $ readFile (projectPath ++ "package.yaml")
     let tbState = toolbarState appState
     let tbState' = tbState { Toolbar.projectConfig = contents }
-    localIO $ print contents
     localIO $ JQuery.setValueForId "#pkgTA" contents
     _ <- Toolbar.update Toolbar.LoadPackageYaml tbState
     return appState { toolbarState = tbState' }
+
+update (ToolbarAction Toolbar.SavePackage) appState = do
+    let projectPath = Compilation.projectPath (compilationState appState)
+    let tbState = toolbarState appState
+    atRemote $ localIO $ writeFile (projectPath ++ "package.yaml") (Toolbar.projectConfig tbState)
+    _ <- Toolbar.update Toolbar.ClosePackageModal tbState
+    return appState
+
 
 update (ToolbarAction action) appState = do
     let cs = compilationState appState

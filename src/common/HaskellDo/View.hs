@@ -69,6 +69,8 @@ widgets state = do
     <|> pathInputWidget
     <|> packageTextAreaWidget
     <|> closeModalButtonWidget
+    <|> closePackageEditorButtonWidget
+    <|> cancelPackageEditorButtonWidget
   where
     simpleMDEWidget = Ulmus.newWidget "editor" $
         Ulmus.mapAction SimpleMDEAction $
@@ -91,7 +93,13 @@ widgets state = do
 
     closeModalButtonWidget = Ulmus.mapAction ToolbarAction $
         Toolbar.closeModalButton (toolbarState state)
-        
+
+    closePackageEditorButtonWidget = Ulmus.mapAction ToolbarAction $
+        Toolbar.closePackageEditorButton (toolbarState state)
+
+    cancelPackageEditorButtonWidget = Ulmus.mapAction ToolbarAction $
+        Toolbar.cancelPackageEditorButton (toolbarState state)
+
 
 showDisplays :: AppState -> Widget ()
 showDisplays state = do
