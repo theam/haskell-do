@@ -16,7 +16,7 @@ a pure Haskell implementation.
 
 The only *3rd-party* requirement to run Haskell.do is [Stack](http://haskellstack.org/) and [NodeJS](https://nodejs.org/).
 
-Before proceeding, run a `npm install -g purescript pulp bower` to install the required NodeJS binaries.
+Before proceeding, run a `npm install -g purescript@0.10.7 pulp@10.0.3 bower` to install the required NodeJS binaries.
 
 `git clone https://github.com/theam/haskell-do && cd haskell-do`
 
