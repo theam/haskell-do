@@ -22,18 +22,19 @@ toolbar = rawHtml $ do
             li ! id "openProjectButton" $ noHtml
             li ! id "compileButton" $ noHtml
             li ! id "packageEditorButton" $ noHtml
-    openProjectModal
-    packageEditorModal
+    packageEditorModal    -- Apparently, if we put this line
+    openProjectModal      -- under this one. The open project modal doesn't work
 
 openProjectModal :: Perch
 openProjectModal =
-    div ! id "openProjectModal" ! atr "class" "modal" $ do
+    div ! id "openProjectModal" ! atr "class" "modal modal-fixed-footer" $ do
         div ! atr "class" "modal-content" $ do
             h4 ("Open project" :: String)
             div $ do
                 b ("Path to Stack project" :: String)
                 div ! id "pathInput" $ noHtml
-        div ! atr "class" "modal-footer" ! id "closeModalButton" $ noHtml
+        div ! atr "class" "modal-footer" $ do
+            div ! id "closeModalButton" $ noHtml
 
 packageEditorModal :: Perch
 packageEditorModal =
@@ -64,7 +65,7 @@ compileButton _ = Ulmus.newWidget "compileButton" $ wlink Compile $
 
 closeModalButton :: State -> Widget Action
 closeModalButton _ = Ulmus.newWidget "closeModalButton" $ wlink LoadProject $
-    a ! atr "class" "modal-action modal-close waves-effect btn-flat waves-purple" $
+     a ! atr "class" "modal-action modal-close waves-effect btn-flat waves-purple" $
         i ! atr "class" "material-icons" $ ("input" :: String)
 
 closePackageEditorButton :: State -> Widget Action
@@ -83,14 +84,14 @@ pathInput state = Ulmus.newWidget "pathInput" $ do
              then Nothing
              else Just $ lastProject state
     _ <- getString pr
-            ! id "pathTextBox"
             ! atr "placeholder" "/path/to/your/project"
             `fire` OnKeyUp
-    projPath <- liftIO $ getValueFromId "#pathTextBox"
+    projPath <- liftIO $ getValueFromId "#pathInput event input"
     return $ NewPath projPath
 
 
 packageTextArea :: State -> Widget Action
-packageTextArea state = Ulmus.newWidget "packageTextArea" $ do
-     newConfig <- getMultilineText "" ! id "pkgTA" `fire` OnKeyUp
+packageTextArea _ = Ulmus.newWidget "packageTextArea" $ do
+     _ <- getMultilineText "" `fire` OnKeyUp
+     newConfig <- liftIO $ getValueFromId "#packageTextArea event textarea"
      return $ NewPackage newConfig

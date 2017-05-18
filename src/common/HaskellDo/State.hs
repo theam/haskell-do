@@ -71,7 +71,7 @@ update (ToolbarAction Toolbar.LoadPackageYaml) appState = do
     contents <- atRemote $ localIO $ readFile (projectPath ++ "package.yaml")
     let tbState = toolbarState appState
     let tbState' = tbState { Toolbar.projectConfig = contents }
-    localIO $ JQuery.setValueForId "#pkgTA" contents
+    localIO $ JQuery.setValueForId "#packageTextArea event textArea" contents
     _ <- Toolbar.update Toolbar.LoadPackageYaml tbState
     return appState { toolbarState = tbState' }
 

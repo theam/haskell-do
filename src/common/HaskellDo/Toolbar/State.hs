@@ -24,8 +24,9 @@ update ClosePackageModal state = do
     localIO $ closeModal "#packageEditorModal"
     return state
 
+update (NewPath "") state = return state
 update (NewPath newPath) state =
-    if last newPath /= '/' && newPath /= ""
+    if last newPath /= '/'
         then return state { projectPath = newPath ++ "/" }
         else return state { projectPath = newPath }
 
