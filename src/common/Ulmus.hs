@@ -21,7 +21,7 @@ import Data.Typeable
 import Control.Monad.IO.Class
 
 import GHCJS.HPlay.View hiding (at, id)
-import Transient.Base
+import Transient.Base hiding (getState, setState)
 import Transient.Move
 
 import AxiomUtils

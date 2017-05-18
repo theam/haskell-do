@@ -1,6 +1,6 @@
 module AxiomUtils where
 
-import GHCJS.HPlay.View (setHtml, Attribute, Perch)
+import GHCJS.HPlay.View (setHtml, Attribute, Perch, Widget, BrowserEvent(..), a, (!), href, pass)
 import qualified GHCJS.HPlay.View
 import GHCJS.Types
 import Data.JSString
@@ -19,3 +19,8 @@ id = atr "id"
 
 at :: String -> GHCJS.HPlay.View.UpdateMethod -> GHCJS.HPlay.View.Widget a -> GHCJS.HPlay.View.Widget a
 at s = GHCJS.HPlay.View.at (pack s :: JSString)
+
+wlink :: (Show a) => a -> Perch -> Widget a
+wlink x v =  do
+    (a ! href "#"   $ v)  `pass` OnClick
+    return x

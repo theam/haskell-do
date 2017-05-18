@@ -3,7 +3,7 @@ module HaskellDo.Toolbar.View where
 
 import Prelude hiding (div, id)
 
-import GHCJS.HPlay.View hiding (addHeader, atr, id)
+import GHCJS.HPlay.View hiding (addHeader, atr, id, wlink)
 import AxiomUtils
 import qualified Ulmus
 
@@ -21,19 +21,42 @@ toolbar = rawHtml $ do
         ul $ do
             li ! id "openProjectButton" $ noHtml
             li ! id "compileButton" $ noHtml
-    div ! id "openProjectModal" ! atr "class" "modal" $ do
+            li ! id "packageEditorButton" $ noHtml
+    packageEditorModal    -- Apparently, if we put this line
+    openProjectModal      -- under this one. The open project modal doesn't work
+
+openProjectModal :: Perch
+openProjectModal =
+    div ! id "openProjectModal" ! atr "class" "modal modal-fixed-footer" $ do
         div ! atr "class" "modal-content" $ do
             h4 ("Open project" :: String)
             div $ do
                 b ("Path to Stack project" :: String)
                 div ! id "pathInput" $ noHtml
-        div ! atr "class" "modal-footer" ! id "closeModalButton" $ noHtml
+        div ! atr "class" "modal-footer" $ do
+            div ! id "closeModalButton" $ noHtml
 
+packageEditorModal :: Perch
+packageEditorModal =
+    div ! id "packageEditorModal" ! atr "class" "modal modal-fixed-footer" $ do
+        div ! atr "class" "modal-content" $ do
+            h4 ("Project settings" :: String)
+            div $
+                div ! id "packageTextArea" $ noHtml
+        div ! atr "class" "modal-footer" $ do
+            div ! id "cancelPackageEditorButton" $ noHtml
+            div ! id "closePackageEditorButton" $ noHtml
 
 openProjectButton :: State -> Widget Action
 openProjectButton _ = Ulmus.newWidget "openProjectButton" $ wlink OpenProject $
         a ! atr "class" "btn-floating purple darken-2" $
             i ! atr "class" "material-icons" $ ("folder_open" :: String)
+
+packageEditorButton :: State -> Widget Action
+packageEditorButton _ = Ulmus.newWidget "packageEditorButton" $ wlink LoadPackageYaml $
+        a ! atr "class" "btn-floating purple darken-2" $
+            i ! atr "class" "material-icons" $ ("build" :: String)
+
 
 compileButton :: State -> Widget Action
 compileButton _ = Ulmus.newWidget "compileButton" $ wlink Compile $
@@ -42,8 +65,18 @@ compileButton _ = Ulmus.newWidget "compileButton" $ wlink Compile $
 
 closeModalButton :: State -> Widget Action
 closeModalButton _ = Ulmus.newWidget "closeModalButton" $ wlink LoadProject $
-    a ! atr "class" "modal-action modal-close waves-effect btn-flat waves-purple" $
+     a ! atr "class" "modal-action modal-close waves-effect btn-flat waves-purple" $
         i ! atr "class" "material-icons" $ ("input" :: String)
+
+closePackageEditorButton :: State -> Widget Action
+closePackageEditorButton _ = Ulmus.newWidget "closePackageEditorButton" $ wlink SavePackage $
+    a ! atr "class" "modal-action modal-close waves-effect btn-flat waves-purple" $
+        i ! atr "class" "material-icons" $ ("playlist_add_check" :: String)
+
+cancelPackageEditorButton :: State -> Widget Action
+cancelPackageEditorButton _ = Ulmus.newWidget "cancelPackageEditorButton" $ wlink ClosePackageModal $
+    a ! atr "class" "modal-action modal-close waves-effect btn-flat waves-purple" $
+        i ! atr "class" "material-icons" $ ("clear" :: String)
 
 pathInput :: State -> Widget Action
 pathInput state = Ulmus.newWidget "pathInput" $ do
@@ -51,8 +84,14 @@ pathInput state = Ulmus.newWidget "pathInput" $ do
              then Nothing
              else Just $ lastProject state
     _ <- getString pr
-            ! id "pathTextBox"
             ! atr "placeholder" "/path/to/your/project"
             `fire` OnKeyUp
-    projPath <- liftIO $ getValueFromId "#pathTextBox"
+    projPath <- liftIO $ getValueFromId "#pathInput event input"
     return $ NewPath projPath
+
+
+packageTextArea :: State -> Widget Action
+packageTextArea _ = Ulmus.newWidget "packageTextArea" $ do
+     _ <- getMultilineText "" ! atr "rows" "20" `fire` OnKeyUp
+     newConfig <- liftIO $ getValueFromId "#packageTextArea event textarea"
+     return $ NewPackage newConfig
