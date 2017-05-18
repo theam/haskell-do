@@ -16,7 +16,7 @@ dependencies:
   - flow
   - transient
   - transient-universe
-  - ghcjs-hplay
+  - axiom
   - clay
   - text
   - process
