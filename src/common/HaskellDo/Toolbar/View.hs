@@ -3,7 +3,7 @@ module HaskellDo.Toolbar.View where
 
 import Prelude hiding (div, id)
 
-import GHCJS.HPlay.View hiding (addHeader, atr, id)
+import GHCJS.HPlay.View hiding (addHeader, atr, id, wlink)
 import AxiomUtils
 import qualified Ulmus
 
