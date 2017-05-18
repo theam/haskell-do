@@ -36,6 +36,6 @@ initialize = do
 
 view :: State -> Widget Action
 view _ = do
-    _ <- textArea "" ! id "mainEditor" `fire` OnKeyUp
+    _ <- textArea "" `fire` OnKeyUp
     newContent <- liftIO getMDEContent
     return (NewContent newContent)

@@ -21,13 +21,13 @@ import Data.JSString
 getMDEContent :: IO String
 getMDEContent = unpack <$> js_getMDEContent
 
-foreign import javascript unsafe "simpleMDE.value()"
+foreign import javascript unsafe "simpleMDE.getValue()"
     js_getMDEContent :: IO JSString
 
 setMDEContent :: String -> IO ()
 setMDEContent = js_setMDEContent . pack
 
-foreign import javascript unsafe "simpleMDE.value($1)"
+foreign import javascript unsafe "simpleMDE.setValue($1)"
     js_setMDEContent :: JSString -> IO ()
 
 makeSimpleMDEFromId :: String -> IO ()
@@ -35,18 +35,13 @@ makeSimpleMDEFromId = js_makeSimpleMDEFromId . pack
 
 foreign import javascript unsafe
     "function initMDE() {\
-      var ta = document.getElementById($1);\
-      if (typeof SimpleMDE !== 'undefined') {\
+      var taId = $('#editor event textarea').attr('id');\
+      var ta = document.getElementById(taId);\
+      if (typeof CodeMirror !== 'undefined') {\
         if (ta !== null) {\
-            simpleMDE=new SimpleMDE({\
-              tabSize: 2, \
-              element: ta, \
-              status: false,\
-              toolbar: false,\
-              previewRender: function(x){return '';},\
-              autofocus: true,\
-              forceSync: true,\
-              indentWithTabs: false\
+            simpleMDE=CodeMirror.fromTextArea(ta, {\
+              mode: 'gfm',\
+              theme: 'default'\
             });\
         } else {\
           window.setTimeout(initMDE, 10);\
