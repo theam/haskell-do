@@ -55,5 +55,8 @@ mdeStyle = Text.unpack . Clay.render $ do
     "#outputdiv" ? do
         position relative
         zIndex 1
-    "#pkgTA" ? do
+    "#packageTextArea event textarea" ? do
         fontFamily [] [monospace]
+        boxSizing borderBox
+        overflow auto
+        height (pct 100)

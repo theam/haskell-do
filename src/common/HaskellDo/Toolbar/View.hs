@@ -92,6 +92,6 @@ pathInput state = Ulmus.newWidget "pathInput" $ do
 
 packageTextArea :: State -> Widget Action
 packageTextArea _ = Ulmus.newWidget "packageTextArea" $ do
-     _ <- getMultilineText "" `fire` OnKeyUp
+     _ <- getMultilineText "" ! atr "rows" "20" `fire` OnKeyUp
      newConfig <- liftIO $ getValueFromId "#packageTextArea event textarea"
      return $ NewPackage newConfig
