@@ -38,12 +38,13 @@ openProjectModal =
 
 packageEditorModal :: Perch
 packageEditorModal =
-    div ! id "packageEditorModal" ! atr "class" "modal modal-fixed-footer" $ do
+    div ! id "packageEditorModal" ! atr "class" "modal bottom-sheet" $ do
         div ! atr "class" "modal-content" $ do
             h4 ("Project settings" :: String)
             div $
                 div ! id "packageTextArea" $ noHtml
         div ! atr "class" "modal-footer" $ do
+            p ! atr "class" "red-text" $ ("Dependencies will be downloaded after confirming" :: String)
             div ! id "cancelPackageEditorButton" $ noHtml
             div ! id "closePackageEditorButton" $ noHtml
 

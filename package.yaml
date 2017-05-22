@@ -24,6 +24,7 @@ dependencies:
 
 ghc-options:
   - -Wall
+  - -Werror
   - -fprint-potential-instances
 
 when:
@@ -40,11 +41,54 @@ default-extensions:
 
 library:
   source-dirs: src/common
+  other-modules:
+    - AxiomUtils
+    - Foreign.Highlight
+    - Foreign.JQuery
+    - Foreign.Materialize
+    - Foreign.SimpleMDE
+    - HaskellDo.Compilation.State
+    - HaskellDo.Compilation.Types
+    - HaskellDo.Compilation.View
+    - HaskellDo.Materialize.View
+    - HaskellDo.SimpleMDE.State
+    - HaskellDo.SimpleMDE.Types
+    - HaskellDo.SimpleMDE.View
+    - HaskellDo.State
+    - HaskellDo.Style.View
+    - HaskellDo.Toolbar.State
+    - HaskellDo.Toolbar.Types
+    - HaskellDo.Toolbar.View
+    - HaskellDo.Types
+    - HaskellDo.View
+    - Ulmus
   exposed-modules:
     - HaskellDo
 
 executables:
   haskell-do:
+    other-modules:
+      - AxiomUtils
+      - Foreign.Highlight
+      - Foreign.JQuery
+      - Foreign.Materialize
+      - Foreign.SimpleMDE
+      - HaskellDo.Compilation.State
+      - HaskellDo.Compilation.Types
+      - HaskellDo.Compilation.View
+      - HaskellDo.Materialize.View
+      - HaskellDo.SimpleMDE.State
+      - HaskellDo.SimpleMDE.Types
+      - HaskellDo.SimpleMDE.View
+      - HaskellDo.State
+      - HaskellDo.Style.View
+      - HaskellDo.Toolbar.State
+      - HaskellDo.Toolbar.Types
+      - HaskellDo.Toolbar.View
+      - HaskellDo.Types
+      - HaskellDo.View
+      - Ulmus
+      - HaskellDo
     source-dirs: src/common
     main: Main.hs
 

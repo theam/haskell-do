@@ -43,9 +43,9 @@ data AppConfig action appState = AppConfig
 initializeApp :: (Show appState, Show action, Read appState, Read action, Typeable appState, Typeable action)
               => AppConfig action appState
               -> IO ()
-initializeApp (AppConfig update view updateDisplays initialAppState port setup) = do
+initializeApp (AppConfig update view updateDisplays initialAppState appPort setup) = do
     setup
-    simpleWebApp port $ do
+    simpleWebApp appPort $ do
         currentState <- local $ getState initialAppState
         nextAction <- local (render $ view currentState)
         currentState' <- local $ getState initialAppState
@@ -87,7 +87,7 @@ mapAction actionConstructor widget = do
     return $ actionConstructor action
 ---------------------------------------------  State manipulation -------------------------------
 
-getState :: (Typeable appState, Show appState) => appState -> TransIO appState
+getState :: (Typeable appState) => appState -> TransIO appState
 getState initialAppState = getRData <|> setAndReturn
  where
   setAndReturn = do
@@ -95,7 +95,7 @@ getState initialAppState = getRData <|> setAndReturn
       return initialAppState
 
 
-setState :: (Show appState, Typeable appState) => appState -> TransIO ()
+setState :: (Typeable appState) => appState -> TransIO ()
 setState = setRData
 
 ---------------------------------------------  State References in the TransIO monad ------------

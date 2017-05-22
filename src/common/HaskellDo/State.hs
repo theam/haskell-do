@@ -57,6 +57,7 @@ update (ToolbarAction Toolbar.Compile) appState = do
         }
 
 update (ToolbarAction Toolbar.LoadProject) appState = do
+    localIO $ JQuery.hide "#dependencyMessage"
     let projectPath = Compilation.projectPath (compilationState appState)
     let filePath = Compilation.workingFile (compilationState appState)
     contents <- atRemote $ localIO $ readFile (projectPath ++ filePath)
@@ -80,7 +81,10 @@ update (ToolbarAction Toolbar.SavePackage) appState = do
     let tbState = toolbarState appState
     atRemote $ localIO $ writeFile (projectPath ++ "package.yaml") (Toolbar.projectConfig tbState)
     _ <- Toolbar.update Toolbar.ClosePackageModal tbState
-    return appState
+    localIO $ JQuery.show "#dependencyMessage"
+    newState <- update (ToolbarAction Toolbar.Compile) appState
+    localIO $ JQuery.hide "#dependencyMessage"
+    return newState
 
 
 update (ToolbarAction action) appState = do

@@ -23,7 +23,6 @@ import qualified System.Exit as System
 import qualified Data.Text as Text
 import System.Directory
 
-import Transient.Base
 import Transient.Move
 
 import HaskellDo.Compilation.Types

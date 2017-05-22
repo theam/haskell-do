@@ -20,7 +20,7 @@ id = atr "id"
 at :: String -> GHCJS.HPlay.View.UpdateMethod -> GHCJS.HPlay.View.Widget a -> GHCJS.HPlay.View.Widget a
 at s = GHCJS.HPlay.View.at (pack s :: JSString)
 
-wlink :: (Show a) => a -> Perch -> Widget a
+wlink :: a -> Perch -> Widget a
 wlink x v =  do
-    (a ! href "#"   $ v)  `pass` OnClick
+    _ <- (a ! href "#"   $ v)  `pass` OnClick
     return x

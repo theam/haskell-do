@@ -10,7 +10,6 @@ import           Transient.Base
 import qualified Ulmus
 
 import           HaskellDo.Compilation.Types
-import Foreign.Materialize
 
 outputDisplay :: State -> Widget ()
 outputDisplay state = rawHtml $

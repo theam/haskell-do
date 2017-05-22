@@ -17,7 +17,6 @@
 module HaskellDo.View where
 
 import Prelude hiding (id, div)
-import Control.Monad.IO.Class
 
 import Transient.Base
 import GHCJS.HPlay.View
@@ -28,8 +27,6 @@ import qualified HaskellDo.Materialize.View as Materialize
 import qualified HaskellDo.SimpleMDE.View as SimpleMDE
 import qualified HaskellDo.Compilation.View as Compilation
 import qualified HaskellDo.Toolbar.View as Toolbar
-
-import qualified Foreign.JQuery as JQuery
 
 view :: AppState -> Widget Action
 view appState = Ulmus.withWidgets (widgets appState) $
@@ -47,17 +44,18 @@ view appState = Ulmus.withWidgets (widgets appState) $
 
 loaderOverlay :: Perch
 loaderOverlay =
-    div ! atr "class" "dimmedBackground" $
-      div ! atr "class" "loader-align" $
-         div ! atr "class" "loader-align-inner" $
-          div ! atr "class" "preloader-wrapper big active" $
-            div ! atr "class" "spinner-layer spinner-blue-only" $ do
-              div ! atr "class" "circle-clipper left" $
-                div ! atr "class" "circle" $ noHtml
-              div ! atr "class" "gap-patch" $
-                div ! atr "class" "circle" $ noHtml
-              div ! atr "class" "circle-clipper right" $
-                div ! atr "class" "circle" $ noHtml
+    div ! atr "class" "dimmedBackground" $ do
+        div ! atr "class" "loader-align center-align" $ do
+            div ! atr "class" "loader-align-inner" $ do
+                div ! atr "class" "preloader-wrapper big active" $ do
+                    div ! atr "class" "spinner-layer spinner-blue-only" $ do
+                        div ! atr "class" "circle-clipper left" $
+                            div ! atr "class" "circle" $ noHtml
+                        div ! atr "class" "gap-patch" $
+                            div ! atr "class" "circle" $ noHtml
+                        div ! atr "class" "circle-clipper right" $
+                            div ! atr "class" "circle" $ noHtml
+                p ! atr "class" "grey-text center-align" ! atr "id" "dependencyMessage" $ ("Downloading dependencies" :: String)
 widgets :: AppState -> Widget Action
 widgets state = do
     Toolbar.toolbar
