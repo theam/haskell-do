@@ -22,7 +22,6 @@ mdeStyle = Text.unpack . Clay.render $ do
         marginRight (pct 2)
         minHeight (pct 100.0)
         bottom (px 0)
-        boxShadow (px 0) (px 19) (px 38) (rgba 0 0 0 0.25)
         paddingTop (px 75)
         paddingLeft (px 60)
         paddingRight (px 60)
