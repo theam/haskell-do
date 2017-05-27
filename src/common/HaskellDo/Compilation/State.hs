@@ -39,7 +39,7 @@ lastProjectFile :: FilePath
 lastProjectFile = "lastproject"
 
 update :: Action -> State -> Cloud State
-update (WriteWorkingFile content) state = local . liftIO $ do
+update (WriteWorkingFile content) state = localIO $ do
     unless (null $ projectPath state) (writeWorkingFile content state)
     return state
 update Compile state = do
