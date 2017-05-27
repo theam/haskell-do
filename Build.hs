@@ -65,12 +65,12 @@ buildGUI pdir =
 
 
 buildOrchestrator pdir =
-  echo "Building orchestrator"
+  echo ""
 
 
 runHaskellDo pdir = do
   echo "Running Haskell.do"
-  shell ("stack exec haskell-do --stack-yaml=" <> serverStackYaml <> " -- web") ""
+  shell ("stack exec haskell-do --stack-yaml=" <> serverStackYaml <> " -- 8080") ""
   return ()
 
 

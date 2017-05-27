@@ -13,9 +13,15 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
+{-# LANGUAGE LambdaCase #-}
 module Main where
 
 import HaskellDo
+import System.Environment (getArgs)
 
 main :: IO ()
-main = run
+main = getArgs >>= \case
+    [x] -> do
+        let port = read x :: Integer
+        run port
+    _ -> run 3000

@@ -30,12 +30,12 @@ initializeHeaders = do
     Style.initialize
 
 -- | Executes Haskell.do in designated 'port'
-run :: IO ()
-run = Ulmus.initializeApp Ulmus.AppConfig
+run :: Integer -> IO ()
+run appPort = Ulmus.initializeApp Ulmus.AppConfig
   { Ulmus._update         = update
   , Ulmus._view           = view
   , Ulmus._updateDisplays = updateDisplays
   , Ulmus._initialState   = initialAppState
-  , Ulmus._port           = 8080
+  , Ulmus._port           = appPort
   , Ulmus._setup          = initializeHeaders
   }
