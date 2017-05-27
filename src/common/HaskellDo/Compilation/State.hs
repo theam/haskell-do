@@ -114,8 +114,10 @@ preprocessOutput out =
 runCommand :: String -> FilePath -> IO (System.ExitCode, String, String)
 runCommand command projPath =
     System.readCreateProcessWithExitCode (System.shell
-        $ "cd " ++ projPath ++ " && stack " ++ command
+        $ "cd " ++ projPath ++ " && " ++ stackCommand ++ " " ++ command
         ) ""
+  where
+    stackCommand = "/usr/local/bin/stack"
 
 
 bootstrapCSSTag :: Text.Text
