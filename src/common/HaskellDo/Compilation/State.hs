@@ -59,7 +59,6 @@ writeWorkingFile content state = do
     fileExists <- doesFileExist fullPath
     when fileExists (writeCode fullPath content)
 
-
 writeCode :: FilePath -> String -> IO ()
 writeCode path code = do
     let fileContent = "{-# OPTIONS_GHC -F -pgmF inlitpp #-}\n" ++
@@ -102,7 +101,7 @@ buildOutput state = do
 preprocessOutput :: String -> String
 preprocessOutput out =
     Text.pack out
-    |> remove "class=\"container\"" --"div onload=\"$('.haskell').each(function(i, block){ hljs.highlightBlock(block);})\""
+    |> remove "class=\"container\""
     |> remove bootstrapCSSTag
     |> remove bootstrapThemeCSSTag
     |> remove jQueryJSTag

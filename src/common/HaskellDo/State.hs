@@ -108,8 +108,8 @@ update (ToolbarAction action) appState = do
     return appState { compilationState = newCompilationState, toolbarState = newToolbarState }
 
 readAtRemote :: FilePath -> Cloud (Either String String)
-readAtRemote path = atRemote . localIO $ 
-    maybeRead path 
+readAtRemote path = atRemote . localIO $
+    maybeRead path
     >>= \case
         Nothing -> return (Left $ "Could not open file " ++ path)
         Just txt -> return (Right txt)
