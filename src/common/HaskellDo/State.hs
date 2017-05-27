@@ -62,19 +62,36 @@ update (ToolbarAction Toolbar.Compile) appState = do
 update (ToolbarAction Toolbar.LoadProject) appState = do
     localIO $ JQuery.hide "#dependencyMessage"
     let tbState = toolbarState appState
+    let cmpState = compilationState appState
     let projectPath = Compilation.projectPath (compilationState appState)
     let filePath = Compilation.workingFile (compilationState appState)
     readAtRemote (projectPath ++ filePath) >>= \case
         Left _ -> do
             let newTbState = tbState { Toolbar.projectOpened = False }
-            return appState { toolbarState = newTbState }
+            let newCmpState = cmpState
+                    { Compilation.compilationError = "Couldn't find Haskell.do project at "
+                                                   ++ projectPath
+                                                   ++ ". Was it created correctly?"
+                    }
+            localIO $ SimpleMDE.setMDEContent ""
+            localIO $ JQuery.setHtmlForId "#outputDisplay" ""
+            return appState
+                { toolbarState = newTbState
+                , compilationState = newCmpState
+                }
         Right contents -> do
             let editorState = simpleMDEState appState
             let parsedContents = unlines . drop 4 $ lines contents
             let newEditorState = editorState { SimpleMDE.content = parsedContents }
             let newTbState = tbState { Toolbar.projectOpened = True }
+            let newCmpState = cmpState { Compilation.compilationError = "" }
             localIO $ SimpleMDE.setMDEContent parsedContents
-            return appState { simpleMDEState = newEditorState , toolbarState = newTbState }
+            localIO $ JQuery.setHtmlForId "#outputDisplay" ""
+            return appState
+                { simpleMDEState = newEditorState
+                , toolbarState = newTbState
+                , compilationState = newCmpState
+                }
 
 update (ToolbarAction Toolbar.LoadPackageYaml) appState = do
     let projectPath = Compilation.projectPath (compilationState appState)
@@ -103,7 +120,6 @@ update (ToolbarAction action) appState = do
     newToolbarState <- Toolbar.update action ts'
     let newCompilationState = cs
             { Compilation.projectPath = Toolbar.projectPath newToolbarState
-            , Compilation.compilationError = ""
             }
     return appState { compilationState = newCompilationState, toolbarState = newToolbarState }
 

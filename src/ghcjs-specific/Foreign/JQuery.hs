@@ -9,6 +9,9 @@ foreign import javascript unsafe "$($1).val()"
 foreign import javascript unsafe "$($1).val($2);"
   js_setValueForId :: JSString -> JSString -> IO ()
 
+foreign import javascript unsafe "$($1).html($2);"
+  js_setHtmlForId :: JSString -> JSString -> IO ()
+
 foreign import javascript unsafe "$($1).show();"
   js_show :: JSString -> IO ()
 
@@ -22,6 +25,9 @@ getValueFromId s = do
 
 setValueForId :: String -> String -> IO ()
 setValueForId id' s = js_setValueForId (pack id') (pack s)
+
+setHtmlForId :: String -> String -> IO ()
+setHtmlForId id' s = js_setHtmlForId (pack id') (pack s)
 
 show :: String -> IO ()
 show = js_show . pack
