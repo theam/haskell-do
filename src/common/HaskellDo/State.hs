@@ -13,7 +13,10 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
+{-# LANGUAGE LambdaCase #-}
 module HaskellDo.State where
+
+import Control.Exception (try, SomeException)
 
 import Transient.Move
 
@@ -58,14 +61,20 @@ update (ToolbarAction Toolbar.Compile) appState = do
 
 update (ToolbarAction Toolbar.LoadProject) appState = do
     localIO $ JQuery.hide "#dependencyMessage"
+    let tbState = toolbarState appState
     let projectPath = Compilation.projectPath (compilationState appState)
     let filePath = Compilation.workingFile (compilationState appState)
-    contents <- atRemote $ localIO $ readFile (projectPath ++ filePath)
-    let editorState = simpleMDEState appState
-    let parsedContents = unlines . drop 4 $ lines contents
-    let editorState' = editorState { SimpleMDE.content = parsedContents }
-    localIO $ SimpleMDE.setMDEContent parsedContents
-    return appState { simpleMDEState = editorState' }
+    readAtRemote (projectPath ++ filePath) >>= \case
+        Left _ -> do
+            let newTbState = tbState { Toolbar.projectOpened = False }
+            return appState { toolbarState = newTbState }
+        Right contents -> do
+            let editorState = simpleMDEState appState
+            let parsedContents = unlines . drop 4 $ lines contents
+            let newEditorState = editorState { SimpleMDE.content = parsedContents }
+            let newTbState = tbState { Toolbar.projectOpened = True }
+            localIO $ SimpleMDE.setMDEContent parsedContents
+            return appState { simpleMDEState = newEditorState , toolbarState = newTbState }
 
 update (ToolbarAction Toolbar.LoadPackageYaml) appState = do
     let projectPath = Compilation.projectPath (compilationState appState)
@@ -86,7 +95,6 @@ update (ToolbarAction Toolbar.SavePackage) appState = do
     localIO $ JQuery.hide "#dependencyMessage"
     return newState
 
-
 update (ToolbarAction action) appState = do
     let cs = compilationState appState
     cs' <- atRemote $ Compilation.update Compilation.GetLastProject cs
@@ -98,3 +106,21 @@ update (ToolbarAction action) appState = do
             , Compilation.compilationError = ""
             }
     return appState { compilationState = newCompilationState, toolbarState = newToolbarState }
+
+readAtRemote :: FilePath -> Cloud (Either String String)
+readAtRemote path = atRemote . localIO $ 
+    maybeRead path 
+    >>= \case
+        Nothing -> return (Left $ "Could not open file " ++ path)
+        Just txt -> return (Right txt)
+
+maybeRead :: FilePath -> IO (Maybe String)
+maybeRead path =
+    try (readFile path)
+    >>= handleRead
+
+handleRead :: Either SomeException String -> IO (Maybe String)
+handleRead = \case
+    Left _ -> return Nothing
+    Right txt -> return (Just txt)
+

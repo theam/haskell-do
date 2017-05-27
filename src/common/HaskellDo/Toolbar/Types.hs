@@ -4,6 +4,7 @@ data State = State
     { projectPath   :: String
     , lastProject   :: String
     , projectConfig :: String
+    , projectOpened :: Bool
     } deriving (Read, Show)
 
 data Action

@@ -9,6 +9,7 @@ initialState = State
     { projectPath = ""
     , lastProject = ""
     , projectConfig = ""
+    , projectOpened = False
     }
 
 update :: Action -> State -> Cloud State

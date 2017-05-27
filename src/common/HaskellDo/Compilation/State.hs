@@ -56,7 +56,8 @@ update GetLastProject state = do
 writeWorkingFile :: String -> State -> IO ()
 writeWorkingFile content state = do
     let fullPath = projectPath state ++ workingFile state
-    unless (null $ projectPath state) (writeCode fullPath content)
+    fileExists <- doesFileExist fullPath
+    when fileExists (writeCode fullPath content)
 
 
 writeCode :: FilePath -> String -> IO ()
@@ -75,7 +76,7 @@ compile state = local $ liftIO $ buildHtmlCode state
 
 buildHtmlCode :: State -> IO State
 buildHtmlCode state = do
-    putStrLn $ "Attempting to build " ++ (projectPath state)
+    putStrLn $ "Attempting to build " ++ projectPath state
     (exitCode, _, err) <- runCommand "build" (projectPath state)
     case exitCode of
         System.ExitFailure _ ->
