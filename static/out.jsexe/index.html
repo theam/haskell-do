@@ -23,6 +23,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/mode/haskell/haskell.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/mode/htmlmixed/htmlmixed.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.2/mode/meta.min.js"></script>
+    <script>
+        let cmdOrCtrlReturnPressed = false;
+    </script>
   </head>
   <body>
   <script language="javascript" src="runmain.js" defer></script>
@@ -34,6 +37,10 @@
       setTimeout(hideLoader, 10);
     }
     hideLoader();
+
+    $(document).keydown(function(event){
+        cmdOrCtrlReturnPressed = (event.metaKey || event.ctrlKey) && event.keyCode == 13;
+    });
   </script>
   </body>
 </html>
