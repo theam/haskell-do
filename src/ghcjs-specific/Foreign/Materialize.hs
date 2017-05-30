@@ -19,3 +19,6 @@ foreign import javascript unsafe "$($1).modal('close')"
 
 foreign import javascript unsafe "$('.modal').modal({dismissible: false, opacity: 0.7});"
     makeModals :: IO ()
+
+foreign import javascript unsafe "$('.tooltipped').tooltip({delay: 50});"
+    initTooltips :: IO ()

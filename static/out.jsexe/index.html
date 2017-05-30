@@ -38,9 +38,18 @@
     }
     hideLoader();
 
+    function makeTooltips() {
+    if (typeof $('.tooltipped').val() === 'string')
+        $('.tooltipped').tooltip({delay: 50});
+    else
+        setTimeout(makeTooltips,10);
+    }
+    makeTooltips();
+
     $(document).keydown(function(event){
         cmdOrCtrlReturnPressed = (event.metaKey || event.ctrlKey) && event.keyCode == 13;
     });
+
   </script>
   </body>
 </html>

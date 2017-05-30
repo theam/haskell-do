@@ -44,10 +44,10 @@ view appState = Ulmus.withWidgets (widgets appState) $
 
 loaderOverlay :: Perch
 loaderOverlay =
-    div ! atr "class" "dimmedBackground" $ do
-        div ! atr "class" "loader-align center-align" $ do
+    div ! atr "class" "dimmedBackground" $
+        div ! atr "class" "loader-align center-align" $
             div ! atr "class" "loader-align-inner" $ do
-                div ! atr "class" "preloader-wrapper big active" $ do
+                div ! atr "class" "preloader-wrapper big active" $
                     div ! atr "class" "spinner-layer spinner-blue-only" $ do
                         div ! atr "class" "circle-clipper left" $
                             div ! atr "class" "circle" $ noHtml
@@ -105,5 +105,5 @@ showDisplays state = do
     Ulmus.newWidget "errorDisplay" $ Compilation.errorDisplay (compilationState state)
 
 updateDisplays :: AppState -> TransIO ()
-updateDisplays state = do
+updateDisplays state =
     Compilation.updateDisplays (compilationState state)
