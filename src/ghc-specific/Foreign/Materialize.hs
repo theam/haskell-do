@@ -8,3 +8,6 @@ closeModal _ = return ()
 
 makeModals :: IO ()
 makeModals = return ()
+
+initTooltips :: IO ()
+initTooltips = return ()

@@ -33,7 +33,7 @@ openProjectModal =
             div $ do
                 b ("Path to Stack project" :: String)
                 div ! id "pathInput" $ noHtml
-        div ! atr "class" "modal-footer" $ do
+        div ! atr "class" "modal-footer" $
             div ! id "closeModalButton" $ noHtml
 
 packageEditorModal :: Perch
@@ -50,18 +50,18 @@ packageEditorModal =
 
 openProjectButton :: State -> Widget Action
 openProjectButton _ = Ulmus.newWidget "openProjectButton" $ wlink OpenProject $
-        a ! atr "class" "btn-floating purple darken-2" $
+        a ! atr "class" "btn-floating purple darken-2 tooltipped" ! atr "data-position" "bottom" ! atr "data-tooltip" "Open" ! atr "data-delay" "50" $
             i ! atr "class" "material-icons" $ ("folder_open" :: String)
 
 packageEditorButton :: State -> Widget Action
 packageEditorButton _ = Ulmus.newWidget "packageEditorButton" $ wlink LoadPackageYaml $
-        a ! atr "class" "btn-floating purple darken-2" $
+        a ! atr "class" "btn-floating purple darken-2 tooltipped" ! atr "data-position" "bottom" ! atr "data-tooltip" "Project settings"  ! atr "data-delay" "50"$
             i ! atr "class" "material-icons" $ ("build" :: String)
 
 
 compileButton :: State -> Widget Action
 compileButton _ = Ulmus.newWidget "compileButton" $ wlink Compile $
-    a ! atr "class" "btn-floating purple darken-2" $
+    a ! atr "class" "btn-floating purple darken-2 tooltipped" ! atr "data-position" "bottom" ! atr "data-tooltip" "Compile [Ctrl+Return]" ! atr "data-delay" "50"$
         i ! atr "class" "material-icons" $ ("play_arrow" :: String)
 
 closeModalButton :: State -> Widget Action
