@@ -16,11 +16,5 @@
  -}
 module Main where
 
-import Flow
-
-import Test.Hspec
-import Test.QuickCheck
-import Test.QuickCheck.IO ()
-
 main :: IO ()
-main = print "TODO: Write tests"
+main = putStrLn "TODO: Write tests"
