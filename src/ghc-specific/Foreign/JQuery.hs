@@ -14,3 +14,6 @@ show _ = return ()
 
 hide :: String -> IO ()
 hide _ = return ()
+
+shake :: String -> IO ()
+shake _ = return ()
