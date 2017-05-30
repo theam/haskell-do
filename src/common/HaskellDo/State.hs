@@ -50,14 +50,20 @@ update (SimpleMDEAction action) appState = do
         }
 
 update (ToolbarAction Toolbar.Compile) appState = do
-    localIO $ JQuery.show ".dimmedBackground"
-    newCompilationState <- atRemote $ Compilation.update
-        Compilation.Compile
-        (compilationState appState)
-    localIO $ JQuery.hide ".dimmedBackground"
-    return appState
-        { compilationState = newCompilationState
-        }
+    let tbState = toolbarState appState
+    if Toolbar.projectOpened tbState
+        then do
+            localIO $ JQuery.show ".dimmedBackground"
+            newCompilationState <- atRemote $ Compilation.update
+                Compilation.Compile
+                (compilationState appState)
+            localIO $ JQuery.hide ".dimmedBackground"
+            return appState
+                { compilationState = newCompilationState
+                }
+        else do
+            localIO Toolbar.shakeErrorDisplay
+            return appState
 
 update (ToolbarAction Toolbar.LoadProject) appState = do
     localIO $ JQuery.hide "#dependencyMessage"

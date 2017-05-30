@@ -18,6 +18,9 @@ foreign import javascript unsafe "$($1).show();"
 foreign import javascript unsafe "$($1).hide();"
   js_hide :: JSString -> IO ()
 
+foreign import javascript unsafe "$($1).effect('shake');"
+  js_shake :: JSString -> IO ()
+
 getValueFromId :: String -> IO String
 getValueFromId s = do
   r <- js_getValueFromId $ pack s
@@ -34,3 +37,6 @@ show = js_show . pack
 
 hide :: String -> IO ()
 hide = js_hide . pack
+
+shake :: String -> IO ()
+shake = js_shake . pack

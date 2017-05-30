@@ -3,6 +3,7 @@ module HaskellDo.Toolbar.State where
 import Transient.Move
 import HaskellDo.Toolbar.Types
 import Foreign.Materialize
+import Foreign.JQuery
 
 initialState :: State
 initialState = State
@@ -18,7 +19,9 @@ update OpenProject state = do
     return state
 
 update LoadPackageYaml state = do
-    localIO $ openModal "#packageEditorModal"
+    localIO $ if projectOpened state
+        then openModal "#packageEditorModal"
+        else shakeErrorDisplay
     return state
 
 update ClosePackageModal state = do
@@ -34,3 +37,6 @@ update (NewPath newPath) state =
 update (NewPackage newConfig) state = return state { projectConfig = newConfig }
 
 update _ state = return state
+
+shakeErrorDisplay :: IO ()
+shakeErrorDisplay = shake "#errorDisplay"
