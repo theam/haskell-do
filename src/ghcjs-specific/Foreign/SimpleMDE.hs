@@ -30,6 +30,9 @@ setMDEContent = js_setMDEContent . pack
 foreign import javascript unsafe "simpleMDE.setValue($1)"
     js_setMDEContent :: JSString -> IO ()
 
+foreign import javascript unsafe "$r = cmdOrCtrlReturnPressed;"
+    cmdOrCtrlReturnPressed :: IO Bool
+
 makeSimpleMDEFromId :: String -> IO ()
 makeSimpleMDEFromId = js_makeSimpleMDEFromId . pack
 

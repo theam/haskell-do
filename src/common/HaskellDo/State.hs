@@ -45,9 +45,13 @@ update (SimpleMDEAction action) appState = do
     _ <- atRemote $ Compilation.update
         (Compilation.WriteWorkingFile newContent)
         (compilationState appState)
-    return appState
-        { simpleMDEState = newSimpleMDEState
-        }
+    compileShortcutPressed <- localIO $ SimpleMDE.cmdOrCtrlReturnPressed
+    let newState = appState
+            { simpleMDEState = newSimpleMDEState
+            }
+    if compileShortcutPressed
+        then update (ToolbarAction Toolbar.Compile) newState
+        else return newState
 
 update (ToolbarAction Toolbar.Compile) appState = do
     let tbState = toolbarState appState

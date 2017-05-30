@@ -23,3 +23,6 @@ setMDEContent _ = return ()
 
 makeSimpleMDEFromId :: String -> IO ()
 makeSimpleMDEFromId _ = return ()
+
+cmdOrCtrlReturnPressed :: IO Bool
+cmdOrCtrlReturnPressed = return False
