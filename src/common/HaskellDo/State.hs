@@ -28,7 +28,6 @@ import qualified HaskellDo.Compilation.State as Compilation
 import qualified HaskellDo.Compilation.Types as Compilation
 import qualified HaskellDo.Toolbar.State as Toolbar
 import qualified HaskellDo.Toolbar.Types as Toolbar
-
 import qualified Foreign.JQuery as JQuery
 
 initialAppState :: AppState
@@ -45,7 +44,7 @@ update (SimpleMDEAction action) appState = do
     _ <- atRemote $ Compilation.update
         (Compilation.WriteWorkingFile newContent)
         (compilationState appState)
-    compileShortcutPressed <- localIO $ SimpleMDE.cmdOrCtrlReturnPressed
+    compileShortcutPressed <- localIO SimpleMDE.cmdOrCtrlReturnPressed
     let newState = appState
             { simpleMDEState = newSimpleMDEState
             }

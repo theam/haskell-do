@@ -1,6 +1,9 @@
 module HaskellDo.Toolbar.State where
 
+import System.Directory (doesFileExist)
+
 import Transient.Move
+
 import HaskellDo.Toolbar.Types
 import Foreign.Materialize
 import Foreign.JQuery
@@ -11,6 +14,7 @@ initialState = State
     , lastProject = ""
     , projectConfig = ""
     , projectOpened = False
+    , createProject = False
     }
 
 update :: Action -> State -> Cloud State
@@ -29,10 +33,20 @@ update ClosePackageModal state = do
     return state
 
 update (NewPath "") state = return state
-update (NewPath newPath) state =
-    if last newPath /= '/'
-        then return state { projectPath = newPath ++ "/" }
-        else return state { projectPath = newPath }
+update (NewPath newPath) state = do
+    newState <- if last newPath /= '/'
+                then return state { projectPath = newPath ++ "/" }
+                else return state { projectPath = newPath }
+    isProject <- atRemote $ localIO $ doesFileExist (projectPath newState ++ "package.yaml")
+    if isProject
+        then do
+            localIO $ setHtmlForId "#creationDisplay" ""
+            localIO $ setHtmlForId "#closeModalButton event .material-icons" "input"
+            return $ newState { createProject = False }
+        else do
+            localIO $ setHtmlForId "#creationDisplay" ("No project found at " ++ projectPath newState ++ ", it will be created.")
+            localIO $ setHtmlForId "#closeModalButton event .material-icons" "playlist_add"
+            return $ newState { createProject = True }
 
 update (NewPackage newConfig) state = return state { projectConfig = newConfig }
 
