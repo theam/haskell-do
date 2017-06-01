@@ -59,6 +59,7 @@ loaderOverlay =
 widgets :: AppState -> Widget Action
 widgets state = do
     Toolbar.toolbar
+    Toolbar.creationDisplay (toolbarState state)
     showDisplays state
     simpleMDEWidget
     <|> openProjectButtonWidget

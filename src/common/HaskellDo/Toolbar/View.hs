@@ -33,6 +33,8 @@ openProjectModal =
             div $ do
                 b ("Path to Stack project" :: String)
                 div ! id "pathInput" $ noHtml
+                p ! atr "class" "grey-text lighten-4" $ ("Path must be absolute, without ~ or environment variables." :: String)
+                div ! id "creationDisplay" $ noHtml
         div ! atr "class" "modal-footer" $
             div ! id "closeModalButton" $ noHtml
 
@@ -50,7 +52,7 @@ packageEditorModal =
 
 openProjectButton :: State -> Widget Action
 openProjectButton _ = Ulmus.newWidget "openProjectButton" $ wlink OpenProject $
-        a ! atr "class" "btn-floating purple darken-2 tooltipped" ! atr "data-position" "bottom" ! atr "data-tooltip" "Open" ! atr "data-delay" "50" $
+        a ! atr "class" "btn-floating purple darken-2 tooltipped" ! atr "data-position" "bottom" ! atr "data-tooltip" "New/Open" ! atr "data-delay" "50" $
             i ! atr "class" "material-icons" $ ("folder_open" :: String)
 
 packageEditorButton :: State -> Widget Action
@@ -96,3 +98,8 @@ packageTextArea _ = Ulmus.newWidget "packageTextArea" $ do
      _ <- getMultilineText "" ! atr "rows" "20" `fire` OnKeyUp
      newConfig <- liftIO $ getValueFromId "#packageTextArea event textarea"
      return $ NewPackage newConfig
+
+creationDisplay :: State -> Widget ()
+creationDisplay _ = Ulmus.newWidget "creationDisplay" $ do
+    liftIO $ putStrLn "Making display"
+    rawHtml $ p ! atr "class" "red-text" $ ("" :: String)
