@@ -17,6 +17,7 @@
 module HaskellDo.State where
 
 import Control.Exception (try, SomeException)
+import Control.Monad (when)
 
 import Transient.Move
 
@@ -74,6 +75,8 @@ update (ToolbarAction Toolbar.LoadProject) appState = do
     let cmpState = compilationState appState
     let projectPath = Compilation.projectPath (compilationState appState)
     let filePath = Compilation.workingFile (compilationState appState)
+    atRemote $ localIO $
+        when (Toolbar.createProject tbState) (Compilation.makeNewProject projectPath)
     readAtRemote (projectPath ++ filePath) >>= \case
         Left _ -> do
             let newTbState = tbState { Toolbar.projectOpened = False }
@@ -95,12 +98,18 @@ update (ToolbarAction Toolbar.LoadProject) appState = do
             let newTbState = tbState { Toolbar.projectOpened = True }
             let newCmpState = cmpState { Compilation.compilationError = "" }
             localIO $ SimpleMDE.setMDEContent parsedContents
+            localIO $ JQuery.hide "#errorDisplay" -- Hide error while dependencies load
             localIO $ JQuery.setHtmlForId "#outputDisplay" ""
-            return appState
-                { simpleMDEState = newEditorState
-                , toolbarState = newTbState
-                , compilationState = newCmpState
-                }
+            let stateAfterOpening =  appState
+                        { simpleMDEState = newEditorState
+                        , toolbarState = newTbState
+                        , compilationState = newCmpState
+                        }
+            localIO $ JQuery.show "#dependencyMessage"
+            newState <- update (ToolbarAction Toolbar.Compile) stateAfterOpening
+            localIO $ JQuery.hide "#dependencyMessage"
+            localIO $ JQuery.show "#errorDisplay" -- Show it after they finished
+            return newState
 
 update (ToolbarAction Toolbar.LoadPackageYaml) appState = do
     let projectPath = Compilation.projectPath (compilationState appState)

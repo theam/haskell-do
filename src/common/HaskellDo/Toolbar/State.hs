@@ -44,7 +44,7 @@ update (NewPath newPath) state = do
             localIO $ setHtmlForId "#closeModalButton event .material-icons" "input"
             return $ newState { createProject = False }
         else do
-            localIO $ setHtmlForId "#creationDisplay" ("No project found at " ++ projectPath newState ++ ", it will be created.")
+            localIO $ setHtmlForId "#creationDisplay" ("<p class=\"red-text\">No project found at " ++ projectPath newState ++ ", it will be created.</p>")
             localIO $ setHtmlForId "#closeModalButton event .material-icons" "playlist_add"
             return $ newState { createProject = True }
 

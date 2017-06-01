@@ -38,6 +38,9 @@ initialState = State
 lastProjectFile :: FilePath
 lastProjectFile = "lastproject"
 
+templateURL :: String
+templateURL = "/Users/nickseagull/Documents/Development/stack-templates/haskell-do-new.hsfiles"
+
 update :: Action -> State -> Cloud State
 update (WriteWorkingFile content) state = localIO $ do
     unless (null $ projectPath state) (writeWorkingFile content state)
@@ -110,9 +113,29 @@ preprocessOutput out =
   where
     remove s = Text.replace s ""
 
+makeNewProject :: String -> IO ()
+makeNewProject path = do
+    let projectName = dirname path
+    let parentDir = parent path
+    putStrLn path
+    putStrLn projectName
+    putStrLn parentDir
+    _ <- runCommand ("new " ++ projectName ++ " " ++ templateURL) parentDir
+    return ()
+  where
+    dirname p = init p
+              |> reverse
+              |> takeWhile (/= '/')
+              |> reverse
+    parent p = init p
+             |> reverse
+             |> dropWhile (/= '/')
+             |> tail
+             |> reverse
 
 runCommand :: String -> FilePath -> IO (System.ExitCode, String, String)
-runCommand command projPath =
+runCommand command projPath = do
+    putStrLn $ "Executing: cd " ++ projPath ++ " && " ++ stackCommand ++ " " ++ command
     System.readCreateProcessWithExitCode (System.shell
         $ "cd " ++ projPath ++ " && " ++ stackCommand ++ " " ++ command
         ) ""

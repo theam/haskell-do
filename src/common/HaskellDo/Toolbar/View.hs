@@ -52,7 +52,7 @@ packageEditorModal =
 
 openProjectButton :: State -> Widget Action
 openProjectButton _ = Ulmus.newWidget "openProjectButton" $ wlink OpenProject $
-        a ! atr "class" "btn-floating purple darken-2 tooltipped" ! atr "data-position" "bottom" ! atr "data-tooltip" "Open" ! atr "data-delay" "50" $
+        a ! atr "class" "btn-floating purple darken-2 tooltipped" ! atr "data-position" "bottom" ! atr "data-tooltip" "New/Open" ! atr "data-delay" "50" $
             i ! atr "class" "material-icons" $ ("folder_open" :: String)
 
 packageEditorButton :: State -> Widget Action
@@ -102,4 +102,4 @@ packageTextArea _ = Ulmus.newWidget "packageTextArea" $ do
 creationDisplay :: State -> Widget ()
 creationDisplay _ = Ulmus.newWidget "creationDisplay" $ do
     liftIO $ putStrLn "Making display"
-    rawHtml $ p ! atr "class" "red-text" $ ("No project found at /Users/nickseagull/Documents/Development/haskell-do-test, it will be created." :: String)
+    rawHtml $ p ! atr "class" "red-text" $ ("" :: String)
