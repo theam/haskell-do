@@ -1,4 +1,4 @@
-# haskell.do
+![Banner](static/out.jsexe/banner.png)
 
 [![Gitter](https://badges.gitter.im/theam/haskell-do.svg)](https://gitter.im/theam/haskell-do?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
