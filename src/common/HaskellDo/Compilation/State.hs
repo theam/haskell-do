@@ -39,7 +39,7 @@ lastProjectFile :: FilePath
 lastProjectFile = "lastproject"
 
 templateURL :: String
-templateURL = "/Users/nickseagull/Documents/Development/stack-templates/haskell-do-new.hsfiles"
+templateURL = "https://raw.githubusercontent.com/theam/stack-templates/master/haskell-do-new.hsfiles"
 
 update :: Action -> State -> Cloud State
 update (WriteWorkingFile content) state = localIO $ do

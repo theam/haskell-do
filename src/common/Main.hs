@@ -13,15 +13,35 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-{-# LANGUAGE LambdaCase #-}
 module Main where
 
 import HaskellDo
 import System.Environment (getArgs)
 
+defaultPort :: Integer
+defaultPort = 3001
+
 main :: IO ()
-main = getArgs >>= \case
-    [x] -> do
-        let port = read x :: Integer
-        run port
-    _ -> run 3000
+main = do
+    args <- getArgs
+    let port = case args of
+            [x] -> read x :: Integer
+            _   -> defaultPort
+    showWelcomeMessage
+    let msg = "     Open the following URL in your browser: http://localhost:" ++ show port ++ "     "
+    putStrLn $ replicate (length msg) '='
+    putStrLn msg
+    putStrLn $ replicate (length msg) '='
+    run port
+
+showWelcomeMessage :: IO ()
+showWelcomeMessage = putStrLn $
+    "\n"
+    ++ " ________________\n"
+    ++ "´     ,   ,      `     ,--.                    ,--.          ,--.,--.       ,--.\n"
+    ++ "|    /\\| | \\     |     |  ,---.  ,--,--. ,---. |  |,-. ,---. |  ||  |     ,-|  | ,---.\n"
+    ++ "|   /\\\\| | /\\    |     |  .-.  |' ,-.  |(  .-' |     /| .-. :|  ||  |    ' .-. || .-. |\n"
+    ++ "| (   `| |´//)   |     |  | |  |\\ '-'  |.-'  `)|  \\  \\\\   --.|  ||  |.--.\\ `-' |' '-' '\n"
+    ++ "|   \\  | |///    |     `--' `--' `--`--'`----' `--'`--'`----'`--'`--''--' `---'  `---'\n"
+    ++ "|     \\| |/      |\n"
+    ++ "\\________________/\n"

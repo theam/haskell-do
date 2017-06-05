@@ -100,6 +100,5 @@ packageTextArea _ = Ulmus.newWidget "packageTextArea" $ do
      return $ NewPackage newConfig
 
 creationDisplay :: State -> Widget ()
-creationDisplay _ = Ulmus.newWidget "creationDisplay" $ do
-    liftIO $ putStrLn "Making display"
+creationDisplay _ = Ulmus.newWidget "creationDisplay" $
     rawHtml $ p ! atr "class" "red-text" $ ("" :: String)
