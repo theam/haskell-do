@@ -8,7 +8,7 @@ Pull Requests are greatly appreciated, check out [our contributing guidelines](C
 
 ## Building from source
 
-The only *3rd-party* requirement to build [haskell.do](haskell.do) is [Stack](http://haskellstack.org/) and [NodeJS](https://nodejs.org/) (due to GHCJS).
+The only *3rd-party* requirements to build [haskell.do](haskell.do) are [Stack](http://haskellstack.org/) and [NodeJS](https://nodejs.org/) (due to GHCJS).
 
 `git clone https://github.com/theam/haskell-do && cd haskell-do`
 
