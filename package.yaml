@@ -1,0 +1,105 @@
+name:                haskell-do
+version:             0.9.0
+synopsis:            The Haskell code editor focused on interactive development
+description:         Please see README.md
+homepage:            https://github.com/theam/haskell-do#readme
+license:             Apache-2.0
+author:              Theam
+maintainer:          nick@theam.io
+copyright:           2017 Theam
+category:            Editor
+extra-source-files:
+- README.md
+
+dependencies:
+  - base >= 4.7 && < 5
+  - flow == 1.0.7
+  - transient == 0.5.4
+  - transient-universe == 0.4.3
+  - axiom == 0.4.5
+  - clay == 0.12.1
+  - text == 1.2.2.1
+  - process == 1.4.3.0
+  - directory == 1.3.0.0
+
+ghc-options:
+  - -Wall
+  - -Werror
+  - -fprint-potential-instances
+
+when:
+  - condition: impl(ghcjs)
+    then:
+      dependencies: ghcjs-base
+      source-dirs: src/ghcjs-specific
+    else:
+      source-dirs: src/ghc-specific
+
+default-extensions:
+  - CPP
+  - OverloadedStrings
+
+library:
+  source-dirs: src/common
+  other-modules:
+    - AxiomUtils
+    - Foreign.Highlight
+    - Foreign.JQuery
+    - Foreign.Materialize
+    - Foreign.SimpleMDE
+    - HaskellDo.Compilation.State
+    - HaskellDo.Compilation.Types
+    - HaskellDo.Compilation.View
+    - HaskellDo.Materialize.View
+    - HaskellDo.SimpleMDE.State
+    - HaskellDo.SimpleMDE.Types
+    - HaskellDo.SimpleMDE.View
+    - HaskellDo.State
+    - HaskellDo.Style.View
+    - HaskellDo.Toolbar.State
+    - HaskellDo.Toolbar.Types
+    - HaskellDo.Toolbar.View
+    - HaskellDo.Types
+    - HaskellDo.View
+    - Ulmus
+  exposed-modules:
+    - HaskellDo
+
+executables:
+  haskell-do:
+    other-modules:
+      - AxiomUtils
+      - Foreign.Highlight
+      - Foreign.JQuery
+      - Foreign.Materialize
+      - Foreign.SimpleMDE
+      - HaskellDo.Compilation.State
+      - HaskellDo.Compilation.Types
+      - HaskellDo.Compilation.View
+      - HaskellDo.Materialize.View
+      - HaskellDo.SimpleMDE.State
+      - HaskellDo.SimpleMDE.Types
+      - HaskellDo.SimpleMDE.View
+      - HaskellDo.State
+      - HaskellDo.Style.View
+      - HaskellDo.Toolbar.State
+      - HaskellDo.Toolbar.Types
+      - HaskellDo.Toolbar.View
+      - HaskellDo.Types
+      - HaskellDo.View
+      - Ulmus
+      - HaskellDo
+    source-dirs: src/common
+    main: Main.hs
+
+tests:
+  spec:
+    main: Spec.hs
+    source-dirs:
+      - test
+      - src/common
+    dependencies:
+      - hspec == 2.*
+      - QuickCheck
+      - quickcheck-io
+      - mockery
