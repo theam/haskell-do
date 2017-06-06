@@ -53,7 +53,7 @@ buildGUI pdir =
     else do
       echo "Building GUI"
       shell "mkdir -p static" ""
-      Just directory <- fold (inshell "stack path --stack-yaml=client-stack.yaml --local-install-root" Turtle.empty) Foldl.head
+      Just directory <- fold (inshell "stack path --stack-yaml=" <> clientStackYaml <> " --local-install-root" Turtle.empty) Foldl.head
       exitCode <- shell ("stack build --stack-yaml=" <> clientStackYaml) ""
       when (exitCode /= ExitSuccess) (error "GUI: Build failed")
       shell "rm -rf static/out.jsexe/*.js" ""
