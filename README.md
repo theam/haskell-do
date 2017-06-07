@@ -13,6 +13,8 @@ The only *3rd-party* requirements to build [haskell.do](haskell.do) are [Stack](
 
 `git clone https://github.com/theam/haskell-do && cd haskell-do`
 
+`stack setup --stack-yaml=client-stack.yaml` to setup GHCJS (note that it isn't supported on Windows)
+
 `stack Build.hs -h` for detailed usage of the build file.
 
 `stack Build.hs -a` for building project.
