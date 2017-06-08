@@ -140,7 +140,7 @@ runCommand command projPath = do
         $ "cd " ++ projPath ++ " && " ++ stackCommand ++ " " ++ command
         ) ""
   where
-    stackCommand = "/usr/local/bin/stack"
+    stackCommand = "stack"
 
 
 bootstrapCSSTag :: Text.Text

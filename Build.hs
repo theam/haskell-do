@@ -54,6 +54,7 @@ buildGUI pdir =
       echo "Building GUI"
       shell "mkdir -p static" ""
       Just directory <- fold (inshell ("stack path --stack-yaml=" <> clientStackYaml <> " --local-install-root") Turtle.empty) Foldl.head
+      Just coreBinDirectory <- fold (inshell "stack path --local-install-root" Turtle.empty) Foldl.head
       exitCode <- shell ("stack build --stack-yaml=" <> clientStackYaml) ""
       when (exitCode /= ExitSuccess) (error "GUI: Build failed")
       shell "rm -rf static/out.jsexe/*.js" ""
@@ -61,6 +62,7 @@ buildGUI pdir =
       shell "rm -rf static/out.jsexe/*.stats" ""
       shell "rm -rf static/out.jsexe/*.webapp" ""
       shell ("cp -R " <> lineToText directory <> "/bin/haskell-do.jsexe/*.js static/out.jsexe") ""
+      shell ("cp -R static " <> lineToText coreBinDirectory <> "/bin") ""
       return ()
 
 
