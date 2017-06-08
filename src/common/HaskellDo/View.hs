@@ -18,7 +18,6 @@ module HaskellDo.View where
 
 import Prelude hiding (id, div)
 
-import Transient.Base
 import GHCJS.HPlay.View
 import qualified Ulmus
 
@@ -70,6 +69,7 @@ widgets state = do
     <|> closeModalButtonWidget
     <|> closePackageEditorButtonWidget
     <|> cancelPackageEditorButtonWidget
+    <|> fsTreeWidget
   where
     simpleMDEWidget = Ulmus.newWidget "editor" $
         Ulmus.mapAction SimpleMDEAction $
@@ -90,6 +90,9 @@ widgets state = do
     packageTextAreaWidget = Ulmus.mapAction ToolbarAction $
         Toolbar.packageTextArea (toolbarState state)
 
+    fsTreeWidget = Ulmus.mapAction ToolbarAction $
+        Toolbar.fsTree (toolbarState state)
+
     closeModalButtonWidget = Ulmus.mapAction ToolbarAction $
         Toolbar.closeModalButton (toolbarState state)
 
@@ -105,6 +108,8 @@ showDisplays state = do
     Ulmus.newWidget "outputDisplay" $ Compilation.outputDisplay (compilationState state)
     Ulmus.newWidget "errorDisplay" $ Compilation.errorDisplay (compilationState state)
 
-updateDisplays :: AppState -> TransIO ()
-updateDisplays state =
+updateDisplays :: AppState -> Widget Action
+updateDisplays state = do
     Compilation.updateDisplays (compilationState state)
+    Ulmus.mapAction ToolbarAction $
+      Toolbar.updateDisplays (toolbarState state)

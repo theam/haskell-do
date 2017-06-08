@@ -21,6 +21,7 @@ dependencies:
   - text == 1.2.2.1
   - process
   - directory
+  - filepath
 
 ghc-options:
   - -Wall

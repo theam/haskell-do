@@ -16,13 +16,15 @@
 module HaskellDo.Toolbar.View where
 
 
-import Prelude hiding (div, id)
+import Prelude hiding (div, id, span)
 
 import GHCJS.HPlay.View hiding (addHeader, atr, id, wlink)
 import AxiomUtils
 import qualified Ulmus
 
 import Control.Monad.IO.Class
+
+import System.FilePath ((</>), takeDirectory, dropTrailingPathSeparator)
 
 import HaskellDo.Toolbar.Types
 import Foreign.JQuery
@@ -50,6 +52,7 @@ openProjectModal =
                 div ! id "pathInput" $ noHtml
                 p ! atr "class" "grey-text lighten-4" $ ("Path must be absolute, without ~ or environment variables." :: String)
                 div ! id "creationDisplay" $ noHtml
+                ul ! id "fsTree" ! atr "class" "collection" $ noHtml
         div ! atr "class" "modal-footer" $
             div ! id "closeModalButton" $ noHtml
 
@@ -107,6 +110,38 @@ pathInput state = Ulmus.newWidget "pathInput" $ do
     projPath <- liftIO $ getValueFromId "#pathInput event input"
     return $ NewPath projPath
 
+fsTree :: State -> Widget Action
+fsTree state = Ulmus.newWidget "fsTree" $
+    if directoryExists state
+    then
+      let dirElements = map directoryItem directories
+          fileElements = map fileItem files
+
+          elements = dirElements ++ fileElements
+          final = if projectPath state /= "/"
+                  then
+                    backItem : elements
+                  else
+                    elements
+      
+      in foldl1 (<|>) final
+    else
+      noWidget
+  where
+    (directories, files) = directoryList state
+    pp = projectPath state
+
+    folderIcon = i ! atr "class" "material-icons amber-text text-darken-1" $ ("folder" :: String)
+    fileIcon = i ! atr "class" "material-icons blue-grey-text text-lighten-2" $ ("insert_drive_file" :: String)
+    backIcon = i ! atr "class" "material-icons amber-text text-lighten-1" $ ("arrow_back" :: String)
+
+    parentDirectory = takeDirectory . dropTrailingPathSeparator
+
+    item path icon name = wlink (NewPath path) (li ! atr "class" "valign-wrapper" $ icon >> span name) ! atr "class" "collection-item"
+
+    directoryItem name = item (pp </> name) folderIcon name
+    fileItem = item pp fileIcon
+    backItem = item (parentDirectory pp) backIcon ("Back" :: String)
 
 packageTextArea :: State -> Widget Action
 packageTextArea _ = Ulmus.newWidget "packageTextArea" $ do
@@ -117,3 +152,6 @@ packageTextArea _ = Ulmus.newWidget "packageTextArea" $ do
 creationDisplay :: State -> Widget ()
 creationDisplay _ = Ulmus.newWidget "creationDisplay" $
     rawHtml $ p ! atr "class" "red-text" $ ("" :: String)
+
+updateDisplays :: State -> Widget Action
+updateDisplays = fsTree
