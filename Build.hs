@@ -10,13 +10,14 @@ import Data.Text (Text)
 import System.Info (os)
 import qualified Control.Foldl as Foldl
 import Filesystem.Path.CurrentOS
+import Filesystem
 
 clientStackYaml = "client-stack.yaml"
 serverStackYaml = "stack.yaml"
 
 main = do
   projectDirectory <- pwdAsText
-  BuildCommand all gui core orchestrator run <- options "Haskell.do build file" buildSwitches
+  BuildCommand all gui core orchestrator run pkg <- options "Haskell.do build file" buildSwitches
   if all
     then buildAll projectDirectory
     else do
@@ -24,6 +25,7 @@ main = do
       when core         $ buildCore         projectDirectory
       when orchestrator $ buildOrchestrator projectDirectory
       when run          $ runHaskellDo      projectDirectory
+      when pkg          $ buildAndPackage   projectDirectory
 
 
 buildSwitches :: Parser BuildCommand
@@ -33,6 +35,7 @@ buildSwitches = BuildCommand
      <*> switch "core"         'c' "Build processing/compilation core"
      <*> switch "orchestrator" 'o' "Build orchestrator"
      <*> switch "run"          'r' "Run Haskell.do"
+     <*> switch "package"      'p' "Package Haskell.do for release (caution: removes .stack-work before re-building)"
 
 buildAll projectDirectory = do
   buildCore projectDirectory
@@ -65,6 +68,19 @@ buildGUI pdir =
       shell ("cp -R static " <> lineToText coreBinDirectory <> "/bin") ""
       return ()
 
+buildAndPackage projectDirectory = do
+  removeTree ".stack-work"
+  removeTree ".build-dist"
+  buildAll projectDirectory
+  
+  createDirectory True ".build-dist"
+  rename "static" (".build-dist" </> "static")
+  (_, binPath) <- shellStrict "stack exec which haskell-do" ""
+  case textToLine binPath of
+    Just path -> copyFile (fromText . lineToText $ path) (".build-dist" </> "haskell-do")
+    Nothing -> return ()
+  shell "cd .build-dist; zip -r ../release.zip *" ""
+  rename (".build-dist" </> "static") "static"
 
 buildOrchestrator pdir =
   echo ""
@@ -74,9 +90,6 @@ runHaskellDo pdir = do
   echo "Running Haskell.do"
   shell ("stack exec haskell-do --stack-yaml=" <> serverStackYaml <> " -- 8080") ""
   return ()
-
-
-
 
 -- Helpers
 isWindows operatingSystem = "mingw" `T.isPrefixOf` T.pack operatingSystem
@@ -93,4 +106,5 @@ data BuildCommand = BuildCommand
   , buildCommandCore         :: Bool
   , buildCommandOrchestrator :: Bool
   , buildCommandRun          :: Bool
+  , buildCommandPackage      :: Bool
   }
