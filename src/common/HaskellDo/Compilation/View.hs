@@ -21,7 +21,6 @@ import           Prelude                     hiding (div, id)
 import           AxiomUtils
 import           Foreign.Highlight
 import           GHCJS.HPlay.View            hiding (atr)
-import           Transient.Base
 import qualified Ulmus
 
 import           HaskellDo.Compilation.Types
@@ -39,8 +38,8 @@ errorDisplay state
         ! atr "role" "alert"
         $ compilationError state
 
-updateDisplays :: State -> TransIO ()
+updateDisplays :: State -> Widget ()
 updateDisplays state = do
-  Ulmus.updateWidget "outputDisplay" (outputDisplay state)
-  Ulmus.updateWidget "errorDisplay" (errorDisplay state)
+  Ulmus.newWidget "outputDisplay" (outputDisplay state)
+  Ulmus.newWidget "errorDisplay" (errorDisplay state)
   liftIO highlightCode

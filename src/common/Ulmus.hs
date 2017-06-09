@@ -26,14 +26,14 @@ import Transient.Move
 
 import AxiomUtils
 
-type Update action appState  = action -> appState -> Cloud appState
-type View action appState    = appState -> Widget action
-type UpdateDisplays appState = appState -> TransIO ()
+type Update action appState         = action -> appState -> Cloud appState
+type View action appState           = appState -> Widget action
+type UpdateDisplays action appState = appState -> Widget action
 
 data AppConfig action appState = AppConfig
   { _update         :: Update action appState
   , _view           :: View action appState
-  , _updateDisplays :: UpdateDisplays appState
+  , _updateDisplays :: UpdateDisplays action appState
   , _initialState   :: appState
   , _port           :: Integer
   , _setup          :: IO ()
@@ -46,29 +46,22 @@ initializeApp :: (Show appState, Show action, Read appState, Read action, Typeab
 initializeApp (AppConfig update view updateDisplays initialAppState appPort setup) = do
     setup
     simpleWebApp appPort $ do
-        currentState <- local $ getState initialAppState
-        nextAction <- local (render $ view currentState)
-        currentState' <- local $ getState initialAppState
-        newState <- update nextAction currentState'
-        local (setState newState)
-        renderDisplay initialAppState updateDisplays
-
+        step view
+        loop (step updateDisplays)
+  where
+    step f = do
+      currentState <- local $ getState initialAppState
+      nextAction <- local (render $ f currentState)
+      currentState' <- local $ getState initialAppState
+      newState <- update nextAction currentState'
+      local (setState newState)
+    loop f = f >> loop f
 
 widgetPlaceholder :: String -> Perch
 widgetPlaceholder id' =
   div
     ! id id'
     $ noHtml
-
-
-renderDisplay :: (Show appState, Read appState, Typeable appState)
-              => appState
-              -> UpdateDisplays appState
-              -> Cloud ()
-renderDisplay initialAppState f = do
-  state <- local $ getState initialAppState
-  local $ f state
-
 
 updateWidget :: String -> Widget () -> TransIO ()
 updateWidget s f = render $ at ("#" ++ s) Insert f

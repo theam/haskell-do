@@ -15,12 +15,13 @@
  -}
 module HaskellDo.Toolbar.View where
 
-
 import Prelude hiding (div, id)
 
 import GHCJS.HPlay.View hiding (addHeader, atr, id, wlink)
 import AxiomUtils
 import qualified Ulmus
+
+import qualified HaskellDo.Toolbar.FileSystemTree as FileSystemTree
 
 import Control.Monad.IO.Class
 
@@ -50,6 +51,7 @@ openProjectModal =
                 div ! id "pathInput" $ noHtml
                 p ! atr "class" "grey-text lighten-4" $ ("Path must be absolute, without ~ or environment variables." :: String)
                 div ! id "creationDisplay" $ noHtml
+                ul ! id "fsTree" ! atr "class" "collection" $ noHtml
         div ! atr "class" "modal-footer" $
             div ! id "closeModalButton" $ noHtml
 
@@ -107,7 +109,6 @@ pathInput state = Ulmus.newWidget "pathInput" $ do
     projPath <- liftIO $ getValueFromId "#pathInput event input"
     return $ NewPath projPath
 
-
 packageTextArea :: State -> Widget Action
 packageTextArea _ = Ulmus.newWidget "packageTextArea" $ do
      _ <- getMultilineText "" ! atr "rows" "20" `fire` OnKeyUp
@@ -117,3 +118,6 @@ packageTextArea _ = Ulmus.newWidget "packageTextArea" $ do
 creationDisplay :: State -> Widget ()
 creationDisplay _ = Ulmus.newWidget "creationDisplay" $
     rawHtml $ p ! atr "class" "red-text" $ ("" :: String)
+
+updateDisplays :: State -> Widget Action
+updateDisplays = FileSystemTree.widget

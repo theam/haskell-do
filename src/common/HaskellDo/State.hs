@@ -21,6 +21,8 @@ import Control.Monad (when)
 
 import Transient.Move
 
+import System.FilePath ((</>))
+
 import HaskellDo.Types
 import qualified HaskellDo.SimpleMDE.State as SimpleMDE
 import qualified HaskellDo.SimpleMDE.Types as SimpleMDE
@@ -113,7 +115,7 @@ update (ToolbarAction Toolbar.LoadProject) appState = do
 
 update (ToolbarAction Toolbar.LoadPackageYaml) appState = do
     let projectPath = Compilation.projectPath (compilationState appState)
-    contents <- atRemote $ localIO $ readFile (projectPath ++ "package.yaml")
+    contents <- atRemote $ localIO $ readFile (projectPath </> "package.yaml")
     let tbState = toolbarState appState
     let tbState' = tbState { Toolbar.projectConfig = contents }
     localIO $ JQuery.setValueForId "#packageTextArea event textArea" contents
@@ -123,7 +125,7 @@ update (ToolbarAction Toolbar.LoadPackageYaml) appState = do
 update (ToolbarAction Toolbar.SavePackage) appState = do
     let projectPath = Compilation.projectPath (compilationState appState)
     let tbState = toolbarState appState
-    atRemote $ localIO $ writeFile (projectPath ++ "package.yaml") (Toolbar.projectConfig tbState)
+    atRemote $ localIO $ writeFile (projectPath </> "package.yaml") (Toolbar.projectConfig tbState)
     _ <- Toolbar.update Toolbar.ClosePackageModal tbState
     localIO $ JQuery.show "#dependencyMessage"
     newState <- update (ToolbarAction Toolbar.Compile) appState
@@ -131,11 +133,8 @@ update (ToolbarAction Toolbar.SavePackage) appState = do
     return newState
 
 update (ToolbarAction action) appState = do
+    newToolbarState <- Toolbar.update action (toolbarState appState)
     let cs = compilationState appState
-    cs' <- atRemote $ Compilation.update Compilation.GetLastProject cs
-    let ts = toolbarState appState
-    let ts' = ts { Toolbar.projectPath = Compilation.projectPath cs' }
-    newToolbarState <- Toolbar.update action ts'
     let newCompilationState = cs
             { Compilation.projectPath = Toolbar.projectPath newToolbarState
             }
