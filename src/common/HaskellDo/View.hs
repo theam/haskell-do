@@ -26,6 +26,7 @@ import qualified HaskellDo.Materialize.View as Materialize
 import qualified HaskellDo.SimpleMDE.View as SimpleMDE
 import qualified HaskellDo.Compilation.View as Compilation
 import qualified HaskellDo.Toolbar.View as Toolbar
+import qualified HaskellDo.Toolbar.FileSystemTree as FileSystemTree
 
 view :: AppState -> Widget Action
 view appState = Ulmus.withWidgets (widgets appState) $
@@ -91,7 +92,7 @@ widgets state = do
         Toolbar.packageTextArea (toolbarState state)
 
     fsTreeWidget = Ulmus.mapAction ToolbarAction $
-        Toolbar.fsTree (toolbarState state)
+        FileSystemTree.widget (toolbarState state)
 
     closeModalButtonWidget = Ulmus.mapAction ToolbarAction $
         Toolbar.closeModalButton (toolbarState state)

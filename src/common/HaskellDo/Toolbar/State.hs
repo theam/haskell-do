@@ -53,12 +53,7 @@ update ClosePackageModal state = do
     return state
 
 update (NewPath newPath) state = do
-    path <- if null newPath
-            then
-              atRemote . localIO $ getHomeDirectory
-            else
-              return newPath
-
+    path <- pathOrHome newPath
     localIO $ setValueForId "#pathInput event input" path
 
     exists <- atRemote . localIO $ doesDirectoryExist path
@@ -66,28 +61,39 @@ update (NewPath newPath) state = do
 
     if exists
     then do
+      (directories, files) <- directoriesAndFiles path
+
+      let newState' = newState { directoryList = (directories, files) }
+
+      isProject <- atRemote $ localIO $ doesFileExist (path </> "package.yaml")
+      updateProjectAvailability newState' path isProject
+    else do
+      let newState' = newState { directoryList = ([], []) }
+      return newState'
+  where
+    pathOrHome path = if null path
+                      then
+                        atRemote . localIO $ getHomeDirectory
+                      else
+                        return path
+
+    directoriesAndFiles path = do
       list <- atRemote . localIO $ listDirectory path
       let visible = filter ((/= '.') . head) list
       directories <- atRemote . localIO $ filterM (doesDirectoryExist . (path </>)) visible
       files <- atRemote . localIO $ filterM (doesFileExist . (path </>)) visible
 
-      let newState' = newState { directoryList = (directories, files) }
+      return (directories, files)
 
-      isProject <- atRemote $ localIO $ doesFileExist (path </> "package.yaml")
-      if isProject
-          then do
-              localIO $ setHtmlForId "#creationDisplay" ""
-              localIO $ setHtmlForId "#closeModalButton event .material-icons" "input"
-              return $ newState' { createProject = False }
-          else do
-              localIO $ setHtmlForId "#creationDisplay" ("<p class=\"red-text\">No project found at " ++ path ++ ", it will be created.</p>")
-              localIO $ setHtmlForId "#closeModalButton event .material-icons" "playlist_add"
-              return $ newState' { createProject = True }
-    else do
-      let newState' = newState { directoryList = ([], []) }
-      return newState'
+    updateProjectAvailability currentState _ True = do
+      localIO $ setHtmlForId "#creationDisplay" ""
+      localIO $ setHtmlForId "#closeModalButton event .material-icons" "input"
+      return $ currentState { createProject = False }
 
-
+    updateProjectAvailability currentState path False = do
+      localIO $ setHtmlForId "#creationDisplay" ("<p class=\"red-text\">No project found at " ++ path ++ ", it will be created.</p>")
+      localIO $ setHtmlForId "#closeModalButton event .material-icons" "playlist_add"
+      return $ currentState { createProject = True }
 
 update (NewPackage newConfig) state = return state { projectConfig = newConfig }
 
