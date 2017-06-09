@@ -40,6 +40,6 @@ errorDisplay state
 
 updateDisplays :: State -> Widget ()
 updateDisplays state = do
-  _ <- Ulmus.newWidget "outputDisplay" (outputDisplay state)
-  _ <- Ulmus.newWidget "errorDisplay" (errorDisplay state)
+  Ulmus.newWidget "outputDisplay" (outputDisplay state)
+  Ulmus.newWidget "errorDisplay" (errorDisplay state)
   liftIO highlightCode

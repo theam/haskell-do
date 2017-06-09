@@ -15,7 +15,7 @@
  -}
 module HaskellDo.Toolbar.View where
 
-import Prelude hiding (div, id, span)
+import Prelude hiding (div, id)
 
 import GHCJS.HPlay.View hiding (addHeader, atr, id, wlink)
 import AxiomUtils
