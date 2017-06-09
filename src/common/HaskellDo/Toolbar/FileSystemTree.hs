@@ -13,7 +13,7 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module HaskellDo.Toolbar.FileSystemTree where
+module HaskellDo.Toolbar.FileSystemTree (widget) where
 
 import Prelude hiding (div, id, span)
 
@@ -53,10 +53,12 @@ widget state = Ulmus.newWidget "fsTree" $
     fileIcon = i ! atr "class" "material-icons blue-grey-text text-lighten-2" $ ("insert_drive_file" :: String)
     backIcon = i ! atr "class" "material-icons amber-text text-lighten-1" $ ("arrow_back" :: String)
 
-    parentDirectory = takeDirectory . dropTrailingPathSeparator
-
-    item path icon name = wlink (NewPath path) (li ! atr "class" "valign-wrapper" $ icon >> span name) ! atr "class" "collection-item"
-
     directoryItem name = item (pp </> name) folderIcon name
     fileItem = item pp fileIcon
     backItem = item (parentDirectory pp) backIcon ("Back" :: String)
+
+parentDirectory :: FilePath -> FilePath
+parentDirectory = takeDirectory . dropTrailingPathSeparator
+
+item :: FilePath -> Perch -> String -> Widget Action
+item path icon name = wlink (NewPath path) (li ! atr "class" "valign-wrapper" $ icon >> span name) ! atr "class" "collection-item"
