@@ -131,11 +131,8 @@ update (ToolbarAction Toolbar.SavePackage) appState = do
     return newState
 
 update (ToolbarAction action) appState = do
+    newToolbarState <- Toolbar.update action (toolbarState appState)
     let cs = compilationState appState
-    cs' <- atRemote $ Compilation.update Compilation.GetLastProject cs
-    let ts = toolbarState appState
-    let ts' = ts { Toolbar.projectPath = Compilation.projectPath cs' }
-    newToolbarState <- Toolbar.update action ts'
     let newCompilationState = cs
             { Compilation.projectPath = Toolbar.projectPath newToolbarState
             }

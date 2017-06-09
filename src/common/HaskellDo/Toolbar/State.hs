@@ -37,6 +37,10 @@ initialState = State
     , directoryList = ([], [])
     }
 
+
+lastProjectFile :: FilePath
+lastProjectFile = "lastproject"
+
 update :: Action -> State -> Cloud State
 update OpenProject state = do
     localIO $ openModal "#openProjectModal"
@@ -53,7 +57,7 @@ update ClosePackageModal state = do
     return state
 
 update (NewPath newPath) state = do
-    path <- pathOrHome newPath
+    path <- pathOrLastOrHome newPath
     localIO $ setValueForId "#pathInput event input" path
 
     exists <- atRemote . localIO $ doesDirectoryExist path
@@ -71,9 +75,18 @@ update (NewPath newPath) state = do
       let newState' = newState { directoryList = ([], []) }
       return newState'
   where
-    pathOrHome path = if null path
-                      then
-                        atRemote . localIO $ getHomeDirectory
+    pathOrLastOrHome path = if null path
+                      then do
+                        exists <- atRemote . localIO $ doesFileExist lastProjectFile
+                        home <- atRemote . localIO $ getHomeDirectory
+                        -- if lastProjectFile exists and is not empty, use it
+                        -- otherwise use the home directory
+                        if exists
+                        then do
+                          content <- atRemote . localIO $ readFile lastProjectFile
+                          return $ if null content then home else content
+                        else
+                          return home
                       else
                         return path
 

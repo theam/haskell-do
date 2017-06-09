@@ -27,21 +27,24 @@ import HaskellDo.Toolbar.Types
 
 widget :: State -> Widget Action
 widget state = Ulmus.newWidget "fsTree" $
-    if directoryExists state
-    then
-      let dirElements = map directoryItem directories
-          fileElements = map fileItem files
-
-          elements = dirElements ++ fileElements
-          final = if projectPath state /= "/"
-                  then
-                    backItem : elements
-                  else
-                    elements
-      
-      in foldl1 (<|>) final
+    if null pp then
+      return $ NewPath ""
     else
-      noWidget
+      if directoryExists state
+      then
+        let dirElements = map directoryItem directories
+            fileElements = map fileItem files
+
+            elements = dirElements ++ fileElements
+            final = if projectPath state /= "/"
+                    then
+                      backItem : elements
+                    else
+                      elements
+        
+        in foldl1 (<|>) final
+      else
+        noWidget
   where
     (directories, files) = directoryList state
     pp = projectPath state
