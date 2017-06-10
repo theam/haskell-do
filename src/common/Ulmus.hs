@@ -39,13 +39,18 @@ data AppConfig action appState = AppConfig
   , _setup          :: IO ()
   }
 
+webApp :: Integer -> Cloud () -> IO ()
+webApp appPort app = do
+  node <- createNode "localhost" appPort
+  _ <- keep' $ initWebApp node app
+  return ()
 
 initializeApp :: (Show appState, Show action, Read appState, Read action, Typeable appState, Typeable action)
               => AppConfig action appState
               -> IO ()
 initializeApp (AppConfig update view updateDisplays initialAppState appPort setup) = do
     setup
-    simpleWebApp appPort $ do
+    webApp appPort $ do
         step view
         loop (step updateDisplays)
   where
