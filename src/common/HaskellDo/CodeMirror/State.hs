@@ -13,12 +13,16 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module HaskellDo.SimpleMDE.Types where
+module HaskellDo.CodeMirror.State where
 
-data Action
-    = NewContent String
-    deriving (Read, Show)
+import Transient.Move
+import HaskellDo.CodeMirror.Types
 
-data State = State
-    { content :: String
-    } deriving (Read, Show)
+initialState :: State
+initialState = State
+    { content = ""
+    }
+
+update :: Action -> State -> Cloud State
+update (NewContent newContent) state = do
+    return (state { content = newContent } )

@@ -13,7 +13,7 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module HaskellDo.SimpleMDE.View where
+module HaskellDo.CodeMirror.View where
 
 import Prelude hiding (div, id)
 import Control.Monad.IO.Class
@@ -21,8 +21,8 @@ import Control.Monad.IO.Class
 import GHCJS.HPlay.View hiding (addHeader, atr, id)
 import AxiomUtils
 
-import HaskellDo.SimpleMDE.Types
-import Foreign.SimpleMDE
+import HaskellDo.CodeMirror.Types
+import Foreign.CodeMirror
 
 initialize :: IO ()
 initialize = do
@@ -32,7 +32,7 @@ initialize = do
         script ("var simpleMDE;" :: String)
         script ! src "https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"
                $ noHtml
-    makeSimpleMDEFromId "mainEditor"
+    makeCodeMirrorFromId "mainEditor"
 
 view :: State -> Widget Action
 view _ = do

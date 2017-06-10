@@ -23,7 +23,7 @@ import qualified Ulmus
 
 import HaskellDo.Types
 import qualified HaskellDo.Materialize.View as Materialize
-import qualified HaskellDo.SimpleMDE.View as SimpleMDE
+import qualified HaskellDo.CodeMirror.View as CodeMirror
 import qualified HaskellDo.Compilation.View as Compilation
 import qualified HaskellDo.Toolbar.View as Toolbar
 import qualified HaskellDo.Toolbar.FileSystemTree as FileSystemTree
@@ -73,8 +73,8 @@ widgets state = do
     <|> fsTreeWidget
   where
     simpleMDEWidget = Ulmus.newWidget "editor" $
-        Ulmus.mapAction SimpleMDEAction $
-            SimpleMDE.view $ simpleMDEState state
+        Ulmus.mapAction CodeMirrorAction $
+            CodeMirror.view $ simpleMDEState state
 
     openProjectButtonWidget = Ulmus.mapAction ToolbarAction $
         Toolbar.openProjectButton (toolbarState state)

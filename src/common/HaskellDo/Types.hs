@@ -15,18 +15,18 @@
  -}
 module HaskellDo.Types where
 
-import qualified HaskellDo.SimpleMDE.Types as SimpleMDE
+import qualified HaskellDo.CodeMirror.Types as CodeMirror
 import qualified HaskellDo.Compilation.Types as Compilation
 import qualified HaskellDo.Toolbar.Types as Toolbar
 
 data AppState = AppState
-  { simpleMDEState   :: SimpleMDE.State
+  { simpleMDEState   :: CodeMirror.State
   , compilationState :: Compilation.State
   , toolbarState     :: Toolbar.State
   } deriving (Read, Show)
 
 
 data Action
-  = SimpleMDEAction SimpleMDE.Action
+  = CodeMirrorAction CodeMirror.Action
   | ToolbarAction Toolbar.Action
   deriving (Read, Show)

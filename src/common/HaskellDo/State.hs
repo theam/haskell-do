@@ -24,9 +24,9 @@ import Transient.Move
 import System.FilePath ((</>))
 
 import HaskellDo.Types
-import qualified HaskellDo.SimpleMDE.State as SimpleMDE
-import qualified HaskellDo.SimpleMDE.Types as SimpleMDE
-import qualified Foreign.SimpleMDE as SimpleMDE
+import qualified HaskellDo.CodeMirror.State as CodeMirror
+import qualified HaskellDo.CodeMirror.Types as CodeMirror
+import qualified Foreign.CodeMirror as CodeMirror
 import qualified HaskellDo.Compilation.State as Compilation
 import qualified HaskellDo.Compilation.Types as Compilation
 import qualified HaskellDo.Toolbar.State as Toolbar
@@ -35,21 +35,21 @@ import qualified Foreign.JQuery as JQuery
 
 initialAppState :: AppState
 initialAppState = AppState
-  { simpleMDEState = SimpleMDE.initialState
+  { simpleMDEState = CodeMirror.initialState
   , compilationState = Compilation.initialState
   , toolbarState = Toolbar.initialState
   }
 
 update :: Action -> AppState -> Cloud AppState
-update (SimpleMDEAction action) appState = do
-    newSimpleMDEState <- SimpleMDE.update action (simpleMDEState appState)
-    let newContent = SimpleMDE.content newSimpleMDEState
+update (CodeMirrorAction action) appState = do
+    newCodeMirrorState <- CodeMirror.update action (simpleMDEState appState)
+    let newContent = CodeMirror.content newCodeMirrorState
     _ <- atRemote $ Compilation.update
         (Compilation.WriteWorkingFile newContent)
         (compilationState appState)
-    compileShortcutPressed <- localIO SimpleMDE.cmdOrCtrlReturnPressed
+    compileShortcutPressed <- localIO CodeMirror.cmdOrCtrlReturnPressed
     let newState = appState
-            { simpleMDEState = newSimpleMDEState
+            { simpleMDEState = newCodeMirrorState
             }
     if compileShortcutPressed
         then update (ToolbarAction Toolbar.Compile) newState
@@ -87,7 +87,7 @@ update (ToolbarAction Toolbar.LoadProject) appState = do
                                                    ++ projectPath
                                                    ++ ". Was it created correctly?"
                     }
-            localIO $ SimpleMDE.setMDEContent ""
+            localIO $ CodeMirror.setMDEContent ""
             localIO $ JQuery.setHtmlForId "#outputDisplay" ""
             return appState
                 { toolbarState = newTbState
@@ -96,10 +96,10 @@ update (ToolbarAction Toolbar.LoadProject) appState = do
         Right contents -> do
             let editorState = simpleMDEState appState
             let parsedContents = unlines . drop 4 $ lines contents
-            let newEditorState = editorState { SimpleMDE.content = parsedContents }
+            let newEditorState = editorState { CodeMirror.content = parsedContents }
             let newTbState = tbState { Toolbar.projectOpened = True }
             let newCmpState = cmpState { Compilation.compilationError = "" }
-            localIO $ SimpleMDE.setMDEContent parsedContents
+            localIO $ CodeMirror.setMDEContent parsedContents
             localIO $ JQuery.hide "#errorDisplay" -- Hide error while dependencies load
             localIO $ JQuery.setHtmlForId "#outputDisplay" ""
             let stateAfterOpening =  appState
