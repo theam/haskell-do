@@ -63,6 +63,14 @@
     }
     makeTooltips();
 
+    function toggleEditor() {
+    if ($('#editor').is(':visible'))
+        $('#outputdiv').removeClass('s6').addClass('s12');
+    else
+        $('#outputdiv').removeClass('s12').addClass('s6');
+    $('#editor').parent().toggle();
+    }
+
     $(document).keydown(function(event){
         cmdOrCtrlReturnPressed = (event.metaKey || event.ctrlKey) && event.keyCode == 13;
     });
