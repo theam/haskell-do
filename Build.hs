@@ -8,6 +8,8 @@ import Control.Monad (when)
 import Data.Text as T
 import Data.Text (Text)
 import System.Info (os)
+import Data.Char (isNumber)
+import Data.List (isInfixOf)
 import qualified Control.Foldl as Foldl
 import Filesystem.Path.CurrentOS
 import Filesystem
@@ -70,16 +72,29 @@ buildGUI pdir =
 
 buildAndPackage projectDirectory = do
   removeTree ".stack-work"
+  shell "mkdir -p .build-dist" ""
   removeTree ".build-dist"
+  shell "mkdir -p builds" ""
+  shell "rm -rf builds/*" ""
   buildAll projectDirectory
-  
+  let currentOS = System.Info.os
+  packageYamlContent <- Prelude.readFile "package.yaml"
+  let osName = if isOSX currentOS
+               then "darwin"
+               else "linux-x86_64"
+      version = T.dropWhile (not . isNumber)
+              . T.dropWhile (/= ':')
+              . Prelude.head
+              . Prelude.filter (T.isInfixOf "version:")
+              $ T.lines (T.pack packageYamlContent)
+
   createDirectory True ".build-dist"
   rename "static" (".build-dist" </> "static")
   (_, binPath) <- shellStrict "stack exec which haskell-do" ""
   case textToLine binPath of
     Just path -> copyFile (fromText . lineToText $ path) (".build-dist" </> "haskell-do")
     Nothing -> return ()
-  shell "cd .build-dist; zip -r ../release.zip *" ""
+  shell ("cd .build-dist; zip -r ../builds/haskell-do_" <> osName <> "_v" <> version <> ".zip *") ""
   rename (".build-dist" </> "static") "static"
 
 buildOrchestrator pdir =
@@ -98,7 +113,7 @@ isOSX operatingSystem = "darwin" `T.isPrefixOf` T.pack operatingSystem
 makeTextPath = T.pack . encodeString . fromText
 
 pwdAsText :: IO Text
-pwdAsText = T.pack <$> encodeString <$> pwd
+pwdAsText = T.pack . encodeString <$> pwd
 
 data BuildCommand = BuildCommand
   { buildCommandAll          :: Bool

@@ -40,3 +40,4 @@ static/out.jsexe/*webapp*
 *.cabal
 
 lastproject
+builds/
