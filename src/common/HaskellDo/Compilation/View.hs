@@ -16,6 +16,7 @@
 module HaskellDo.Compilation.View where
 
 import           Control.Monad.IO.Class
+import           Control.Monad (unless)
 import           Prelude                     hiding (div, id)
 
 import           AxiomUtils
@@ -41,7 +42,8 @@ errorDisplay state
 
 updateDisplays :: State -> Widget ()
 updateDisplays state = do
-  Ulmus.newWidget "outputDisplay" (outputDisplay state)
+  highlighted <- liftIO alreadyHighlighted
+  unless highlighted $ Ulmus.newWidget "outputDisplay" (outputDisplay state)
   Ulmus.newWidget "errorDisplay" (errorDisplay state)
   liftIO $ activateScriptTags "#output-frame"
   liftIO highlightCode

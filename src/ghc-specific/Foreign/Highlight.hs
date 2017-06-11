@@ -17,3 +17,9 @@ module Foreign.Highlight where
 
 highlightCode :: IO ()
 highlightCode = return ()
+
+askForHighlight :: IO ()
+askForHighlight = return ()
+
+alreadyHighlighted :: IO Bool
+alreadyHighlighted = return True

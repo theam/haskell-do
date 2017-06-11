@@ -32,6 +32,7 @@ import qualified HaskellDo.Compilation.Types as Compilation
 import qualified HaskellDo.Toolbar.State as Toolbar
 import qualified HaskellDo.Toolbar.Types as Toolbar
 import qualified Foreign.JQuery as JQuery
+import qualified Foreign.Highlight as Highlight
 
 initialAppState :: AppState
 initialAppState = AppState
@@ -52,7 +53,9 @@ update (CodeMirrorAction action) appState = do
             { codeMirrorState = newCodeMirrorState
             }
     if compileShortcutPressed
-        then update (ToolbarAction Toolbar.Compile) newState
+        then do
+            localIO Highlight.askForHighlight
+            update (ToolbarAction Toolbar.Compile) newState
         else return newState
 
 update (ToolbarAction Toolbar.Compile) appState = do
