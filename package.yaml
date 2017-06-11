@@ -61,6 +61,7 @@ library:
     - HaskellDo.Toolbar.State
     - HaskellDo.Toolbar.Types
     - HaskellDo.Toolbar.View
+    - HaskellDo.Toolbar.FileSystemTree
     - HaskellDo.Types
     - HaskellDo.View
     - Ulmus
@@ -87,6 +88,7 @@ executables:
       - HaskellDo.Toolbar.State
       - HaskellDo.Toolbar.Types
       - HaskellDo.Toolbar.View
+      - HaskellDo.Toolbar.FileSystemTree
       - HaskellDo.Types
       - HaskellDo.View
       - Ulmus
