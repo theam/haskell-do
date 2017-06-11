@@ -1,5 +1,5 @@
 name:                haskell-do
-version:             0.9.3
+version:             0.9.4
 synopsis:            The Haskell code editor focused on interactive development
 description:         Please see README.md
 homepage:            https://github.com/theam/haskell-do#readme
