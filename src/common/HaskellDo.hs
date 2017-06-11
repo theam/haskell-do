@@ -21,12 +21,12 @@ import qualified Ulmus
 
 import HaskellDo.View
 import HaskellDo.State
-import qualified HaskellDo.SimpleMDE.View as SimpleMDE
+import qualified HaskellDo.CodeMirror.View as CodeMirror
 import qualified HaskellDo.Style.View as Style
 
 initializeHeaders :: IO ()
 initializeHeaders = do
-    SimpleMDE.initialize
+    CodeMirror.initialize
     Style.initialize
 
 -- | Executes Haskell.do in designated 'port'

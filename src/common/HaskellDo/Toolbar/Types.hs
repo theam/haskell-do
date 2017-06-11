@@ -34,4 +34,5 @@ data Action
     | LoadProject
     | SavePackage
     | ClosePackageModal
+    | ToggleEditor
     deriving (Read, Show)

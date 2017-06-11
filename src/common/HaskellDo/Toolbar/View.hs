@@ -38,6 +38,7 @@ toolbar = rawHtml $ do
             li ! id "openProjectButton" $ noHtml
             li ! id "compileButton" $ noHtml
             li ! id "packageEditorButton" $ noHtml
+            li ! id "toggleEditorButton" $ noHtml
     packageEditorModal    -- Apparently, if we put this line
     openProjectModal      -- under this one. The open project modal doesn't work
 
@@ -82,6 +83,11 @@ compileButton :: State -> Widget Action
 compileButton _ = Ulmus.newWidget "compileButton" $ wlink Compile $
     a ! atr "class" "btn-floating purple darken-2 tooltipped" ! atr "data-position" "bottom" ! atr "data-tooltip" "Compile [Ctrl+Return]" ! atr "data-delay" "50"$
         i ! atr "class" "material-icons" $ ("play_arrow" :: String)
+
+toggleEditorButton :: State -> Widget Action
+toggleEditorButton _ = Ulmus.newWidget "toggleEditorButton" $ wlink ToggleEditor $
+    a ! atr "class" "btn-floating purple darken-2 tooltipped" ! atr "data-position" "bottom" ! atr "data-tooltip" "Toggle editor" ! atr "data-delay" "50"$
+        i ! atr "class" "material-icons" $ ("remove_red_eye" :: String)
 
 closeModalButton :: State -> Widget Action
 closeModalButton _ = Ulmus.newWidget "closeModalButton" $ wlink LoadProject $

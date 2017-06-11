@@ -26,3 +26,6 @@ makeModals = return ()
 
 initTooltips :: IO ()
 initTooltips = return ()
+
+toggleEditor :: IO ()
+toggleEditor = return ()

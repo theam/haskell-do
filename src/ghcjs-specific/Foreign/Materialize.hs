@@ -37,3 +37,9 @@ foreign import javascript unsafe "$('.modal').modal({dismissible: true, opacity:
 
 foreign import javascript unsafe "$('.tooltipped').tooltip({delay: 50});"
     initTooltips :: IO ()
+
+foreign import javascript unsafe "$('#editor').is('visible')"
+    isEditorVisible :: IO Bool
+
+foreign import javascript unsafe "toggleEditor()"
+    toggleEditor :: IO ()

@@ -48,14 +48,14 @@ library:
     - Foreign.Highlight
     - Foreign.JQuery
     - Foreign.Materialize
-    - Foreign.SimpleMDE
+    - Foreign.CodeMirror
     - HaskellDo.Compilation.State
     - HaskellDo.Compilation.Types
     - HaskellDo.Compilation.View
     - HaskellDo.Materialize.View
-    - HaskellDo.SimpleMDE.State
-    - HaskellDo.SimpleMDE.Types
-    - HaskellDo.SimpleMDE.View
+    - HaskellDo.CodeMirror.State
+    - HaskellDo.CodeMirror.Types
+    - HaskellDo.CodeMirror.View
     - HaskellDo.State
     - HaskellDo.Style.View
     - HaskellDo.Toolbar.State
@@ -75,14 +75,14 @@ executables:
       - Foreign.Highlight
       - Foreign.JQuery
       - Foreign.Materialize
-      - Foreign.SimpleMDE
+      - Foreign.CodeMirror
       - HaskellDo.Compilation.State
       - HaskellDo.Compilation.Types
       - HaskellDo.Compilation.View
       - HaskellDo.Materialize.View
-      - HaskellDo.SimpleMDE.State
-      - HaskellDo.SimpleMDE.Types
-      - HaskellDo.SimpleMDE.View
+      - HaskellDo.CodeMirror.State
+      - HaskellDo.CodeMirror.Types
+      - HaskellDo.CodeMirror.View
       - HaskellDo.State
       - HaskellDo.Style.View
       - HaskellDo.Toolbar.State

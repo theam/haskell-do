@@ -13,7 +13,7 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module Foreign.SimpleMDE where
+module Foreign.CodeMirror where
 
 import GHCJS.Types
 import Data.JSString
@@ -33,8 +33,8 @@ foreign import javascript unsafe "simpleMDE.setValue($1)"
 foreign import javascript unsafe "$r = cmdOrCtrlReturnPressed;"
     cmdOrCtrlReturnPressed :: IO Bool
 
-makeSimpleMDEFromId :: String -> IO ()
-makeSimpleMDEFromId = js_makeSimpleMDEFromId . pack
+makeCodeMirrorFromId :: String -> IO ()
+makeCodeMirrorFromId = js_makeCodeMirrorFromId . pack
 
 foreign import javascript unsafe
     "function initMDE() {\
@@ -55,4 +55,4 @@ foreign import javascript unsafe
     };\
     initMDE();"
 
-    js_makeSimpleMDEFromId :: JSString -> IO ()
+    js_makeCodeMirrorFromId :: JSString -> IO ()
