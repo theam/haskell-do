@@ -36,6 +36,26 @@ foreign import javascript unsafe "$($1).hide();"
 foreign import javascript unsafe "$($1).effect('shake');"
   js_shake :: JSString -> IO ()
 
+-- go through script tags, loading each one in order
+-- the deferred object and $.when make sure scripts are executed
+-- sequentially
+foreign import javascript unsafe "setTimeout(function() { \
+                                    var scripts = []; \
+                                    $($1).find('script').each(function() { \
+                                      var $e = $(this); \
+                                      $.when.apply($, scripts).then(function() { \
+                                        if ($e.attr('src')) { \
+                                          var d = $.Deferred(); \
+                                          $.getScript($e.attr('src'), function() { d.resolve() }); \
+                                          scripts.push(d); \
+                                        } else { \
+                                          eval($e.html()); \
+                                        } \
+                                      }) \
+                                    }) \
+                                  }, 0);"
+  js_activateScriptTags :: JSString -> IO ()
+
 getValueFromId :: String -> IO String
 getValueFromId s = do
   r <- js_getValueFromId $ pack s
@@ -46,6 +66,9 @@ setValueForId id' s = js_setValueForId (pack id') (pack s)
 
 setHtmlForId :: String -> String -> IO ()
 setHtmlForId id' s = js_setHtmlForId (pack id') (pack s)
+
+activateScriptTags :: String -> IO ()
+activateScriptTags id' = js_activateScriptTags (pack id')
 
 show :: String -> IO ()
 show = js_show . pack
