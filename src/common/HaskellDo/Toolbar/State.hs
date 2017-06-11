@@ -110,6 +110,10 @@ update (NewPath newPath) state = do
 
 update (NewPackage newConfig) state = return state { projectConfig = newConfig }
 
+update ToggleEditor state = do
+    localIO toggleEditor
+    return state
+
 update _ state = return state
 
 shakeErrorDisplay :: IO ()
