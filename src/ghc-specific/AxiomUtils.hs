@@ -32,5 +32,5 @@ id = atr "id"
 at :: String -> UpdateMethod -> Widget a -> Widget a
 at _ _ w = w
 
-wlink :: (Show a) => a -> Perch -> Widget a
-wlink _ _= empty
+wlink :: a -> Perch -> Widget a
+wlink _ _ = empty
