@@ -2,7 +2,7 @@ FROM phusion/baseimage:0.9.22
 
 ENV HASKELL_DO_VER=0.9.3 
 
-# CMD ["/sbin/my_init"]
+# # CMD ["/sbin/my_init"]
 
 COPY setup.sh .
 
