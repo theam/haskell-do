@@ -35,21 +35,21 @@ import qualified Foreign.JQuery as JQuery
 
 initialAppState :: AppState
 initialAppState = AppState
-  { simpleMDEState = CodeMirror.initialState
+  { codeMirrorState = CodeMirror.initialState
   , compilationState = Compilation.initialState
   , toolbarState = Toolbar.initialState
   }
 
 update :: Action -> AppState -> Cloud AppState
 update (CodeMirrorAction action) appState = do
-    newCodeMirrorState <- CodeMirror.update action (simpleMDEState appState)
+    newCodeMirrorState <- CodeMirror.update action (codeMirrorState appState)
     let newContent = CodeMirror.content newCodeMirrorState
     _ <- atRemote $ Compilation.update
         (Compilation.WriteWorkingFile newContent)
         (compilationState appState)
     compileShortcutPressed <- localIO CodeMirror.cmdOrCtrlReturnPressed
     let newState = appState
-            { simpleMDEState = newCodeMirrorState
+            { codeMirrorState = newCodeMirrorState
             }
     if compileShortcutPressed
         then update (ToolbarAction Toolbar.Compile) newState
@@ -94,7 +94,7 @@ update (ToolbarAction Toolbar.LoadProject) appState = do
                 , compilationState = newCmpState
                 }
         Right contents -> do
-            let editorState = simpleMDEState appState
+            let editorState = codeMirrorState appState
             let parsedContents = unlines . drop 4 $ lines contents
             let newEditorState = editorState { CodeMirror.content = parsedContents }
             let newTbState = tbState { Toolbar.projectOpened = True }
@@ -103,7 +103,7 @@ update (ToolbarAction Toolbar.LoadProject) appState = do
             localIO $ JQuery.hide "#errorDisplay" -- Hide error while dependencies load
             localIO $ JQuery.setHtmlForId "#outputDisplay" ""
             let stateAfterOpening =  appState
-                        { simpleMDEState = newEditorState
+                        { codeMirrorState = newEditorState
                         , toolbarState = newTbState
                         , compilationState = newCmpState
                         }

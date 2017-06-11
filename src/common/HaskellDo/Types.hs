@@ -20,7 +20,7 @@ import qualified HaskellDo.Compilation.Types as Compilation
 import qualified HaskellDo.Toolbar.Types as Toolbar
 
 data AppState = AppState
-  { simpleMDEState   :: CodeMirror.State
+  { codeMirrorState   :: CodeMirror.State
   , compilationState :: Compilation.State
   , toolbarState     :: Toolbar.State
   } deriving (Read, Show)

@@ -29,7 +29,7 @@ initialize = do
     addHeader $ do
         link ! atr "rel" "stylesheet"
              ! href "https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css"
-        script ("var simpleMDE;" :: String)
+        script ("var codeMirror;" :: String)
         script ! src "https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"
                $ noHtml
     makeCodeMirrorFromId "mainEditor"

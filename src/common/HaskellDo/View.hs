@@ -61,7 +61,7 @@ widgets state = do
     Toolbar.toolbar
     Toolbar.creationDisplay (toolbarState state)
     showDisplays state
-    simpleMDEWidget
+    codeMirrorWidget
     <|> openProjectButtonWidget
     <|> packageEditorButtonWidget
     <|> compileButtonWidget
@@ -72,9 +72,9 @@ widgets state = do
     <|> cancelPackageEditorButtonWidget
     <|> fsTreeWidget
   where
-    simpleMDEWidget = Ulmus.newWidget "editor" $
+    codeMirrorWidget = Ulmus.newWidget "editor" $
         Ulmus.mapAction CodeMirrorAction $
-            CodeMirror.view $ simpleMDEState state
+            CodeMirror.view $ codeMirrorState state
 
     openProjectButtonWidget = Ulmus.mapAction ToolbarAction $
         Toolbar.openProjectButton (toolbarState state)
