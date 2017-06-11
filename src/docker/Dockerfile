@@ -1,5 +1,7 @@
 FROM phusion/baseimage:0.9.22
 
+TAG theam/haskell.do:0.9.3
+
 ENV HASKELL_DO_VER=0.9.3 
 
 # # CMD ["/sbin/my_init"]
