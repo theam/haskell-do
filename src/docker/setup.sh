@@ -1,7 +1,7 @@
 #!/bin/bash
 
 printf "\n=== APT-Installing dependencies :\n"
-apt-get update && apt-get install -y --no-install-recommends build-essential wget sudo
+apt-get update && apt-get install -y --no-install-recommends build-essential wget unzip sudo
 
 printf "\n=== Setting up FP Complete APT repository :\n"
 # # get FP Complete public key
