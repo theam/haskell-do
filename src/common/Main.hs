@@ -17,6 +17,7 @@ module Main where
 
 import HaskellDo
 import System.Environment (getArgs)
+import System.Directory
 
 defaultPort :: Integer
 defaultPort = 3001
@@ -24,6 +25,19 @@ defaultPort = 3001
 main :: IO ()
 main = do
     args <- getArgs
+    hdopath <- findExecutable "haskell-do"
+    case hdopath of
+        Just p -> do
+            let parentDir = reverse . dropWhile (/= '/') . reverse
+            x <- listDirectory $ parentDir p
+            print x
+            setCurrentDirectory (parentDir p)
+        Nothing ->
+#ifdef ghcjs_HOST_OS
+            return ()
+#else
+            error "haskell.do must be on PATH"
+#endif
     let port = case args of
             [x] -> read x :: Integer
             _   -> defaultPort

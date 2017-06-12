@@ -25,5 +25,4 @@ data State = State
 data Action
     = Compile
     | WriteWorkingFile String
-    | GetLastProject
     deriving (Read, Show)

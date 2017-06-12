@@ -13,7 +13,7 @@
  - See the License for the specific language governing permissions and
  - limitations under the License.
  -}
-module Foreign.SimpleMDE where
+module Foreign.CodeMirror where
 
 getMDEContent :: IO String
 getMDEContent = return ""
@@ -21,8 +21,8 @@ getMDEContent = return ""
 setMDEContent :: String -> IO ()
 setMDEContent _ = return ()
 
-makeSimpleMDEFromId :: String -> IO ()
-makeSimpleMDEFromId _ = return ()
+makeCodeMirrorFromId :: String -> IO ()
+makeCodeMirrorFromId _ = return ()
 
 cmdOrCtrlReturnPressed :: IO Bool
 cmdOrCtrlReturnPressed = return False

@@ -15,5 +15,5 @@
  -}
 module Foreign.Highlight where
 
-foreign import javascript unsafe "$('.haskell').each(function(i, block){ hljs.highlightBlock(block);});"
+foreign import javascript unsafe "setTimeout(function() {$('.haskell').each(function(i, block){ hljs.highlightBlock(block);}) }, 0);"
     highlightCode :: IO ()

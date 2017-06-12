@@ -24,6 +24,9 @@ setValueForId _ _ = return ()
 setHtmlForId :: String -> String -> IO ()
 setHtmlForId _ _ = return ()
 
+activateScriptTags :: String -> IO ()
+activateScriptTags _ = return ()
+
 show :: String -> IO ()
 show _ = return ()
 

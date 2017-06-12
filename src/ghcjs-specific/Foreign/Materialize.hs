@@ -32,8 +32,14 @@ foreign import javascript unsafe "$($1).modal('open')"
 foreign import javascript unsafe "$($1).modal('close')"
     js_closeModal :: JSString -> IO ()
 
-foreign import javascript unsafe "$('.modal').modal({dismissible: false, opacity: 0.7});"
+foreign import javascript unsafe "$('.modal').modal({dismissible: true, opacity: 0.7});"
     makeModals :: IO ()
 
 foreign import javascript unsafe "$('.tooltipped').tooltip({delay: 50});"
     initTooltips :: IO ()
+
+foreign import javascript unsafe "$('#editor').is('visible')"
+    isEditorVisible :: IO Bool
+
+foreign import javascript unsafe "toggleEditor()"
+    toggleEditor :: IO ()

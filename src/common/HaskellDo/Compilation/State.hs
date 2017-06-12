@@ -48,13 +48,6 @@ update (WriteWorkingFile content) state = localIO $ do
 update Compile state = do
     localIO $ writeFile lastProjectFile $ projectPath state
     compile state
-update GetLastProject state = do
-    exists <- localIO $ doesFileExist lastProjectFile
-    localIO $ unless exists (writeFile lastProjectFile "")
-    pr <- localIO $ readFile lastProjectFile
-    return state { projectPath = pr }
-
-
 
 writeWorkingFile :: String -> State -> IO ()
 writeWorkingFile content state = do
@@ -140,7 +133,7 @@ runCommand command projPath = do
         $ "cd " ++ projPath ++ " && " ++ stackCommand ++ " " ++ command
         ) ""
   where
-    stackCommand = "/usr/local/bin/stack"
+    stackCommand = "stack"
 
 
 bootstrapCSSTag :: Text.Text

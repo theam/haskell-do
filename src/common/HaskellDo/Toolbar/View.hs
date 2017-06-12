@@ -15,12 +15,13 @@
  -}
 module HaskellDo.Toolbar.View where
 
-
 import Prelude hiding (div, id)
 
 import GHCJS.HPlay.View hiding (addHeader, atr, id, wlink)
 import AxiomUtils
 import qualified Ulmus
+
+import qualified HaskellDo.Toolbar.FileSystemTree as FileSystemTree
 
 import Control.Monad.IO.Class
 
@@ -37,6 +38,7 @@ toolbar = rawHtml $ do
             li ! id "openProjectButton" $ noHtml
             li ! id "compileButton" $ noHtml
             li ! id "packageEditorButton" $ noHtml
+            li ! id "toggleEditorButton" $ noHtml
     packageEditorModal    -- Apparently, if we put this line
     openProjectModal      -- under this one. The open project modal doesn't work
 
@@ -50,6 +52,7 @@ openProjectModal =
                 div ! id "pathInput" $ noHtml
                 p ! atr "class" "grey-text lighten-4" $ ("Path must be absolute, without ~ or environment variables." :: String)
                 div ! id "creationDisplay" $ noHtml
+                ul ! id "fsTree" ! atr "class" "collection" $ noHtml
         div ! atr "class" "modal-footer" $
             div ! id "closeModalButton" $ noHtml
 
@@ -81,6 +84,11 @@ compileButton _ = Ulmus.newWidget "compileButton" $ wlink Compile $
     a ! atr "class" "btn-floating purple darken-2 tooltipped" ! atr "data-position" "bottom" ! atr "data-tooltip" "Compile [Ctrl+Return]" ! atr "data-delay" "50"$
         i ! atr "class" "material-icons" $ ("play_arrow" :: String)
 
+toggleEditorButton :: State -> Widget Action
+toggleEditorButton _ = Ulmus.newWidget "toggleEditorButton" $ wlink ToggleEditor $
+    a ! atr "class" "btn-floating purple darken-2 tooltipped" ! atr "data-position" "bottom" ! atr "data-tooltip" "Toggle editor" ! atr "data-delay" "50"$
+        i ! atr "class" "material-icons" $ ("remove_red_eye" :: String)
+
 closeModalButton :: State -> Widget Action
 closeModalButton _ = Ulmus.newWidget "closeModalButton" $ wlink LoadProject $
      a ! atr "class" "modal-action modal-close waves-effect btn-flat waves-purple" $
@@ -107,7 +115,6 @@ pathInput state = Ulmus.newWidget "pathInput" $ do
     projPath <- liftIO $ getValueFromId "#pathInput event input"
     return $ NewPath projPath
 
-
 packageTextArea :: State -> Widget Action
 packageTextArea _ = Ulmus.newWidget "packageTextArea" $ do
      _ <- getMultilineText "" ! atr "rows" "20" `fire` OnKeyUp
@@ -117,3 +124,6 @@ packageTextArea _ = Ulmus.newWidget "packageTextArea" $ do
 creationDisplay :: State -> Widget ()
 creationDisplay _ = Ulmus.newWidget "creationDisplay" $
     rawHtml $ p ! atr "class" "red-text" $ ("" :: String)
+
+updateDisplays :: State -> Widget Action
+updateDisplays = FileSystemTree.widget

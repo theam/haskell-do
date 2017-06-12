@@ -18,15 +18,15 @@ module HaskellDo.View where
 
 import Prelude hiding (id, div)
 
-import Transient.Base
 import GHCJS.HPlay.View
 import qualified Ulmus
 
 import HaskellDo.Types
 import qualified HaskellDo.Materialize.View as Materialize
-import qualified HaskellDo.SimpleMDE.View as SimpleMDE
+import qualified HaskellDo.CodeMirror.View as CodeMirror
 import qualified HaskellDo.Compilation.View as Compilation
 import qualified HaskellDo.Toolbar.View as Toolbar
+import qualified HaskellDo.Toolbar.FileSystemTree as FileSystemTree
 
 view :: AppState -> Widget Action
 view appState = Ulmus.withWidgets (widgets appState) $
@@ -61,19 +61,21 @@ widgets state = do
     Toolbar.toolbar
     Toolbar.creationDisplay (toolbarState state)
     showDisplays state
-    simpleMDEWidget
+    codeMirrorWidget
     <|> openProjectButtonWidget
     <|> packageEditorButtonWidget
     <|> compileButtonWidget
+    <|> toggleEditorButtonWidget
     <|> pathInputWidget
     <|> packageTextAreaWidget
     <|> closeModalButtonWidget
     <|> closePackageEditorButtonWidget
     <|> cancelPackageEditorButtonWidget
+    <|> fsTreeWidget
   where
-    simpleMDEWidget = Ulmus.newWidget "editor" $
-        Ulmus.mapAction SimpleMDEAction $
-            SimpleMDE.view $ simpleMDEState state
+    codeMirrorWidget = Ulmus.newWidget "editor" $
+        Ulmus.mapAction CodeMirrorAction $
+            CodeMirror.view $ codeMirrorState state
 
     openProjectButtonWidget = Ulmus.mapAction ToolbarAction $
         Toolbar.openProjectButton (toolbarState state)
@@ -84,11 +86,17 @@ widgets state = do
     compileButtonWidget = Ulmus.mapAction ToolbarAction $
         Toolbar.compileButton (toolbarState state)
 
+    toggleEditorButtonWidget = Ulmus.mapAction ToolbarAction $
+        Toolbar.toggleEditorButton (toolbarState state)
+
     pathInputWidget = Ulmus.mapAction ToolbarAction $
         Toolbar.pathInput (toolbarState state)
 
     packageTextAreaWidget = Ulmus.mapAction ToolbarAction $
         Toolbar.packageTextArea (toolbarState state)
+
+    fsTreeWidget = Ulmus.mapAction ToolbarAction $
+        FileSystemTree.widget (toolbarState state)
 
     closeModalButtonWidget = Ulmus.mapAction ToolbarAction $
         Toolbar.closeModalButton (toolbarState state)
@@ -105,6 +113,8 @@ showDisplays state = do
     Ulmus.newWidget "outputDisplay" $ Compilation.outputDisplay (compilationState state)
     Ulmus.newWidget "errorDisplay" $ Compilation.errorDisplay (compilationState state)
 
-updateDisplays :: AppState -> TransIO ()
-updateDisplays state =
+updateDisplays :: AppState -> Widget Action
+updateDisplays state = do
     Compilation.updateDisplays (compilationState state)
+    Ulmus.mapAction ToolbarAction $
+      Toolbar.updateDisplays (toolbarState state)

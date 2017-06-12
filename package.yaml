@@ -1,5 +1,5 @@
 name:                haskell-do
-version:             0.9.0
+version:             0.9.4
 synopsis:            The Haskell code editor focused on interactive development
 description:         Please see README.md
 homepage:            https://github.com/theam/haskell-do#readme
@@ -17,10 +17,12 @@ dependencies:
   - transient == 0.5.4
   - transient-universe == 0.4.3
   - axiom == 0.4.5
-  - clay == 0.12.1
+  - clay
   - text == 1.2.2.1
-  - process == 1.4.3.0
-  - directory == 1.3.0.0
+  - process
+  - directory
+  - filepath
+  - system-fileio
 
 ghc-options:
   - -Wall
@@ -46,19 +48,20 @@ library:
     - Foreign.Highlight
     - Foreign.JQuery
     - Foreign.Materialize
-    - Foreign.SimpleMDE
+    - Foreign.CodeMirror
     - HaskellDo.Compilation.State
     - HaskellDo.Compilation.Types
     - HaskellDo.Compilation.View
     - HaskellDo.Materialize.View
-    - HaskellDo.SimpleMDE.State
-    - HaskellDo.SimpleMDE.Types
-    - HaskellDo.SimpleMDE.View
+    - HaskellDo.CodeMirror.State
+    - HaskellDo.CodeMirror.Types
+    - HaskellDo.CodeMirror.View
     - HaskellDo.State
     - HaskellDo.Style.View
     - HaskellDo.Toolbar.State
     - HaskellDo.Toolbar.Types
     - HaskellDo.Toolbar.View
+    - HaskellDo.Toolbar.FileSystemTree
     - HaskellDo.Types
     - HaskellDo.View
     - Ulmus
@@ -72,19 +75,20 @@ executables:
       - Foreign.Highlight
       - Foreign.JQuery
       - Foreign.Materialize
-      - Foreign.SimpleMDE
+      - Foreign.CodeMirror
       - HaskellDo.Compilation.State
       - HaskellDo.Compilation.Types
       - HaskellDo.Compilation.View
       - HaskellDo.Materialize.View
-      - HaskellDo.SimpleMDE.State
-      - HaskellDo.SimpleMDE.Types
-      - HaskellDo.SimpleMDE.View
+      - HaskellDo.CodeMirror.State
+      - HaskellDo.CodeMirror.Types
+      - HaskellDo.CodeMirror.View
       - HaskellDo.State
       - HaskellDo.Style.View
       - HaskellDo.Toolbar.State
       - HaskellDo.Toolbar.Types
       - HaskellDo.Toolbar.View
+      - HaskellDo.Toolbar.FileSystemTree
       - HaskellDo.Types
       - HaskellDo.View
       - Ulmus

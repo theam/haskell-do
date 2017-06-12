@@ -15,7 +15,10 @@
  -}
 module HaskellDo.Toolbar.State where
 
-import System.Directory (doesFileExist)
+import System.Directory (listDirectory, doesFileExist, doesDirectoryExist, getHomeDirectory)
+import System.FilePath ((</>))
+
+import Control.Monad (filterM)
 
 import Transient.Move
 
@@ -30,7 +33,13 @@ initialState = State
     , projectConfig = ""
     , projectOpened = False
     , createProject = False
+    , directoryExists = False
+    , directoryList = ([], [])
     }
+
+
+lastProjectFile :: FilePath
+lastProjectFile = "lastproject"
 
 update :: Action -> State -> Cloud State
 update OpenProject state = do
@@ -47,23 +56,63 @@ update ClosePackageModal state = do
     localIO $ closeModal "#packageEditorModal"
     return state
 
-update (NewPath "") state = return state
 update (NewPath newPath) state = do
-    newState <- if last newPath /= '/'
-                then return state { projectPath = newPath ++ "/" }
-                else return state { projectPath = newPath }
-    isProject <- atRemote $ localIO $ doesFileExist (projectPath newState ++ "package.yaml")
-    if isProject
-        then do
-            localIO $ setHtmlForId "#creationDisplay" ""
-            localIO $ setHtmlForId "#closeModalButton event .material-icons" "input"
-            return $ newState { createProject = False }
-        else do
-            localIO $ setHtmlForId "#creationDisplay" ("<p class=\"red-text\">No project found at " ++ projectPath newState ++ ", it will be created.</p>")
-            localIO $ setHtmlForId "#closeModalButton event .material-icons" "playlist_add"
-            return $ newState { createProject = True }
+    path <- pathOrLastOrHome newPath
+    localIO $ setValueForId "#pathInput event input" path
+
+    exists <- atRemote . localIO $ doesDirectoryExist path
+    let newState = state { directoryExists = exists, projectPath = path }
+
+    if exists
+    then do
+      (directories, files) <- directoriesAndFiles path
+
+      let newState' = newState { directoryList = (directories, files) }
+
+      isProject <- atRemote $ localIO $ doesFileExist (path </> "package.yaml")
+      updateProjectAvailability newState' path isProject
+    else do
+      let newState' = newState { directoryList = ([], []) }
+      return newState'
+  where
+    pathOrLastOrHome path = if null path
+                      then do
+                        exists <- atRemote . localIO $ doesFileExist lastProjectFile
+                        home <- atRemote . localIO $ getHomeDirectory
+                        -- if lastProjectFile exists and is not empty, use it
+                        -- otherwise use the home directory
+                        if exists
+                        then do
+                          content <- atRemote . localIO $ readFile lastProjectFile
+                          return $ if null content then home else content
+                        else
+                          return home
+                      else
+                        return path
+
+    directoriesAndFiles path = do
+      list <- atRemote . localIO $ listDirectory path
+      let visible = filter ((/= '.') . head) list
+      directories <- atRemote . localIO $ filterM (doesDirectoryExist . (path </>)) visible
+      files <- atRemote . localIO $ filterM (doesFileExist . (path </>)) visible
+
+      return (directories, files)
+
+    updateProjectAvailability currentState _ True = do
+      localIO $ setHtmlForId "#creationDisplay" ""
+      localIO $ setHtmlForId "#closeModalButton event .material-icons" "input"
+      return $ currentState { createProject = False }
+
+    updateProjectAvailability currentState path False = do
+      localIO $ setHtmlForId "#creationDisplay" ("<p class=\"red-text\">No project found at " ++ path ++ ", it will be created.</p>")
+      localIO $ setHtmlForId "#closeModalButton event .material-icons" "playlist_add"
+      return $ currentState { createProject = True }
 
 update (NewPackage newConfig) state = return state { projectConfig = newConfig }
+
+update ToggleEditor state = do
+    localIO toggleEditor
+    return state
 
 update _ state = return state
 
