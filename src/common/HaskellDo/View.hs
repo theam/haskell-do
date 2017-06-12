@@ -19,6 +19,7 @@ module HaskellDo.View where
 import Prelude hiding (id, div)
 
 import GHCJS.HPlay.View
+import Transient.Internals ((**>))
 import qualified Ulmus
 
 import HaskellDo.Types
@@ -62,16 +63,16 @@ widgets state = do
     Toolbar.creationDisplay (toolbarState state)
     showDisplays state
     codeMirrorWidget
-    <|> openProjectButtonWidget
-    <|> packageEditorButtonWidget
-    <|> compileButtonWidget
-    <|> toggleEditorButtonWidget
-    <|> pathInputWidget
-    <|> packageTextAreaWidget
-    <|> closeModalButtonWidget
-    <|> closePackageEditorButtonWidget
-    <|> cancelPackageEditorButtonWidget
-    <|> fsTreeWidget
+    **> packageTextAreaWidget
+    **> openProjectButtonWidget
+    **> packageEditorButtonWidget
+    **> toggleEditorButtonWidget
+    **> compileButtonWidget
+    **> pathInputWidget
+    **> closeModalButtonWidget
+    **> closePackageEditorButtonWidget
+    **> cancelPackageEditorButtonWidget
+    **> fsTreeWidget
   where
     codeMirrorWidget = Ulmus.newWidget "editor" $
         Ulmus.mapAction CodeMirrorAction $
