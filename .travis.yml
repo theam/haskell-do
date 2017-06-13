@@ -47,7 +47,7 @@ before_install:
 - mkdir -p ~/.local/bin
 - export PATH=$HOME/.local/bin:$PATH
 - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
-- curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash - && apt install -y nodejs && ln -s /usr/local/bin/nodejs /usr/local/bin/node
+- curl -sL https://deb.nodesource.com/setup_7.x | bash - && apt install -y nodejs && ln -s /usr/local/bin/nodejs /usr/local/bin/node
 
 install:
 # Build dependencies
