@@ -56,6 +56,9 @@ foreign import javascript unsafe "setTimeout(function() { \
                                   }, 0);"
   js_activateScriptTags :: JSString -> IO ()
 
+foreign import javascript unsafe "setTimeout(function() { $($1).height($($2).height()) }, 0);"
+  js_setHeightFromElement :: JSString -> JSString -> IO ()
+
 getValueFromId :: String -> IO String
 getValueFromId s = do
   r <- js_getValueFromId $ pack s
@@ -69,6 +72,9 @@ setHtmlForId id' s = js_setHtmlForId (pack id') (pack s)
 
 activateScriptTags :: String -> IO ()
 activateScriptTags id' = js_activateScriptTags (pack id')
+
+setHeightFromElement :: String -> String -> IO ()
+setHeightFromElement id' id'' = js_setHeightFromElement (pack id') (pack id'')
 
 show :: String -> IO ()
 show = js_show . pack

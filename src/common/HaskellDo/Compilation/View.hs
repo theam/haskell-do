@@ -46,4 +46,5 @@ updateDisplays state = do
   unless highlighted $ Ulmus.newWidget "outputDisplay" (outputDisplay state)
   Ulmus.newWidget "errorDisplay" (errorDisplay state)
   liftIO $ activateScriptTags "#output-frame"
+  liftIO $ setHeightFromElement ".error-placeholder" "#errorDisplay"
   liftIO highlightCode

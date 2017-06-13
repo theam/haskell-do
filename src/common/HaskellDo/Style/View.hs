@@ -78,3 +78,9 @@ mdeStyle = Text.unpack . Clay.render $ do
         margin (px 0) auto (px 0) auto
     "#fsTree .collection-item span" ? do
         marginLeft (px 5)
+    "#errorDisplay" ? do
+        position fixed
+        left (pct 1)
+        bottom (pct 0)
+        maxWidth (pct 98)
+        zIndex 2
