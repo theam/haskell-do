@@ -91,7 +91,7 @@ buildOutput state = do
         System.ExitFailure _ ->
             return state { compiledOutput = "Compiling" }
         System.ExitSuccess ->
-            return state { compiledOutput = preprocessOutput out }
+            return state { compiledOutput = preprocessOutput out, compilationError = "" }
 
 
 preprocessOutput :: String -> String

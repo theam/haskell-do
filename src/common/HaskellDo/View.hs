@@ -39,9 +39,8 @@ view appState = Ulmus.withWidgets (widgets appState) $
                 Ulmus.widgetPlaceholder "outputDisplay"
                 loaderOverlay
       Materialize.row $
-            Materialize.col "s" 12 $
-                Ulmus.widgetPlaceholder "errorDisplay"
-
+            Materialize.col "s" 12 $ div ! atr "class" "error-placeholder" $ noHtml
+      Ulmus.widgetPlaceholder "errorDisplay"
 
 loaderOverlay :: Perch
 loaderOverlay =

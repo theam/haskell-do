@@ -27,6 +27,9 @@ setHtmlForId _ _ = return ()
 activateScriptTags :: String -> IO ()
 activateScriptTags _ = return ()
 
+setHeightFromElement :: String -> String -> IO ()
+setHeightFromElement _ _ = return ()
+
 show :: String -> IO ()
 show _ = return ()
 
