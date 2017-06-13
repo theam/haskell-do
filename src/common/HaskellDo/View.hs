@@ -32,15 +32,15 @@ import qualified HaskellDo.Toolbar.FileSystemTree as FileSystemTree
 view :: AppState -> Widget Action
 view appState = Ulmus.withWidgets (widgets appState) $
   div ! atr "class" "editor-container" $ do
+      Materialize.row $
+            Materialize.col "s" 12 $
+                Ulmus.widgetPlaceholder "errorDisplay"
       Materialize.row $ do
             Materialize.col "s" 6 $
                 Ulmus.widgetPlaceholder "editor"
             Materialize.col "s" 6 ! id "outputdiv" $ do
                 Ulmus.widgetPlaceholder "outputDisplay"
                 loaderOverlay
-      Materialize.row $
-            Materialize.col "s" 12 $
-                Ulmus.widgetPlaceholder "errorDisplay"
 
 
 loaderOverlay :: Perch
