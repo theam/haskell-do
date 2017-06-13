@@ -35,10 +35,10 @@ errorDisplay :: State -> Widget ()
 errorDisplay state
  | null (compilationError state) = return ()
  | otherwise = rawHtml $
-    div
+    pre
         ! atr "class" "card-panel red darken-1 white-text"
         ! atr "role" "alert"
-        $ compilationError state
+        $ code (compilationError state)
 
 updateDisplays :: State -> Widget ()
 updateDisplays state = do
