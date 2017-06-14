@@ -51,7 +51,6 @@ before_install:
 
 install:
 # Build dependencies
-- stack setup --stack-yaml=client-stack.yaml
 - stack --no-terminal --install-ghc test --only-dependencies
 
 script:
