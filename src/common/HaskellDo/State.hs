@@ -82,7 +82,7 @@ update (ToolbarAction Toolbar.LoadProject) appState = do
     let filePath = Compilation.workingFile (compilationState appState)
     atRemote $ localIO $
         when (Toolbar.createProject tbState) (Compilation.makeNewProject projectPath)
-    readAtRemote (projectPath ++ filePath) >>= \case
+    readAtRemote (projectPath </> filePath) >>= \case
         Left _ -> do
             let newTbState = tbState { Toolbar.projectOpened = False }
             let newCmpState = cmpState

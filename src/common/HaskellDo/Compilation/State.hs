@@ -22,6 +22,7 @@ import qualified System.Process as System
 import qualified System.Exit as System
 import qualified Data.Text as Text
 import System.Directory
+import System.FilePath ((</>), takeDirectory, takeFileName, dropTrailingPathSeparator)
 
 import Transient.Move
 
@@ -32,7 +33,7 @@ initialState = State
     { compiledOutput = ""
     , compilationError = "No project has been loaded yet, try opening one?"
     , projectPath = ""
-    , workingFile = "/src/Main.hs"
+    , workingFile = "src/Main.hs"
     }
 
 lastProjectFile :: FilePath
@@ -51,7 +52,7 @@ update Compile state = do
 
 writeWorkingFile :: String -> State -> IO ()
 writeWorkingFile content state = do
-    let fullPath = projectPath state ++ workingFile state
+    let fullPath = projectPath state </> workingFile state
     fileExists <- doesFileExist fullPath
     when fileExists (writeCode fullPath content)
 
@@ -108,23 +109,14 @@ preprocessOutput out =
 
 makeNewProject :: String -> IO ()
 makeNewProject path = do
-    let projectName = dirname path
-    let parentDir = parent path
+    let p = dropTrailingPathSeparator path
+    let projectName = takeFileName p
+    let parentDir = takeDirectory p
     putStrLn path
     putStrLn projectName
     putStrLn parentDir
     _ <- runCommand ("new " ++ projectName ++ " " ++ templateURL) parentDir
     return ()
-  where
-    dirname p = init p
-              |> reverse
-              |> takeWhile (/= '/')
-              |> reverse
-    parent p = init p
-             |> reverse
-             |> dropWhile (/= '/')
-             |> tail
-             |> reverse
 
 runCommand :: String -> FilePath -> IO (System.ExitCode, String, String)
 runCommand command projPath = do
