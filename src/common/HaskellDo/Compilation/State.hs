@@ -115,8 +115,16 @@ makeNewProject path = do
     putStrLn path
     putStrLn projectName
     putStrLn parentDir
-    _ <- runCommand ("new " ++ projectName ++ " " ++ templateURL) parentDir
-    return ()
+
+    exists <- doesDirectoryExist path
+    if exists then do
+      isEmpty <- null <$> listDirectory path
+      when isEmpty $ do
+        _ <- runCommand ("new " ++ projectName ++ " " ++ templateURL ++ " --bare") path
+        return ()
+    else do
+      _ <- runCommand ("new " ++ projectName ++ " " ++ templateURL) parentDir
+      return ()
 
 runCommand :: String -> FilePath -> IO (System.ExitCode, String, String)
 runCommand command projPath = do
