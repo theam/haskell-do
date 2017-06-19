@@ -36,11 +36,7 @@ widget state = Ulmus.newWidget "fsTree" $
             fileElements = map fileItem files
 
             elements = dirElements ++ fileElements
-            final = if projectPath state /= "/"
-                    then
-                      backItem : elements
-                    else
-                      elements
+            final = tools : elements
         
         in foldl1 (<|>) final
       else
@@ -52,13 +48,23 @@ widget state = Ulmus.newWidget "fsTree" $
     folderIcon = i ! atr "class" "material-icons amber-text text-darken-1" $ ("folder" :: String)
     fileIcon = i ! atr "class" "material-icons blue-grey-text text-lighten-2" $ ("insert_drive_file" :: String)
     backIcon = i ! atr "class" "material-icons amber-text text-lighten-1" $ ("arrow_back" :: String)
+    newDirIcon = i ! atr "class" "material-icons amber-text text-lighten-1" $ ("create_new_folder" :: String)
 
-    directoryItem name = item (pp </> name) folderIcon name
-    fileItem = item pp fileIcon
-    backItem = item (parentDirectory pp) backIcon ("Back" :: String)
+    directoryItem name = item (NewPath $ pp </> name) folderIcon name
+    fileItem = item (NewPath pp) fileIcon
+
+    tools = Ulmus.newWidget "fsTree-tools" $
+              backItem <|> newDirectoryItem
+
+    backItem = tool (NewPath $ parentDirectory pp) backIcon ("Back" :: String) ! atr "class" "valign-wrapper left"
+    newDirectoryItem = tool NewDirectoryModal newDirIcon ("New Directory" :: String) ! atr "class" "valign-wrapper right"
 
 parentDirectory :: FilePath -> FilePath
 parentDirectory = takeDirectory . dropTrailingPathSeparator
 
-item :: FilePath -> Perch -> String -> Widget Action
-item path icon name = wlink (NewPath path) (li ! atr "class" "valign-wrapper" $ icon >> span name) ! atr "class" "collection-item"
+item :: Action -> Perch -> String -> Widget Action
+item action icon name = wlink action (li ! atr "class" "valign-wrapper" $ icon >> span name) ! atr "class" "collection-item"
+
+tool :: Action -> Perch -> String -> Widget Action
+tool action icon name = wlink action (icon >> span name) ! atr "class" "valign-wrapper"
+

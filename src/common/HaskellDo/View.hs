@@ -27,6 +27,7 @@ import qualified HaskellDo.Materialize.View as Materialize
 import qualified HaskellDo.CodeMirror.View as CodeMirror
 import qualified HaskellDo.Compilation.View as Compilation
 import qualified HaskellDo.Toolbar.View as Toolbar
+import qualified HaskellDo.Toolbar.Types as Toolbar
 import qualified HaskellDo.Toolbar.FileSystemTree as FileSystemTree
 
 view :: AppState -> Widget Action
@@ -72,7 +73,11 @@ widgets state = do
     **> closePackageEditorButtonWidget
     **> cancelPackageEditorButtonWidget
     **> fsTreeWidget
+    **> modalPrompt "newDirectoryModal" Toolbar.NewDirectory Toolbar.CreateNewDirectory
   where
+    modalPrompt id' inputAction buttonAction = Ulmus.mapAction ToolbarAction $
+        Toolbar.modalPrompt id' inputAction buttonAction (toolbarState state)
+
     codeMirrorWidget = Ulmus.newWidget "editor" $
         Ulmus.mapAction CodeMirrorAction $
             CodeMirror.view $ codeMirrorState state
