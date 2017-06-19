@@ -76,7 +76,7 @@ mdeStyle = Text.unpack . Clay.render $ do
         height (pct 100)
     "#dependencyMessage" ? do
         margin (px 0) auto (px 0) auto
-    "#fsTree .collection-item span" ? do
+    ".fs-tree .collection-item span" ? do
         marginLeft (px 5)
     "#errorDisplay" ? do
         position fixed

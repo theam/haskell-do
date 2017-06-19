@@ -41,6 +41,7 @@ toolbar = rawHtml $ do
             li ! id "toggleEditorButton" $ noHtml
     packageEditorModal    -- Apparently, if we put this line
     openProjectModal      -- under this one. The open project modal doesn't work
+    modalPromptPlaceholder "newDirectoryModal" "New Directory" "Choose a name for the new directory"
 
 openProjectModal :: Perch
 openProjectModal =
@@ -52,9 +53,38 @@ openProjectModal =
                 div ! id "pathInput" $ noHtml
                 p ! atr "class" "grey-text lighten-4" $ ("Path must be absolute, without ~ or environment variables." :: String)
                 div ! id "creationDisplay" $ noHtml
-                ul ! id "fsTree" ! atr "class" "collection" $ noHtml
+                ul ! atr "class" "fs-tree collection" $ do
+                  div ! atr "class" "collection-item row" $
+                    li ! id "fsTree-tools" $ noHtml
+                  div ! id "fsTree" $ noHtml
+
         div ! atr "class" "modal-footer" $
             div ! id "closeModalButton" $ noHtml
+
+modalPromptPlaceholder :: String -> String -> String -> Perch
+modalPromptPlaceholder id' htitle text = 
+  div ! id id' ! atr "class" "modal" $ do
+    div ! atr "class" "modal-content" $ do
+      if (not . null) htitle then h4 htitle else noHtml
+      div $ do
+        if (not . null) text then label text else noHtml
+        div ! atr "class" "input-container" $ noHtml
+
+    div ! atr "class" "modal-footer" $
+        div ! id (id' ++ "closeButton") $ noHtml
+
+modalPrompt :: String -> (String -> Action) -> Action -> State -> Widget Action
+modalPrompt id' inputAction buttonAction _ = inputWidget <|> closeButtonWidget
+  where
+    inputWidget = Ulmus.newWidget (id' ++ " .input-container") $ do
+      _ <- getString Nothing
+            `fire` OnKeyUp
+      projPath <- liftIO $ getValueFromId ("#" ++ id' ++ " event input")
+      return (inputAction projPath)
+
+    closeButtonWidget = Ulmus.newWidget (id' ++ "closeButton") $ wlink buttonAction $
+      a ! atr "class" "modal-action modal-close waves-effect btn-flat waves-purple" $
+          i ! atr "class" "material-icons" $ ("input" :: String)
 
 packageEditorModal :: Perch
 packageEditorModal =

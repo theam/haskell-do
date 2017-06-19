@@ -15,10 +15,10 @@
  -}
 module HaskellDo.Toolbar.State where
 
-import System.Directory (listDirectory, doesFileExist, doesDirectoryExist, getHomeDirectory)
+import System.Directory (listDirectory, doesFileExist, doesDirectoryExist, getHomeDirectory, createDirectory)
 import System.FilePath ((</>))
 
-import Control.Monad (filterM)
+import Control.Monad (filterM, unless)
 
 import Transient.Move
 
@@ -35,6 +35,7 @@ initialState = State
     , createProject = False
     , directoryExists = False
     , directoryList = ([], [])
+    , newDirectoryPath = ""
     }
 
 
@@ -46,6 +47,10 @@ update OpenProject state = do
     localIO $ openModal "#openProjectModal"
     return state
 
+update NewDirectoryModal state = do
+  localIO $ openModal "#newDirectoryModal"
+  return state
+
 update LoadPackageYaml state = do
     localIO $ if projectOpened state
         then openModal "#packageEditorModal"
@@ -55,6 +60,17 @@ update LoadPackageYaml state = do
 update ClosePackageModal state = do
     localIO $ closeModal "#packageEditorModal"
     return state
+
+update (NewDirectory path) state = return $ state { newDirectoryPath = projectPath state </> path }
+
+update CreateNewDirectory state = do
+  let path = newDirectoryPath state
+  exists <- atRemote . localIO $ doesDirectoryExist path
+
+  unless exists $
+    atRemote . localIO $ createDirectory path
+
+  update (NewPath (projectPath state)) state
 
 update (NewPath newPath) state = do
     path <- pathOrLastOrHome newPath

@@ -16,13 +16,14 @@
 module HaskellDo.Toolbar.Types where
 
 data State = State
-    { projectPath     :: String
-    , lastProject     :: String
-    , projectConfig   :: String
-    , projectOpened   :: Bool
-    , createProject   :: Bool
-    , directoryExists :: Bool
-    , directoryList   :: ([String], [String]) -- (directories, files)
+    { projectPath      :: String
+    , lastProject      :: String
+    , projectConfig    :: String
+    , projectOpened    :: Bool
+    , createProject    :: Bool
+    , directoryExists  :: Bool
+    , directoryList    :: ([String], [String]) -- (directories, files)
+    , newDirectoryPath :: String
     } deriving (Read, Show)
 
 data Action
@@ -31,6 +32,9 @@ data Action
     | LoadPackageYaml
     | NewPath String
     | NewPackage String
+    | NewDirectoryModal
+    | NewDirectory String
+    | CreateNewDirectory
     | LoadProject
     | SavePackage
     | ClosePackageModal
