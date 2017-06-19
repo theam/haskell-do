@@ -45,7 +45,7 @@ lastProjectFile = "lastproject"
 update :: Action -> State -> Cloud State
 update OpenProject state = do
     localIO $ openModal "#openProjectModal"
-    return state
+    update (NewPath (projectPath state)) state
 
 update NewDirectoryModal state = do
   localIO $ openModal "#newDirectoryModal"
