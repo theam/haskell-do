@@ -15,14 +15,5 @@
  -}
 module Foreign.Highlight where
 
-foreign import javascript unsafe "if (!alreadyHighlighted){ \
-                                    setTimeout(function() {$('.haskell').each(function(i, block){ hljs.highlightBlock(block);}) }, 0); \
-                                    alreadyHighlighted = true; \
-                                  }"
+foreign import javascript unsafe "setTimeout(function() {$('.haskell').each(function(i, block){ hljs.highlightBlock(block);}) }, 0);"
     highlightCode :: IO ()
-
-foreign import javascript unsafe "alreadyHighlighted = false;"
-    askForHighlight :: IO ()
-
-foreign import javascript unsafe "$r = alreadyHighlighted;"
-    alreadyHighlighted :: IO Bool

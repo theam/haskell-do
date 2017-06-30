@@ -20,6 +20,7 @@ data State = State
     , compilationError :: String
     , projectPath      :: String
     , workingFile      :: String
+    , dirtyCompile     :: Bool
     } deriving (Read, Show)
 
 data Action
