@@ -32,7 +32,6 @@ import qualified HaskellDo.Compilation.Types as Compilation
 import qualified HaskellDo.Toolbar.State as Toolbar
 import qualified HaskellDo.Toolbar.Types as Toolbar
 import qualified Foreign.JQuery as JQuery
-import qualified Foreign.Highlight as Highlight
 
 initialAppState :: AppState
 initialAppState = AppState
@@ -42,7 +41,19 @@ initialAppState = AppState
   }
 
 update :: Action -> AppState -> Cloud AppState
-update (CodeMirrorAction action) appState = do
+update action appState = _preUpdate action appState >>= _update action >>= _postUpdate action
+
+_preUpdate :: Action -> AppState -> Cloud AppState
+_preUpdate _ appState = do
+  let cs = compilationState appState
+      newCS = cs { Compilation.dirtyCompile = False }
+  return appState { compilationState = newCS }
+
+_postUpdate :: Action -> AppState -> Cloud AppState
+_postUpdate _ = return
+
+_update :: Action -> AppState -> Cloud AppState
+_update (CodeMirrorAction action) appState = do
     newCodeMirrorState <- CodeMirror.update action (codeMirrorState appState)
     let newContent = CodeMirror.content newCodeMirrorState
     _ <- atRemote $ Compilation.update
@@ -53,12 +64,10 @@ update (CodeMirrorAction action) appState = do
             { codeMirrorState = newCodeMirrorState
             }
     if compileShortcutPressed
-        then do
-            localIO Highlight.askForHighlight
-            update (ToolbarAction Toolbar.Compile) newState
+        then update (ToolbarAction Toolbar.Compile) newState
         else return newState
 
-update (ToolbarAction Toolbar.Compile) appState = do
+_update (ToolbarAction Toolbar.Compile) appState = do
     let tbState = toolbarState appState
     if Toolbar.projectOpened tbState
         then do
@@ -74,7 +83,7 @@ update (ToolbarAction Toolbar.Compile) appState = do
             localIO Toolbar.shakeErrorDisplay
             return appState
 
-update (ToolbarAction Toolbar.LoadProject) appState = do
+_update (ToolbarAction Toolbar.LoadProject) appState = do
     localIO $ JQuery.hide "#dependencyMessage"
     let tbState = toolbarState appState
     let cmpState = compilationState appState
@@ -116,7 +125,7 @@ update (ToolbarAction Toolbar.LoadProject) appState = do
             localIO $ JQuery.show "#errorDisplay" -- Show it after they finished
             return newState
 
-update (ToolbarAction Toolbar.LoadPackageYaml) appState = do
+_update (ToolbarAction Toolbar.LoadPackageYaml) appState = do
     let projectPath = Compilation.projectPath (compilationState appState)
     contents <- atRemote $ localIO $ readFile (projectPath </> "package.yaml")
     let tbState = toolbarState appState
@@ -125,7 +134,7 @@ update (ToolbarAction Toolbar.LoadPackageYaml) appState = do
     _ <- Toolbar.update Toolbar.LoadPackageYaml tbState
     return appState { toolbarState = tbState' }
 
-update (ToolbarAction Toolbar.SavePackage) appState = do
+_update (ToolbarAction Toolbar.SavePackage) appState = do
     let projectPath = Compilation.projectPath (compilationState appState)
     let tbState = toolbarState appState
     atRemote $ localIO $ writeFile (projectPath </> "package.yaml") (Toolbar.projectConfig tbState)
@@ -135,7 +144,7 @@ update (ToolbarAction Toolbar.SavePackage) appState = do
     localIO $ JQuery.hide "#dependencyMessage"
     return newState
 
-update (ToolbarAction action) appState = do
+_update (ToolbarAction action) appState = do
     newToolbarState <- Toolbar.update action (toolbarState appState)
     let cs = compilationState appState
     let newCompilationState = cs

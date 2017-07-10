@@ -34,6 +34,7 @@ initialState = State
     , compilationError = "No project has been loaded yet, try opening one?"
     , projectPath = ""
     , workingFile = "src/Main.hs"
+    , dirtyCompile = True
     }
 
 lastProjectFile :: FilePath
@@ -92,7 +93,7 @@ buildOutput state = do
         System.ExitFailure _ ->
             return state { compiledOutput = "Compiling" }
         System.ExitSuccess ->
-            return state { compiledOutput = preprocessOutput out, compilationError = "" }
+            return state { compiledOutput = preprocessOutput out, compilationError = "", dirtyCompile = True }
 
 
 preprocessOutput :: String -> String
