@@ -79,7 +79,7 @@ buildHtmlCode state = do
         System.ExitFailure _ ->
             if isCommonError err
                 then buildOutput state
-                else return state { compilationError = err }
+                else return state { compilationError = err, dirtyCompile = True }
         System.ExitSuccess ->
             buildOutput state
   where
