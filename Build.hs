@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack --resolver lts-8.11 --install-ghc runghc --package turtle-1.3.2 --package foldl
+-- stack --resolver lts-8.11 --install-ghc runghc --package turtle-1.3.2 --package foldl --package text-1.2.2.2 --package system-filepath-0.4.13.3
 {-# LANGUAGE OverloadedStrings #-}
 
 import Prelude hiding (FilePath)
