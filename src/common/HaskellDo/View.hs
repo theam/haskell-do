@@ -67,6 +67,7 @@ widgets state = do
     **> openProjectButtonWidget
     **> packageEditorButtonWidget
     **> toggleEditorButtonWidget
+    **> toggleErrorButtonWidget
     **> compileButtonWidget
     **> pathInputWidget
     **> closeModalButtonWidget
@@ -93,6 +94,9 @@ widgets state = do
 
     toggleEditorButtonWidget = Ulmus.mapAction ToolbarAction $
         Toolbar.toggleEditorButton (toolbarState state)
+
+    toggleErrorButtonWidget = Ulmus.mapAction ToolbarAction $
+        Toolbar.toggleErrorButton (toolbarState state)
 
     pathInputWidget = Ulmus.mapAction ToolbarAction $
         Toolbar.pathInput (toolbarState state)

@@ -130,6 +130,10 @@ update ToggleEditor state = do
     localIO toggleEditor
     return state
 
+update ToggleError state = do
+    localIO toggleError
+    return state
+
 update _ state = return state
 
 shakeErrorDisplay :: IO ()

@@ -29,3 +29,6 @@ initTooltips = return ()
 
 toggleEditor :: IO ()
 toggleEditor = return ()
+
+toggleError :: IO ()
+toggleError = return ()

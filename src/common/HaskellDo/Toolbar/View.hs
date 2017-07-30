@@ -39,6 +39,7 @@ toolbar = rawHtml $ do
             li ! id "compileButton" $ noHtml
             li ! id "packageEditorButton" $ noHtml
             li ! id "toggleEditorButton" $ noHtml
+            li ! id "toggleErrorButton" $ noHtml
     packageEditorModal    -- Apparently, if we put this line
     openProjectModal      -- under this one. The open project modal doesn't work
     modalPromptPlaceholder "newDirectoryModal" "New Directory" "Choose a name for the new directory"
@@ -118,6 +119,12 @@ toggleEditorButton :: State -> Widget Action
 toggleEditorButton _ = Ulmus.newWidget "toggleEditorButton" $ wlink ToggleEditor $
     a ! atr "class" "btn-floating purple darken-2 tooltipped" ! atr "data-position" "bottom" ! atr "data-tooltip" "Toggle editor" ! atr "data-delay" "50"$
         i ! atr "class" "material-icons" $ ("remove_red_eye" :: String)
+
+toggleErrorButton :: State -> Widget Action
+toggleErrorButton _ = Ulmus.newWidget "toggleErrorButton" $ wlink ToggleError $
+    a ! atr "class" "btn-floating purple darken-2 tooltipped" ! atr "data-position" "bottom" ! atr "data-tooltip" "Toggle error" ! atr "data-delay" "50"$
+        i ! atr "class" "material-icons" $ ("error" :: String)
+
 
 closeModalButton :: State -> Widget Action
 closeModalButton _ = Ulmus.newWidget "closeModalButton" $ wlink LoadProject $

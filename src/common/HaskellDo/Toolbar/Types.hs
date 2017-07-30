@@ -39,4 +39,5 @@ data Action
     | SavePackage
     | ClosePackageModal
     | ToggleEditor
+    | ToggleError
     deriving (Read, Show)
