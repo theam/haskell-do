@@ -84,3 +84,6 @@ mdeStyle = Text.unpack . Clay.render $ do
         bottom (pct 0)
         maxWidth (pct 98)
         zIndex 2
+    "#errorDisplay pre" ? do
+        maxHeight (vh 40)
+        overflow auto

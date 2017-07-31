@@ -43,3 +43,6 @@ foreign import javascript unsafe "$('#editor').is('visible')"
 
 foreign import javascript unsafe "toggleEditor()"
     toggleEditor :: IO ()
+
+foreign import javascript unsafe "$('#errorDisplay').toggle()"
+    toggleError :: IO ()
