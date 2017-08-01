@@ -1,0 +1,58 @@
+# This is the simple Travis configuration, which is intended for use
+# on applications which do not require cross-platform and
+# multiple-GHC-version support. For more information and other
+# options, see:
+#
+# https://docs.haskellstack.org/en/stable/travis_ci/
+#
+# Copy these contents into the root directory of your Github project in a file
+# named .travis.yml
+
+# Use new container infrastructure to enable caching
+sudo: true
+
+# Do not choose a language; we provide our own build tools.
+language: generic
+
+  # we comment this because GHCJS is not bootable in TravisCI
+# Automatic binary upload
+# before_deploy:
+#   "mkdir builds && stack Build.hs -p"
+
+  # deploy:
+  #   provider: releases
+  #   api_key:
+  #       secure: "Wd+8Dn3qE12bWw+338QF7wq/aMgbFItDwuVtu2+nRV0Iz89w1ZSoeSG9j4YriPu+EWpKiAu6Thmwix0VNenAVWBTe/i5GpLOwOHNFMEbCmI4JC6qoioPr9nSdr26QHr8NXLriCafFFODx+B9v5kN7496w/kDWta9//o6gFuZos2g2VDtctzTH6uKr5jkPEdQb7BYIz7MAWXIPSkC+bw3tz/SwqsRqf0NarSXH7HrBJ+GWNo9CgcJ3e611oxkiN8SDMkXSQ/bA2F5O5qXmlIef7odOvqWH1uMHf0uSJyNIT/CctAHZ240UOXVH0O2Il6Ojq4HJhLSNhkNVvSp128tX6lbPxIpd/xBaNVKoCc3DY4EWaZ+PyduwSVSnMePgXxE721OWtjS43p8UG3QiIZGPlTq89q5IWL41egdfH6rVp8xPBmI2oMLgdFBtmc4Ii37wbRvGkl3Qw4VBEIbM2P16eaYGzbSSJjwkxrQLOwgwpy1Lzz3vIUdxi03PxexiWYQaiaZXrDlngpKKByRRSe/QNLipv4WV3x4HA8vLSLdPmM4iQr0wYqFYIOHC4cT7BS7+LHDnjGE5RAGf8wUCmsWfko7juJCzwV2Hq3LxozYbX0/7PK3rGsBkSiy3/vjJhkaJGdGizpu6rMXXORVd3zfTukNYWMpBzKu8MNltQNakjI="
+  #   file_glob: true
+  #   file:
+  #     - "builds/*.zip"
+  #   skip_cleanup: true
+  #   on:
+  #     tags: true
+
+# Caching so the next build will be fast too.
+cache:
+  directories:
+  - $HOME/.stack
+  - $HOME/.ghcjs
+
+# Ensure necessary system libraries are present
+addons:
+    apt:
+      packages:
+          - libgmp-dev
+
+before_install:
+# Download and unpack the stack executable
+- mkdir -p ~/.local/bin
+- export PATH=$HOME/.local/bin:$PATH
+- travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
+- curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash - && sudo apt install -y nodejs && sudo ln -s /usr/local/bin/nodejs /usr/local/bin/node
+
+install:
+# Build dependencies
+- stack --no-terminal --install-ghc test --only-dependencies
+
+script:
+# Build the package, its tests, and its docs and run the tests
+- stack --no-terminal test --haddock --no-haddock-deps

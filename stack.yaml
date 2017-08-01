@@ -1,0 +1,25 @@
+resolver: lts-8.3
+packages:
+- location: '.'
+- extra-dep: true
+  location:
+    git: https://github.com/transient-haskell/transient
+    commit: f38fd2869b045564445edcc0fa3274490a750219
+- extra-dep: true
+  location:
+    git: https://github.com/transient-haskell/transient-universe
+    commit: f5ce492ff31808e05dca85957f9ce6a1a48c7a62
+- extra-dep: true
+  location:
+    git: https://github.com/geraldus/ghcjs-perch
+    commit: 6c238f6ab9624eb1e950059d602aaff35446476b
+- extra-dep: true
+  location:
+    git: https://github.com/transient-haskell/axiom
+    commit: ee39119817ff05ed7385ced4c8c0e7ee0ed7f682
+
+extra-deps: []
+
+flags: {}
+
+extra-package-dbs: []
