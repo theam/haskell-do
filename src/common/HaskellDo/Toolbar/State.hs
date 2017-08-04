@@ -18,7 +18,8 @@ module HaskellDo.Toolbar.State where
 import System.Directory (listDirectory, doesFileExist, doesDirectoryExist, getHomeDirectory, createDirectory)
 import System.FilePath ((</>))
 import System.Process (callCommand, shell, readProcess,readCreateProcessWithExitCode)
-import Data.List (isInfixOf)
+--import Data.List (isInfixOf)
+import System.Exit
 
 import Control.Monad (filterM, unless)
 
@@ -138,17 +139,24 @@ update ToggleError state = do
 
 update ConvertToPDF state = do
     checkIfInstalled <- atRemote . localIO $ readProcess "find" ["/usr/bin","-name","wkhtmltopdf"] []
-    (_,environmentVar,_) <- atRemote . localIO $ readCreateProcessWithExitCode (shell "which") "wkhtmltopdf"
+    (errorCode,_,_) <- atRemote . localIO $ readCreateProcessWithExitCode (shell "which wkhtmltopdf") ""
+    let environmentVar = checkError errorCode :: Bool
     let path = projectPath state
-    if ((checkIfInstalled /= "") || (isInfixOf "bin" environmentVar)) && ((projectOpened state) == True)
+    if (checkIfInstalled /= "") && (environmentVar == True) && ((projectOpened state) == True)
       then do
-        atRemote . localIO $ callCommand ("cd " ++ path ++ " && stack exec run-test > index.html && wkhtmltopdf index.html index.pdf" :: String)
         localIO $ openModal "#convertToPDFModal"
+        atRemote . localIO $ callCommand ("cd " ++ path ++ " && stack exec run-test > index.html && wkhtmltopdf index.html index.pdf" :: String)
       else
         localIO $ openModal "#convertToPDFModalFail"
     return state
 
 update _ state = return state
+
+checkError :: ExitCode -> Bool
+checkError exitCode =
+  case exitCode of
+    ExitSuccess -> True
+    ExitFailure _ -> False
 
 shakeErrorDisplay :: IO ()
 shakeErrorDisplay = shake "#errorDisplay"
