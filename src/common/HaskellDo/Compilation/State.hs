@@ -95,7 +95,6 @@ buildOutput state = do
         System.ExitSuccess ->
             return state { compiledOutput = preprocessOutput out, compilationError = "", dirtyCompile = True }
 
-
 preprocessOutput :: String -> String
 preprocessOutput out =
     Text.pack out

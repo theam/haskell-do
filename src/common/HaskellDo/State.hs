@@ -168,4 +168,3 @@ handleRead :: Either SomeException String -> IO (Maybe String)
 handleRead = \case
     Left _ -> return Nothing
     Right txt -> return (Just txt)
-

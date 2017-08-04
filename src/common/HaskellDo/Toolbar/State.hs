@@ -17,6 +17,8 @@ module HaskellDo.Toolbar.State where
 
 import System.Directory (listDirectory, doesFileExist, doesDirectoryExist, getHomeDirectory, createDirectory)
 import System.FilePath ((</>))
+import System.Process (readProcess, callCommand)
+import Data.List (isInfixOf)
 
 import Control.Monad (filterM, unless)
 
@@ -25,6 +27,8 @@ import Transient.Move
 import HaskellDo.Toolbar.Types
 import Foreign.Materialize
 import Foreign.JQuery
+--import System.Process (callCommand, readProcess)
+--import Data.List (isInfixOf)
 
 initialState :: State
 initialState = State
@@ -132,6 +136,18 @@ update ToggleEditor state = do
 
 update ToggleError state = do
     localIO toggleError
+    return state
+
+update ConvertToPDF state = do
+    isInstalled <- atRemote . localIO $ readProcess "find" ["/usr/bin","-name","wkhtmltopdf"] []
+    environmentVar <- atRemote . localIO $ readProcess "which" ["wkhtmltopdf"] []
+    let path = projectPath state
+    if ((isInstalled /= "") || (isInfixOf "bin" environmentVar)) && (projectOpened state) == True
+      then do
+        atRemote . localIO $ callCommand ("cd " ++ path ++ " && stack exec run-test > index.html && wkhtmltopdf index.html index.pdf" :: String)
+        localIO $ openModal "#convertToPDFModal"
+      else
+        localIO $ openModal "#convertToPDFModalFail"
     return state
 
 update _ state = return state

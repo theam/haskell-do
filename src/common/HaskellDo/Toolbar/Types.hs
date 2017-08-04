@@ -40,4 +40,5 @@ data Action
     | ClosePackageModal
     | ToggleEditor
     | ToggleError
+    | ConvertToPDF
     deriving (Read, Show)

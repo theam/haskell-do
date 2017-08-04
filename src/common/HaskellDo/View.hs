@@ -68,6 +68,7 @@ widgets state = do
     **> packageEditorButtonWidget
     **> toggleEditorButtonWidget
     **> toggleErrorButtonWidget
+    **> convertToPDFButtonWidget
     **> compileButtonWidget
     **> pathInputWidget
     **> closeModalButtonWidget
@@ -97,6 +98,9 @@ widgets state = do
 
     toggleErrorButtonWidget = Ulmus.mapAction ToolbarAction $
         Toolbar.toggleErrorButton (toolbarState state)
+
+    convertToPDFButtonWidget = Ulmus.mapAction ToolbarAction $
+        Toolbar.convertToPDFButton (toolbarState state)
 
     pathInputWidget = Ulmus.mapAction ToolbarAction $
         Toolbar.pathInput (toolbarState state)
