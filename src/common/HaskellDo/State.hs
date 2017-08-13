@@ -80,9 +80,13 @@ _update (CodeMirrorAction action) appState = do
                       codeMirrorState = newCodeMirrorState
                     }
 
-
     if compileShortcutPressed
-        then update (ToolbarAction Toolbar.Compile) newState
+        then do
+          _ <- atRemote $ Compilation.update
+              (Compilation.WriteWorkingFile newContent)
+              (compilationState appState)
+
+          update (ToolbarAction Toolbar.Compile) newState
         else return newState
 
 _update (ToolbarAction Toolbar.Compile) appState = do
