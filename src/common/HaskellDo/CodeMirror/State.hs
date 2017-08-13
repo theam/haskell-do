@@ -17,10 +17,12 @@ module HaskellDo.CodeMirror.State where
 
 import Transient.Move
 import HaskellDo.CodeMirror.Types
+import Data.DateTime
 
 initialState :: State
 initialState = State
-    { content = ""
+    { content  = ""
+    , lastSave = startOfTime
     }
 
 update :: Action -> State -> Cloud State

@@ -14,11 +14,13 @@
  - limitations under the License.
  -}
 module HaskellDo.CodeMirror.Types where
+import Data.DateTime
 
 data Action
     = NewContent String
     deriving (Read, Show)
 
 data State = State
-    { content :: String
+    { content  :: String
+    , lastSave :: DateTime
     } deriving (Read, Show)
