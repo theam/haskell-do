@@ -29,7 +29,8 @@ packages:
     commit: ee39119817ff05ed7385ced4c8c0e7ee0ed7f682
 
 
-extra-deps: []
+extra-deps:
+  - datetime-0.3.1
 
 flags: {}
 

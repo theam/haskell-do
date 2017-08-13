@@ -18,6 +18,7 @@ module HaskellDo.State where
 
 import Control.Exception (try, SomeException)
 import Control.Monad (when)
+import Data.DateTime
 
 import Transient.Move
 
@@ -52,19 +53,40 @@ _preUpdate _ appState = do
 _postUpdate :: Action -> AppState -> Cloud AppState
 _postUpdate _ = return
 
+saveEvery :: Integer
+saveEvery = 3 -- seconds
+
 _update :: Action -> AppState -> Cloud AppState
 _update (CodeMirrorAction action) appState = do
     newCodeMirrorState <- CodeMirror.update action (codeMirrorState appState)
     let newContent = CodeMirror.content newCodeMirrorState
-    _ <- atRemote $ Compilation.update
-        (Compilation.WriteWorkingFile newContent)
-        (compilationState appState)
+
     compileShortcutPressed <- localIO CodeMirror.cmdOrCtrlReturnPressed
-    let newState = appState
-            { codeMirrorState = newCodeMirrorState
-            }
+
+    currentTime <- localIO getCurrentTime
+    let lastSave = CodeMirror.lastSave $ codeMirrorState appState
+
+    newState <- if diffSeconds currentTime lastSave > saveEvery
+                  then do
+                    _ <- atRemote $ Compilation.update
+                        (Compilation.WriteWorkingFile newContent)
+                        (compilationState appState)
+
+                    return appState {
+                      codeMirrorState = newCodeMirrorState { CodeMirror.lastSave = currentTime }
+                    }
+                  else
+                    return appState {
+                      codeMirrorState = newCodeMirrorState
+                    }
+
     if compileShortcutPressed
-        then update (ToolbarAction Toolbar.Compile) newState
+        then do
+          _ <- atRemote $ Compilation.update
+              (Compilation.WriteWorkingFile newContent)
+              (compilationState appState)
+
+          update (ToolbarAction Toolbar.Compile) newState
         else return newState
 
 _update (ToolbarAction Toolbar.Compile) appState = do
