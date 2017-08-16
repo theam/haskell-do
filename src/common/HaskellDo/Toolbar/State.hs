@@ -88,7 +88,7 @@ update (NewPath newPath) state = do
       isProject <- atRemote $ localIO $ doesFileExist (path </> "package.yaml")
       updateProjectAvailability newState' path isProject
     else do
-      let newState' = newState { directoryList = ([], []) }
+      let newState' = newState { directoryList = ([], []), createProject = True }
       return newState'
   where
     pathOrLastOrHome path = if null path
