@@ -138,11 +138,10 @@ update ToggleError state = do
     return state
 
 update ConvertToPDF state = do
-    checkIfInstalled <- atRemote . localIO $ readProcess "find" ["/usr/bin","-name","wkhtmltopdf"] []
     (errorCode,_,_) <- atRemote . localIO $ readCreateProcessWithExitCode (shell "which wkhtmltopdf") ""
     let environmentVar = checkError errorCode :: Bool
     let path = projectPath state
-    if (checkIfInstalled /= "") && (environmentVar == True) && ((projectOpened state) == True)
+    if (environmentVar == True) && ((projectOpened state) == True)
       then do
         localIO $ openModal "#convertToPDFModal"
         atRemote . localIO $ callCommand ("cd " ++ path ++ " && stack exec run-test > index.html && wkhtmltopdf index.html index.pdf" :: String)
