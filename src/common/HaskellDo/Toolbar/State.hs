@@ -17,7 +17,7 @@ module HaskellDo.Toolbar.State where
 
 import System.Directory (listDirectory, doesFileExist, doesDirectoryExist, getHomeDirectory, createDirectory)
 import System.FilePath ((</>))
-import System.Process (callCommand, shell, readProcess,readCreateProcessWithExitCode)
+import System.Process (callCommand, shell,readCreateProcessWithExitCode)
 --import Data.List (isInfixOf)
 import System.Exit
 
