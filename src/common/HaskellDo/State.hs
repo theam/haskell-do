@@ -33,6 +33,7 @@ import qualified HaskellDo.Compilation.Types as Compilation
 import qualified HaskellDo.Toolbar.State as Toolbar
 import qualified HaskellDo.Toolbar.Types as Toolbar
 import qualified Foreign.JQuery as JQuery
+import qualified Foreign.MathJax as MathJax
 
 initialAppState :: AppState
 initialAppState = AppState
@@ -98,6 +99,7 @@ _update (ToolbarAction Toolbar.Compile) appState = do
                 Compilation.Compile
                 (compilationState appState)
             localIO $ JQuery.hide ".dimmedBackground"
+            localIO $ MathJax.typeset "outputDisplay"
             return appState
                 { compilationState = newCompilationState
                 }
