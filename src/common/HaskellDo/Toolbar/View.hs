@@ -74,7 +74,7 @@ convertToPDFModal =
 convertToPDFModalFail :: Perch
 convertToPDFModalFail =
     div ! id "convertToPDFModalFail" ! atr "class" "modal" $ do
-        div ! atr "class" "modal-content" $ do
+        div ! atr "class" "modal-content red darken-1 white-text" $ do
           h4 ("Error: wkhtmltopdf is not installed or a project has not been loaded" :: String)
 
 modalPromptPlaceholder :: String -> String -> String -> Perch
