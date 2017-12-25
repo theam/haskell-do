@@ -30,19 +30,19 @@ NB : These instructions assume the user has already created a docker machine cal
 
 NB 2 : OSX users usually need to run the following command to configure VirtualBox in order to set up port forwarding:
 
-`VBoxManage modifyvm "dev" --natpf1 "tcp-port8080,tcp,,8080,,8080"`
+    VBoxManage modifyvm "dev" --natpf1 "tcp-port8080,tcp,,8080,,8080"
 
 Once that is done, Docker can be configured and started:
 
-`docker-machine start dev`
+    docker-machine start dev
 
-`eval $(docker-machine env dev)`
+    eval $(docker-machine env dev)
 
 Then, the `haskell-do` image can be built and run:
 
-`make docker`
+    make docker
 
-`make docker-run`
+    make docker-run
 
 If everything went well, it is now possible to point a browser to `http://localhost:8080` and work with `haskell-do`.
 
