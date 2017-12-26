@@ -14,6 +14,10 @@ sudo: true
 # Do not choose a language; we provide our own build tools.
 language: generic
 
+
+services:
+  - docker
+  
   # we comment this because GHCJS is not bootable in TravisCI
 # Automatic binary upload
 # before_deploy:
@@ -56,3 +60,5 @@ install:
 script:
 # Build the package, its tests, and its docs and run the tests
 - stack --no-terminal test --haddock --no-haddock-deps
+# Build the Docker image
+- docker build -t theam/haskell-do src/docker/

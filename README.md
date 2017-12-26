@@ -21,9 +21,36 @@ The only *3rd-party* requirements to build [haskell.do](http://haskell.do) are [
 
 `stack Build.hs -r` for running [haskell.do](http://haskell.do) on port `8080`.
 
+
+## Docker-related
+
+`haskell-do` can be executed within a Docker container. For convenience, the building and execution commands are provided within the Makefile.
+
+NB : These instructions assume the user has already created a docker machine called "dev".
+
+NB 2 : OSX users usually need to run the following command to configure VirtualBox in order to set up port forwarding:
+
+    VBoxManage modifyvm "dev" --natpf1 "tcp-port8080,tcp,,8080,,8080"
+
+Once that is done, Docker can be configured and started:
+
+    docker-machine start dev
+
+    eval $(docker-machine env dev)
+
+Then, the `haskell-do` image can be built and run:
+
+    make docker
+
+    make docker-run
+
+If everything went well, it is now possible to point a browser to `http://localhost:8080` and work with `haskell-do`.
+
+
+
 ## Contributing
 
-Wanna contribute? Make sure that you've read our [contributor guidelines](https://github.com/theam/haskell-do/blob/master/CONTRIBUTING.md).
+Would you like to contribute? Make sure that you've read our [contributor guidelines](https://github.com/theam/haskell-do/blob/master/CONTRIBUTING.md).
 We'd like to hear from you and your ideas, get in touch with other contributors through:
 
 - [Gitter](https://gitter.im/theam/haskell-do)
