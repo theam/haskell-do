@@ -2,6 +2,7 @@
 
 [![Gitter](https://badges.gitter.im/theam/haskell-do.svg)](https://gitter.im/theam/haskell-do?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![Build Status](https://travis-ci.org/theam/haskell-do.svg?branch=develop)](https://travis-ci.org/theam/haskell-do)
+[![Open Source Helpers](https://www.codetriage.com/theam/haskell-do/badges/users.svg)](https://www.codetriage.com/theam/haskell-do)
 
 [haskell.do](http://haskell.do) is a Haskell code editor, centered around interactive development. You can get it on [the website](http://haskell.do).
 
