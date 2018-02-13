@@ -17,6 +17,9 @@ module HaskellDo.Toolbar.State where
 
 import System.Directory (listDirectory, doesFileExist, doesDirectoryExist, getHomeDirectory, createDirectory)
 import System.FilePath ((</>))
+import System.Process (callCommand, shell,readCreateProcessWithExitCode)
+--import Data.List (isInfixOf)
+import System.Exit
 
 import Control.Monad (filterM, unless)
 
@@ -134,7 +137,25 @@ update ToggleError state = do
     localIO toggleError
     return state
 
+update ConvertToPDF state = do
+    (errorCode,_,_) <- atRemote . localIO $ readCreateProcessWithExitCode (shell "which wkhtmltopdf") ""
+    let environmentVar = checkError errorCode :: Bool
+    let path = projectPath state
+    if (environmentVar == True) && ((projectOpened state) == True)
+      then do
+        localIO $ openModal "#convertToPDFModal"
+        atRemote . localIO $ callCommand ("cd " ++ path ++ " && stack exec run-test > index.html && wkhtmltopdf index.html index.pdf" :: String)
+      else
+        localIO $ openModal "#convertToPDFModalFail"
+    return state
+
 update _ state = return state
+
+checkError :: ExitCode -> Bool
+checkError exitCode =
+  case exitCode of
+    ExitSuccess -> True
+    ExitFailure _ -> False
 
 shakeErrorDisplay :: IO ()
 shakeErrorDisplay = shake "#errorDisplay"

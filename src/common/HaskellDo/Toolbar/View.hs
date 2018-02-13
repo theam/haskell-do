@@ -40,9 +40,12 @@ toolbar = rawHtml $ do
             li ! id "packageEditorButton" $ noHtml
             li ! id "toggleEditorButton" $ noHtml
             li ! id "toggleErrorButton" $ noHtml
+            li ! id "convertToPDFButton" $ noHtml
     packageEditorModal    -- Apparently, if we put this line
     openProjectModal      -- under this one. The open project modal doesn't work
     modalPromptPlaceholder "newDirectoryModal" "New Directory" "Choose a name for the new directory"
+    convertToPDFModal
+    convertToPDFModalFail
 
 openProjectModal :: Perch
 openProjectModal =
@@ -62,8 +65,20 @@ openProjectModal =
         div ! atr "class" "modal-footer" $
             div ! id "closeModalButton" $ noHtml
 
+convertToPDFModal :: Perch
+convertToPDFModal =
+    div ! id "convertToPDFModal" ! atr "class" "modal" $ do
+        div ! atr "class" "modal-content" $ do
+          h4 ("PDF saved on project path" :: String)
+
+convertToPDFModalFail :: Perch
+convertToPDFModalFail =
+    div ! id "convertToPDFModalFail" ! atr "class" "modal" $ do
+        div ! atr "class" "modal-content red darken-1 white-text" $ do
+          h4 ("Error: wkhtmltopdf is not installed or a project has not been loaded" :: String)
+
 modalPromptPlaceholder :: String -> String -> String -> Perch
-modalPromptPlaceholder id' htitle text = 
+modalPromptPlaceholder id' htitle text =
   div ! id id' ! atr "class" "modal" $ do
     div ! atr "class" "modal-content" $ do
       if (not . null) htitle then h4 htitle else noHtml
@@ -124,6 +139,11 @@ toggleErrorButton :: State -> Widget Action
 toggleErrorButton _ = Ulmus.newWidget "toggleErrorButton" $ wlink ToggleError $
     a ! atr "class" "btn-floating purple darken-2 tooltipped" ! atr "data-position" "bottom" ! atr "data-tooltip" "Toggle error" ! atr "data-delay" "50"$
         i ! atr "class" "material-icons" $ ("error" :: String)
+
+convertToPDFButton :: State -> Widget Action
+convertToPDFButton _ = Ulmus.newWidget "convertToPDFButton" $ wlink ConvertToPDF $
+    a ! atr "class" "btn-floating purple darken-2 tooltipped" ! atr "data-position" "bottom" ! atr "data-tooltip" "Convert to PDF" ! atr "data-delay" "50"$
+        i ! atr "class" "material-icons" $ ("picture_as_pdf" :: String)
 
 
 closeModalButton :: State -> Widget Action
